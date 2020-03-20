@@ -1,0 +1,14 @@
+:root{
+  --website-bg-dark: hsl(222, 11%, 18%);
+  --website-text-normal: #c35353;
+  --website-text-light: #a98181;
+}
+
+body {
+  background-color: var(--website-bg-dark);
+  color: var(--website-text-normal);
+}
+
+a {
+  color: var(--website-text-light);
+}
