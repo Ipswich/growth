@@ -1,17 +1,19 @@
 {
   "development": {
     "config_ID": "development",
-    "node_port": 26420,
+    "web_data": "../config/web-data-config-default.json",
     "database": {
       "name": "growth-dev",
       "address": "127.0.0.1",
       "port": 3306,
       "user": null,
       "pass": null
-    }
+    },
+    "node_port": 26420
   },
   "production": {
     "config_ID": "production",
+    "web_data": "../config/web-data-config.json",
     "node_port": 26420,
     "database": {
       "name": "growth-prod",

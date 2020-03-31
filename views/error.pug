@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  h1.error-messages= message
+  br
+  br
+  h5.error-messages= subMessage
+  pre #{error.stack}

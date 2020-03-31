@@ -2,4 +2,12 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  br
+  div#data-list.list-group
+    a#data-list-header.list-group-item Current Conditions
+    each val, index in sensorData
+      a(href='#' + val.displayName)#data-list-item.list-group-item.list-group-item-action= val.displayName + ": " + val.data + " " + val.units
+  div#chart-container
+  each val, index in sensorData
+    div(id=val.displayName).chart-div
+      h5= val.displayName
