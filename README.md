@@ -3,9 +3,9 @@ Raspberry Pi/Arduino based grow room controller.
 
 ### Software:
 * Node.js
+* Johnny-Five
 * Pug with Bootstrap
 * MariaDB
-* Firmata
 
 ### Computational Hardware: 
 * Raspberry Pi 4, 2GB
