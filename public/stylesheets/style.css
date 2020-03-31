@@ -1,14 +1,61 @@
 :root{
-  --website-bg-dark: hsl(222, 11%, 18%);
+  --website-bg-normal: hsl(222, 11%, 18%);
+  --website-bg-light: hsl(222, 11%, 25%);
+  --website-bg-lighter: hsl(222, 11%, 28%);
   --website-text-normal: #c35353;
   --website-text-light: #a98181;
 }
 
+#body {
+  text-align: center;
+    padding: 40px;
+}
+
+#data-list {
+  color: var(--website-text-normal);
+}
+#data-list-header{
+  background-color:var(--website-bg-lighter);
+  text-align: center;
+}
+
+#data-list-item {
+  background-color:var(--website-bg-light);
+  text-align: left;
+  color: var(--website-text-normal);
+}
+#data-list-item:hover{
+  background-color:var(--website-bg-normal);
+}
+
+#chart-container{
+
+}
+#chart-div{
+  
+}
+
+.error-messages {
+  color: var(--website-text-normal);
+  text-align: center;
+}
+
+.footer-link {
+  color: var(--website-text-light);
+}
+
+hr {
+  border: 1px solid var(--website-text-light);
+}
+
 body {
-  background-color: var(--website-bg-dark);
+  background-color: var(--website-bg-normal);
   color: var(--website-text-normal);
 }
 
-a {
-  color: var(--website-text-light);
+
+pre {
+    text-align: justify;
+    background-color: var(--website-bg-normal);
+    color: var(--website-text-normal);
 }

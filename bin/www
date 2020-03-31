@@ -3,38 +3,30 @@
 /**
  * Module dependencies.
  */
-
 var app = require('../app');
 var debug = require('debug')('growth:server');
 var http = require('http');
 var config = require('../config/config.json');
 
 /**
- * Get port from environment and store in Express.
+ * Get port from config or environment and store in Express.
  */
 if(process.env.NODE_ENV == 'development'){
   config = config.development;
-  app.set('development', true);
-  app.set('production', false);
 } else {
   config = config.production;
-  app.set('production', true);
-  app.set('development', false);
 }
-console.log(config);
+
 if(typeof process.env.PORT == undefined){
   var port = normalizePort(process.env.PORT);
 } else {
   var port = normalizePort(config.node_port);
 }
-
-
-app.set('config', config);
 app.set('port', port);
+
 /**
  * Create HTTP server.
  */
-
 var server = http.createServer(app);
 
 /**
