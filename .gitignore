@@ -105,3 +105,6 @@ dist
 
 #configs
 config/config.json
+
+#Misc files
+SQL/schema.sql
