@@ -7,7 +7,6 @@ CALL addNewSensor('BME280', 'Thermometer', 'Control Box', '°C');
 CALL addNewSensor('BME280', 'Pressure', 'Control Box', 'hPa');
 CALL addNewSensor('BME280', 'Humidity', 'Control Box', '% rH');
 
-CALL addTemperatureReading(1, 75.389);
-CALL addPressureReading(2, 600);
-CALL addHumidityReading(3, 80);
-CALL addTemperatureReading(1, 79.342);
+CALL addSensorReading(1, 75.389);
+CALL addSensorReading(2, 600);
+CALL addSensorReading(3, 54.7);
