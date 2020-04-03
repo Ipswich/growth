@@ -25,7 +25,6 @@ if(process.env.NODE_ENV == 'development'){
 var web_data = require('./config/web-data-config');
 app.set('web_data', web_data);
 app.set('config', config);
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');

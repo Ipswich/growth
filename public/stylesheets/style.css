@@ -1,9 +1,10 @@
-:root{
+:root {
   --website-bg-normal: hsl(222, 11%, 18%);
   --website-bg-light: hsl(222, 11%, 25%);
   --website-bg-lighter: hsl(222, 11%, 28%);
   --website-text-normal: #c35353;
   --website-text-light: #a98181;
+  --website-text-green: hsl(125, 30%, 45%);
 }
 
 #body {
@@ -14,25 +15,41 @@
 #data-list {
   color: var(--website-text-normal);
 }
-#data-list-header{
+#data-list-header {
   background-color:var(--website-bg-lighter);
   text-align: center;
+}
+
+#data-list-group {
+  background-color:var(--website-bg-light);
+  text-align: left;
+  color: var(--website-text-normal);
+  font-weight: bold;
+  text-decoration: underline;
+}
+#data-list-group:hover {
+  background-color:var(--website-bg-normal);
 }
 
 #data-list-item {
   background-color:var(--website-bg-light);
   text-align: left;
+  padding-left: 50px;
   color: var(--website-text-normal);
 }
-#data-list-item:hover{
+#data-list-item:hover {
   background-color:var(--website-bg-normal);
 }
 
-#chart-container{
+#chart-container {
 
 }
-#chart-div{
-  
+#chart-div {
+
+}
+
+.sensor-data {
+  color:var(--website-text-green);
 }
 
 .error-messages {
