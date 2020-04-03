@@ -85,9 +85,17 @@ DELIMITER ;
 
 ##Get sensorTypes
 DELIMITER $$
-CREATE PROCEDURE `getSensorTypes`()
+CREATE PROCEDURE `getAllSensorTypes`()
 READS SQL DATA
   SELECT * FROM SensorTypes$$
+  ORDER BY sensorType DESC
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `getEnabledSensorTypes`()
+READS SQL DATA
+  SELECT * FROM SensorTypes WHERE enabled = 1$$
+  ORDER BY sensorType DESC
 DELIMITER ;
 
 ##Insert new sensor
@@ -152,7 +160,7 @@ CREATE PROCEDURE `getSensorLastReadings`()
     FROM SensorData
   ) AS d ON s.sensorID=d.sensorID
   GROUP BY sensorID
-  ORDER BY sensorType ASC, sensorID DESC
+  ORDER BY sensorType DESC, sensorID DESC
 $$
 DELIMITER ;
 
@@ -160,14 +168,13 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getSensorLastReadingsByHours` (IN `p_hours` INT)
   READS SQL DATA
-  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, data, s.sensorUnits, MAX(logTime) AS logTime
+  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, data, s.sensorUnits, logTime
   FROM Sensors s
   JOIN (
     SELECT sensorID, data, logTime
     FROM SensorData
   ) AS d ON s.sensorID=d.sensorID AND d.logTime > DATE_SUB(logTime, INTERVAL p_hours HOUR)
-  GROUP BY sensorID
-  ORDER BY sensorType ASC, sensorID DESC
+  ORDER BY sensorType DESC, sensorID DESC
 $$
 DELIMITER ;
 

@@ -4,10 +4,14 @@ block content
   h1= title
   br
   div#data-list.list-group
-    a#data-list-header.list-group-item Current Conditions
-    each val, index in sensorData
-      a(href='#' + val.displayName)#data-list-item.list-group-item.list-group-item-action= val.displayName + ": " + val.data + " " + val.units
+    a#data-list-header.list-group-item Most Recent Conditions
+    each type, index in sensorTypes
+      a(href='#' + type.sensorType)#data-list-group.list-group-item.list-group-item-action #{type.sensorType}
+      div(id=type.sensorType).data-list-group
+        each val, index in sensorData
+          if val.sensorType == type.sensorType
+            a(href='#' + val.sensorID)#data-list-item.list-group-item.list-group-item-action #{val.sensorLocation} @ #{val.logTime} #[br] #[span.sensor-data #{val.data} #{val.sensorUnits}]
   div#chart-container
   each val, index in sensorData
-    div(id=val.displayName).chart-div
-      h5= val.displayName
+    div(id=val.sensorID).chart-div
+        h5 #{val.sensorType}
