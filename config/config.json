@@ -3,11 +3,10 @@
     "config_ID": "development",
     "web_data": "../config/web-data-config-default.json",
     "database": {
-      "name": "growth-dev",
-      "address": "127.0.0.1",
-      "port": 3306,
+      "host": "localhost",
       "user": null,
-      "pass": null
+      "password": null,
+      "database": "growth-dev"
     },
     "node_port": 26420
   },
@@ -16,11 +15,10 @@
     "web_data": "../config/web-data-config.json",
     "node_port": 26420,
     "database": {
-      "name": "growth-prod",
-      "address": "127.0.0.1",
-      "port": 3306,
+      "host": "localhost",
       "user": null,
-      "pass": null
+      "password": null,
+      "database": "growth-prod"
     },
     "node_port": 26420
   }
