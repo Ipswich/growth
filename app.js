@@ -4,10 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
-var config = require('./config/config.json');
 var app = express();
 
 //App setup - load config
+try{
+  var config = require('./config/config.json');
+} catch (e) {
+  console.log("ERROR: Could not locate config.json, using default_config.json instead");
+  var config = require('./config/default_config.json');
+}
+
 if(process.env.NODE_ENV == 'development'){
   config = config.development;
   app.set('development', true);
