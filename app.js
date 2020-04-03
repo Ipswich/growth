@@ -5,13 +5,19 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var app = express();
+var fs = require('fs');
 
 //App setup - load config
 try{
   var config = require('./config/config.json');
 } catch (e) {
-  console.log("ERROR: Could not locate config.json, using default_config.json instead");
+  console.log("ERROR: Could not locate config.json, using default_config.json instead.");
   var config = require('./config/default_config.json');
+  fs.copyFile('./config/default_config.json', './config/config.json', (err) => {
+    if (err) {
+      console.log("ERROR: Could not copy default_config.json to config.json.");
+    }
+  });
 }
 
 if(process.env.NODE_ENV == 'development'){
