@@ -1,9 +1,9 @@
-CALL addNewSensorType('Thermometer', 1);
+CALL addNewSensorType('Temperature', 1);
 CALL addNewSensorType('Pressure', 1);
 CALL addNewSensorType('Humidity', 1);
 CALL addNewSensorType('CarbonDioxide', 0);
 
-CALL addNewSensor('BME280', 'Thermometer', 'Control Box', '°C');
+CALL addNewSensor('BME280', 'Temperature', 'Control Box', '°C');
 CALL addNewSensor('BME280', 'Pressure', 'Control Box', 'hPa');
 CALL addNewSensor('BME280', 'Humidity', 'Control Box', '% rH');
 
