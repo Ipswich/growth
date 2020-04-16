@@ -1,10 +1,26 @@
 :root {
   --website-bg-normal: hsl(222, 11%, 18%);
+  --website-bg-almost-light: hsl(222, 11%, 23%);
   --website-bg-light: hsl(222, 11%, 25%);
   --website-bg-lighter: hsl(222, 11%, 28%);
   --website-text-normal: #c35353;
   --website-text-light: #a98181;
   --website-text-green: hsl(125, 30%, 45%);
+}
+
+.nav-pill {
+  color: var(--website-text-normal);
+  background-color: var(--website-bg-lighter);
+}
+
+.nav-pill:hover {
+  color: var(--website-text-normal);
+  background-color: var(--website-bg-almost-light);
+}
+
+.nav-container .nav-pill.active {
+  color: var(--website-text-green);
+  background-color: var(--website-bg-almost-light);
 }
 
 #body {

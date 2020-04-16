@@ -52,7 +52,6 @@ app.use('/js', express.static(path.join(__dirname, '/node_modules/jquery/dist'))
 
 //Routes for web pages
 app.use('/', indexRouter);
-app.use('/schedule', scheduleRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

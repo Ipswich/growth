@@ -24,9 +24,15 @@ router.get('/', function(req, res, next) {
           }
           con.query('CALL getEnabledSensorTypes()', (error, results, fields) => {
             var sensorTypes = {sensorTypes: results[0]};
-            var web_data = req.app.get('web_data');
-            var data = Object.assign({}, web_data, sensorTypes, sensorData);
-            res.render('index', data);
+            con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
+              var scheduleData = {scheduleData: results[0]};
+                for (var key in scheduleData.scheduleData){
+                  scheduleData.scheduleData[key].eventTriggerTime = formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
+                }
+                var web_data = req.app.get('web_data');
+                var data = Object.assign({}, web_data, sensorTypes, sensorData, scheduleData);
+                res.render('index', data);
+              })
           })
     });
     con.destroy
@@ -37,5 +43,25 @@ router.get('/', function(req, res, next) {
   });
 
 });
+
+function formatTimeString(input){
+  if (input == null){
+    return "";
+  }
+  var destructed = input.split(":");
+  if(destructed[0] < 12){
+    if (destructed[0] == 0){
+      return ('12' + ':' + destructed[1] + ' AM');
+    } else {
+      return (destructed[0] + ':' + destructed[1] + ' AM');
+    }
+  } else {
+    if (destructed[0] == 12){
+      return (destructed[0] + ':' + destructed[1] + ' PM');
+    } else{
+      return ((destructed[0] - 12) + ':' + destructed[1] + ' PM');
+    }
+  }
+}
 
 module.exports = router;

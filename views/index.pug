@@ -1,18 +1,17 @@
 extends layout
 
 block content
-  h1= title
+  h1 #{title}
   br
-  div#data-list.list-group
-    a#data-list-header.list-group-item Most Recent Conditions
-    each type, index in sensorTypes
-      a(href='#' + type.sensorType)#data-list-group.list-group-item.list-group-item-action #{type.sensorType}
-      div(id=type.sensorType).data-list-group
-        each val, index in sensorData
-          if val.sensorType == type.sensorType
-            a(href='#' + val.sensorID)#data-list-item.list-group-item.list-group-item-action #{val.sensorLocation} @ #{val.logTime} #[br] #[span.sensor-data #{val.data} #{val.sensorUnits}]
+  div.nav-container
+    ul(id="pills-tab" role="tablist").nav.nav-pills
+      li.nav-item
+          a(id="nav-current-conditions" data-toggle="pill" href="#current-conditions" role="tab" aria-controls="current-conditions" aria-selected="true").nav-pill.nav-link.active Current Conditions
+      li.nav-item
+          a(id="nav-schedule" data-toggle="pill" href="#schedule" role="tab" aria-controls="schedule" aria-selected="false").nav-pill.nav-link Schedule
   br
-  div#chart-container
-  each val, index in sensorData
-    div(id=val.sensorID).chart-div
-        h5 #{val.sensorType}
+  div(id="pills-tabContent").tab-content
+    div(id="current-conditions" role="tabpanel" arealabelledby="nav-current-conditions").tab-pane.fade.show.active
+      include ./currentConditions.pug
+    div(id="schedule" role="tabpanel" arealabelledby="nav-schedule").tab-pane.fade
+      include ./schedules.pug
