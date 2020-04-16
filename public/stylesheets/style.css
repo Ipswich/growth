@@ -48,6 +48,27 @@
 
 }
 
+.scheduleContainer {
+}
+
+.scheduleTable {
+  color: var(--website-text-normal);
+  background-Color:var(--website-bg-light);
+}
+
+.scheduleTableHeader {
+    background-color:var(--website-bg-lighter);
+    border-bottom: 1px solid var(--website-text-light);
+}
+.scheduleTableBody {
+}
+.scheduleTableRow {
+}
+.scheduleTableRow:hover {
+  background-color:var(--website-bg-normal);
+  color: var(--website-text-normal);
+}
+
 .sensor-data {
   color:var(--website-text-green);
 }

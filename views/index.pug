@@ -11,6 +11,7 @@ block content
         each val, index in sensorData
           if val.sensorType == type.sensorType
             a(href='#' + val.sensorID)#data-list-item.list-group-item.list-group-item-action #{val.sensorLocation} @ #{val.logTime} #[br] #[span.sensor-data #{val.data} #{val.sensorUnits}]
+  br
   div#chart-container
   each val, index in sensorData
     div(id=val.sensorID).chart-div

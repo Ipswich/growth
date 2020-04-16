@@ -3,9 +3,12 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var indexRouter = require('./routes/index');
 var app = express();
 var fs = require('fs');
+
+//Routes
+var indexRouter = require('./routes/index');
+var scheduleRouter = require('./routes/schedule');
 
 //App setup - load config
 try{
@@ -49,6 +52,7 @@ app.use('/js', express.static(path.join(__dirname, '/node_modules/jquery/dist'))
 
 //Routes for web pages
 app.use('/', indexRouter);
+app.use('/schedule', scheduleRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

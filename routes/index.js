@@ -21,14 +21,11 @@ router.get('/', function(req, res, next) {
           var sensorData = {sensorData: results[0]};
           for (var key in sensorData.sensorData){
             sensorData.sensorData[key].logTime = dateFormat(sensorData.sensorData[key].logTime, "mmmm d, h:MM:ss TT");
-
           }
           con.query('CALL getEnabledSensorTypes()', (error, results, fields) => {
             var sensorTypes = {sensorTypes: results[0]};
-
             var web_data = req.app.get('web_data');
             var data = Object.assign({}, web_data, sensorTypes, sensorData);
-            // console.log(data);
             res.render('index', data);
           })
     });

@@ -1,0 +1,41 @@
+extends layout
+
+block content
+  h1= title
+  br
+  div.scheduleContainer.table-responsive-sm.rounded
+    table.table.table-sm.table-borderless.scheduleTable.rounded
+      thead.scheduleTableHeader 
+        tr
+          th(scope="col") Time
+          th(scope="col") Event
+          //- th(scope="col") Out %
+      tbody.scheduleTableBody
+      each schedule, index in scheduleData
+        if schedule.scheduleType == 'Time'
+          tr.scheduleTableRow
+            td.align-middle #{schedule.eventTriggerTime}
+            if(schedule.outputValue != null && schedule.outputValue != '0')
+              td.align-middle #{schedule.outputName}<br>#{schedule.eventDescription} - #{schedule.outputValue}%
+            else  
+              td.align-middle #{schedule.outputName}<br>#{schedule.eventDescription}
+            //- td #{schedule.parameter1}
+  div.scheduleContainer.table-responsive-sm.rounded
+    table.table.table-sm.table-borderless.scheduleTable.rounded
+      thead.scheduleTableHeader 
+        tr
+          th(scope="col") Event
+          th(scope="col") Sensor
+          th(scope="col") 
+          th(scope="col") Limit
+      tbody.scheduleTableBody
+      each schedule, index in scheduleData
+        if schedule.scheduleType != 'Time'
+          tr.scheduleTableRow
+            if(schedule.outputValue != null && schedule.outputValue != '0')
+              td.align-middle #{schedule.outputName}<br>#{schedule.eventDescription} - #{schedule.outputValue}%
+            else  
+              td.align-middle #{schedule.outputName}<br>#{schedule.eventDescription}
+            td.align-middle #{schedule.sensorType} @<br> #{schedule.sensorLocation}
+            td.align-middle #{schedule.scheduleComparator}
+            td.align-middle #{schedule.sensorValue}#{schedule.sensorUnits}            
