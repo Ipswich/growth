@@ -8,7 +8,6 @@ var fs = require('fs');
 
 //Routes
 var indexRouter = require('./routes/index');
-var scheduleRouter = require('./routes/schedule');
 
 //App setup - load config
 try{
