@@ -1,3 +1,5 @@
+START TRANSACTION;
+
 DROP DATABASE IF EXISTS `growth-dev`;
 CREATE DATABASE `growth-dev`;
 USE `growth-dev`;
@@ -9,9 +11,24 @@ CREATE TABLE Users (
   PRIMARY KEY (username)
 );
 
-CREATE TABLE SensorTypes(
+CREATE TABLE OutputTypes (
+  outputType VARCHAR(32) NOT NULL,
+  OTenabled BOOLEAN NOT NULL DEFAULT 1,
+  PRIMARY KEY (outputType)
+);
+
+CREATE TABLE Outputs (
+  outputID INT NOT NULL AUTO_INCREMENT,
+  outputType VARCHAR(32) NOT NULL,
+  outputName VARCHAR(64) NOT NULL,
+  outputDescription VARCHAR(128),
+  PRIMARY KEY (outputID),
+  FOREIGN KEY (outputType) REFERENCES OutputTypes(outputType)
+);
+
+CREATE TABLE SensorTypes (
   sensorType VARCHAR(32) NOT NULL,
-  enabled BOOLEAN NOT NULL DEFAULT 1,
+  STenabled BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (sensorType)
 );
 
@@ -29,58 +46,94 @@ CREATE TABLE SensorData (
   readingID INT NOT NULL AUTO_INCREMENT,
   sensorID INT NOT NULL,
   data DECIMAL(12, 7),
-  logTime TIMESTAMP DEFAULT LOCALTIMESTAMP,
+  logTime TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
   PRIMARY KEY (readingID),
   FOREIGN KEY (sensorID) REFERENCES Sensors(sensorID)
-);
-
-CREATE TABLE EventTypes(
-  eventType VARCHAR(32) NOT NULL,
-  enabled BOOLEAN NOT NULL DEFAULT 1,
-  PRIMARY KEY (eventType)
 );
 
 CREATE TABLE Events (
   eventID INT NOT NULL AUTO_INCREMENT,
   eventName VARCHAR(64) NOT NULL,
-  eventType VARCHAR(32) NOT NULL,
   eventDescription VARCHAR(128),
-  PRIMARY KEY (eventID),
-  FOREIGN KEY (eventType) REFERENCES EventTypes(eventType)
+  Eenabled BOOLEAN NOT NULL DEFAULT 1,
+  PRIMARY KEY (eventID)
+);
+
+CREATE TABLE ScheduleTypes(
+  scheduleType VARCHAR(32) NOT NULL,
+  STenabled BOOLEAN NOT NULL DEFAULT 1,
+  PRIMARY KEY (scheduleType)
 );
 
 CREATE TABLE Schedules (
   scheduleID INT NOT NULL AUTO_INCREMENT,
+  scheduleType VARCHAR(32) NOT NULL,
   eventID INT NOT NULL,
-  parameter1 INT DEFAULT NULL,
-  parameter2 INT DEFAULT NULL,
-  parameter3 INT DEFAULT NULL,
-  parameter4 INT DEFAULT NULL,
-  parameter5 INT DEFAULT NULL,
-  parameter6 INT DEFAULT NULL,
-  parameter7 INT DEFAULT NULL,
-  parameter8 INT DEFAULT NULL,
-  parameter9 INT DEFAULT NULL,
-  startTime TIME DEFAULT 0,
-  stopTime TIME DEFAULT 0,
-  startDate DATE DEFAULT 0,
-  stopDate DATE DEFAULT 0,
-  enabled BOOLEAN NOT NULL DEFAULT 1,
+  sensorID INT DEFAULT NULL,
+  sensorValue INT DEFAULT NULL,
+  outputID INT NOT NULL,
+  outputValue INT DEFAULT NULL,
+  scheduleComparator VARCHAR(1) DEFAULT NULL,
+  eventTriggerTime TIME DEFAULT NULL,
+  scheduleStartDate DATE DEFAULT NULL,
+  scheduleStopDate DATE DEFAULT NULL,
+  Senabled BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (scheduleID),
-  FOREIGN KEY (eventID) REFERENCES Events(eventID)
+  FOREIGN KEY (sensorID) REFERENCES Sensors(sensorID),
+  FOREIGN KEY (eventID) REFERENCES Events(eventID),
+  FOREIGN KEY (scheduleType) REFERENCES ScheduleTypes(scheduleType)
+);
+
+CREATE TABLE ScheduledEventLog (
+  logID INT NOT NULL AUTO_INCREMENT,
+  scheduleID INT NOT NULL,
+  logTime TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  PRIMARY KEY (logID),
+  FOREIGN KEY (scheduleID) REFERENCES Schedules(scheduleID)
 );
 
 #############################################
 ############# STORED PROCEDURES #############
 #############################################
 
+#############OUTPUT HARDWARE#############
+
+##Insert new outputType
+DELIMITER $$
+CREATE PROCEDURE `addNewOutputType` (IN `p_type` VARCHAR(32), IN `p_enabled` BOOLEAN)
+MODIFIES SQL DATA
+  INSERT INTO OutputTypes (outputType, OTenabled) VALUES (p_type, p_enabled)$$
+DELIMITER ;
+
+##Get outputTypes
+DELIMITER $$
+CREATE PROCEDURE `getAllOutputTypes`()
+READS SQL DATA
+  SELECT * FROM OutputTypes$$
+  ORDER BY outputType DESC
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `getEnabledOutputTypes`()
+READS SQL DATA
+  SELECT * FROM OutputTypes WHERE OTenabled = 1$$
+  ORDER BY outputType DESC
+DELIMITER ;
+
+##Insert new Output
+DELIMITER $$
+CREATE PROCEDURE `addNewOutput` (IN `p_type` VARCHAR(32), IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128))
+MODIFIES SQL DATA
+	INSERT INTO Outputs (outputType, outputName, outputDescription) VALUES (p_type, p_name, p_description);
+$$
+DELIMITER ;
 #############SENSOR HARDWARE#############
 
 ##Insert new sensorType
 DELIMITER $$
 CREATE PROCEDURE `addNewSensorType` (IN `p_type` VARCHAR(32), IN `p_enabled` BOOLEAN)
 MODIFIES SQL DATA
-  INSERT INTO SensorTypes (sensorType, enabled) VALUES (p_type, p_enabled)$$
+  INSERT INTO SensorTypes (sensorType, STenabled) VALUES (p_type, p_enabled)$$
 DELIMITER ;
 
 ##Get sensorTypes
@@ -94,7 +147,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getEnabledSensorTypes`()
 READS SQL DATA
-  SELECT * FROM SensorTypes WHERE enabled = 1$$
+  SELECT * FROM SensorTypes WHERE STenabled = 1$$
   ORDER BY sensorType DESC
 DELIMITER ;
 
@@ -102,15 +155,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `addNewSensor` (IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16))
 MODIFIES SQL DATA
-sp:BEGIN
-  DECLARE result INT DEFAULT 0;
-  SET result = (SELECT COUNT(sensorType) FROM SensorTypes WHERE sensorType = p_type);
-  IF result = 0 THEN
-    LEAVE sp;
-  ELSE
 	INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits) VALUES (p_model, p_type, p_location, p_units);
-  END IF;
-END;
 $$
 DELIMITER ;
 
@@ -180,26 +225,150 @@ DELIMITER ;
 
 #############EVENTS#############
 
-##Insert new event type
+##Insert new event
 DELIMITER $$
-CREATE PROCEDURE `addNewEventType` (IN `p_type` VARCHAR(32), IN `p_enabled` BOOLEAN)
+CREATE PROCEDURE `addNewEvent` (IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_enabled` BOOLEAN)
 MODIFIES SQL DATA
-  INSERT INTO EventTypes (eventType, enabled) VALUES (p_type, p_enabled);
+    INSERT INTO Events (eventName, eventDescription, Eenabled) VALUES (p_name, p_description, p_enabled);
 $$
 DELIMITER ;
 
-##Insert new event
+##Log event
 DELIMITER $$
-CREATE PROCEDURE `addNewEvent` (IN `p_name` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_description` VARCHAR(128))
+CREATE PROCEDURE `logScheduledEvent` (IN `p_scheduleID` INT)
 MODIFIES SQL DATA
-sp:BEGIN
-  DECLARE result INT DEFAULT 0;
-  SET result = (SELECT COUNT(eventType) FROM EventTypes WHERE eventName = p_name);
-  IF result = 0 THEN
-    LEAVE sp;
-  ELSE
-    INSERT INTO Events (eventName, eventType, eventDescription) VALUES (p_name, p_type, p_description);
-  END IF;
-END;
+  INSERT INTO ScheduledEventLog (scheduleID) VALUES (p_scheduleID);
 $$
 DELIMITER ;
+
+##Get all events
+DELIMITER $$
+CREATE PROCEDURE `getAllEvents` ()
+READS SQL DATA
+  SELECT * FROM Events;
+$$
+DELIMITER ;
+
+##Get all events
+DELIMITER $$
+CREATE PROCEDURE `getEnabledEvents` ()
+READS SQL DATA
+  SELECT * FROM Events WHERE Eenabled = 1$$
+  ORDER BY eventName DESC
+DELIMITER ;
+
+#############SCHEDULES#############
+
+##Insert new schedule type
+DELIMITER $$
+CREATE PROCEDURE `addNewScheduleType` (IN `p_type` VARCHAR(32), IN `p_enabled` BOOLEAN)
+MODIFIES SQL DATA
+  INSERT INTO ScheduleTypes (scheduleType, STenabled) VALUES (p_type, p_enabled);
+$$
+DELIMITER ;
+
+##Get all schedule types
+DELIMITER $$
+CREATE PROCEDURE `getAllScheduleTypes` ()
+READS SQL DATA
+  SELECT * FROM ScheduleTypes
+  ORDER BY scheduleTypes DESC
+$$
+DELIMITER ;
+
+##Get enabled schedule Types
+DELIMITER $$
+CREATE PROCEDURE `getEnabledScheduleTypes` ()
+READS SQL DATA
+  SELECT * FROM ScheduleTypes WHERE STenabled = 1$$
+  ORDER BY scheduleTypes DESC
+DELIMITER ;
+
+##Insert new schedule
+DELIMITER $$
+CREATE PROCEDURE `addNewSchedule` (
+  IN `p_scheduleType` VARCHAR(32),
+  IN `p_eventID` INT,
+  IN `p_sensorID` INT,
+  IN `p_sensorValue` INT,
+  IN `p_outputID` INT,
+  IN `p_outputValue` INT,
+  IN `p_scheduleComparator` VARCHAR(1),
+  IN `p_eventTriggerTime` TIME,
+  IN `p_scheduleStartDate` DATE,
+  IN `p_scheduleStopDate` DATE,
+  IN `p_enabled` BOOLEAN)
+MODIFIES SQL DATA
+INSERT INTO Schedules (
+  scheduleType,
+  eventID,
+  sensorID,
+  sensorValue,
+  outputID,
+  outputValue,
+  scheduleComparator,
+  eventTriggerTime,
+  scheduleStartDate,
+  scheduleStopDate,
+  Senabled)
+ VALUES (
+   p_scheduleType,
+   p_eventID,
+   p_sensorID,
+   p_sensorValue,
+   p_outputID,
+   p_outputValue,
+   p_scheduleComparator,
+   p_eventTriggerTime,
+   p_scheduleStartDate,
+   p_scheduleStopDate,
+   p_enabled
+ );
+$$
+DELIMITER ;
+
+##Get schedule
+DELIMITER $$
+CREATE PROCEDURE `getAllSchedules` ()
+READS SQL DATA
+  SELECT * FROM Schedules s
+  JOIN Events AS e ON s.eventID=e.eventID
+  LEFT JOIN Sensors AS n on s.sensorID=n.sensorID
+  JOIN Outputs AS o on s.outputID=o.outputID
+  ORDER BY eventTriggerTime IS NULL
+$$
+DELIMITER ;
+
+##Get enabled schedule
+DELIMITER $$
+CREATE PROCEDURE `getEnabledSchedules` ()
+READS SQL DATA
+  SELECT * FROM Schedules s
+  JOIN Events AS e ON s.eventID=e.eventID
+  LEFT JOIN Sensors AS n on s.sensorID=n.sensorID
+  JOIN Outputs AS o on s.outputID=o.outputID
+  WHERE s.Senabled = 1
+  ORDER BY eventTriggerTime IS NULL outputName DESC
+$$
+DELIMITER ;
+
+##Get enabled live schedule
+DELIMITER $$
+CREATE PROCEDURE `getEnabledLiveSchedules` ()
+READS SQL DATA
+SELECT * FROM Schedules s
+JOIN Events AS e ON s.eventID=e.eventID
+LEFT JOIN Sensors AS n on s.sensorID=n.sensorID
+JOIN Outputs AS o on s.outputID=o.outputID
+WHERE s.Senabled = 1
+  AND (
+    (LOCALTIMESTAMP BETWEEN s.scheduleStartDate AND s.scheduleStopDate)
+    OR s.scheduleStopDate IS NULL)
+ORDER BY eventTriggerTime IS NULL, outputName DESC
+$$
+DELIMITER ;
+
+
+
+
+COMMIT;
