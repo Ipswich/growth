@@ -108,3 +108,4 @@ config/config.json
 
 #Misc files
 SQL/schema.sql
+*.DS_Store

@@ -7,7 +7,6 @@ USE `growth-dev`;
 CREATE TABLE Users (
   username VARCHAR(32) NOT NULL,
   passhash CHAR(60) NOT NULL,
-  lastLogin TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (username)
 );
 
@@ -78,10 +77,14 @@ CREATE TABLE Schedules (
   scheduleStartDate DATE DEFAULT NULL,
   scheduleStopDate DATE DEFAULT NULL,
   Senabled BOOLEAN NOT NULL DEFAULT 1,
+  addedBy VARCHAR(32) DEFAULT NULL,
+  disabledBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (scheduleID),
   FOREIGN KEY (sensorID) REFERENCES Sensors(sensorID),
   FOREIGN KEY (eventID) REFERENCES Events(eventID),
-  FOREIGN KEY (scheduleType) REFERENCES ScheduleTypes(scheduleType)
+  FOREIGN KEY (scheduleType) REFERENCES ScheduleTypes(scheduleType),
+  FOREIGN KEY (addedBy) REFERENCES Users(username),
+  FOREIGN KEY (disabledBy) REFERENCES Users(username)
 );
 
 CREATE TABLE ScheduledEventLog (
@@ -233,14 +236,6 @@ MODIFIES SQL DATA
 $$
 DELIMITER ;
 
-##Log event
-DELIMITER $$
-CREATE PROCEDURE `logScheduledEvent` (IN `p_scheduleID` INT)
-MODIFIES SQL DATA
-  INSERT INTO ScheduledEventLog (scheduleID) VALUES (p_scheduleID);
-$$
-DELIMITER ;
-
 ##Get all events
 DELIMITER $$
 CREATE PROCEDURE `getAllEvents` ()
@@ -297,7 +292,9 @@ CREATE PROCEDURE `addNewSchedule` (
   IN `p_eventTriggerTime` TIME,
   IN `p_scheduleStartDate` DATE,
   IN `p_scheduleStopDate` DATE,
-  IN `p_enabled` BOOLEAN)
+  IN `p_enabled` BOOLEAN,
+  IN `p_addedBy` VARCHAR(32),
+  IN `p_disabledBy` VARCHAR(32))
 MODIFIES SQL DATA
 INSERT INTO Schedules (
   scheduleType,
@@ -310,7 +307,9 @@ INSERT INTO Schedules (
   eventTriggerTime,
   scheduleStartDate,
   scheduleStopDate,
-  Senabled)
+  Senabled,
+  addedBy,
+  disabledBy)
  VALUES (
    p_scheduleType,
    p_eventID,
@@ -322,8 +321,9 @@ INSERT INTO Schedules (
    p_eventTriggerTime,
    p_scheduleStartDate,
    p_scheduleStopDate,
-   p_enabled
- );
+   p_enabled,
+   p_addedBy,
+   p_disabledBy);
 $$
 DELIMITER ;
 
@@ -348,7 +348,7 @@ READS SQL DATA
   LEFT JOIN Sensors AS n on s.sensorID=n.sensorID
   JOIN Outputs AS o on s.outputID=o.outputID
   WHERE s.Senabled = 1
-  ORDER BY eventTriggerTime IS NULL outputName DESC
+  ORDER BY eventTriggerTime IS NULL, outputName DESC
 $$
 DELIMITER ;
 
@@ -368,6 +368,33 @@ ORDER BY eventTriggerTime IS NULL, outputName DESC
 $$
 DELIMITER ;
 
+#############Users##############
+
+##Add New User
+DELIMITER $$
+CREATE PROCEDURE `AddUser` (IN `p_username` VARCHAR(32), IN `p_hash` VARCHAR(60))
+MODIFIES SQL DATA
+  INSERT INTO Users (username, passhash) VALUES (p_username, p_hash)
+$$
+DELIMITER ;
+
+##Get user
+DELIMITER $$
+CREATE PROCEDURE `GetUser` (IN `p_username` VARCHAR(32))
+READS SQL DATA
+  SELECT * FROM Users WHERE Users.username = p_username
+$$
+DELIMITER ;
+
+#############LOGGING#############
+
+##Log event
+DELIMITER $$
+CREATE PROCEDURE `logScheduledEvent` (IN `p_scheduleID` INT)
+MODIFIES SQL DATA
+  INSERT INTO ScheduledEventLog (scheduleID) VALUES (p_scheduleID);
+$$
+DELIMITER ;
 
 
 
