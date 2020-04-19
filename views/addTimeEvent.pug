@@ -1,0 +1,24 @@
+div
+  form(action="#")
+    div.form-row
+      div.col-5
+        label(for="TimeEvent") Event
+        select(id="TimeEvent" name="TimeEvent").form-control
+          each event, index in events
+            option(value=event.eventID) #{event.eventName}
+      div.col
+        label(for="TimeTrigger") Event Time
+        input(type="time" id="TimeTrigger" name="TimeTrigger").form-control
+
+    div.form-row
+      div.col
+        label(for="TimeOutput") Output
+        select(id="TimeOutput" name="TimeOutput").form-control
+          each output, index in outputs
+            option(value=output.outputID) #{output.outputName}
+      div.col-4
+        label(for="TimeOutputValue") Output Value
+        select(id="TimeOutputValue" name="TimeOutputValue").form-control
+          - for(var i = 100; i>= 1; i--)
+            option= i            
+      

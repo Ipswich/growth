@@ -21,6 +21,7 @@ CREATE TABLE Outputs (
   outputType VARCHAR(32) NOT NULL,
   outputName VARCHAR(64) NOT NULL,
   outputDescription VARCHAR(128),
+  OEnabled BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (outputID),
   FOREIGN KEY (outputType) REFERENCES OutputTypes(outputType)
 );
@@ -37,6 +38,7 @@ CREATE TABLE Sensors (
   sensorType VARCHAR(32) NOT NULL,
   sensorLocation VARCHAR(64) NOT NULL,
   sensorUnits VARCHAR(16) DEFAULT NULL,
+  SSenabled BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (sensorID),
   FOREIGN KEY (sensorType) REFERENCES SensorTypes(sensorType)
 );
@@ -130,6 +132,21 @@ MODIFIES SQL DATA
 	INSERT INTO Outputs (outputType, outputName, outputDescription) VALUES (p_type, p_name, p_description);
 $$
 DELIMITER ;
+
+##Get Outputs
+DELIMITER $$
+CREATE PROCEDURE `getAllOutputs`()
+READS SQL DATA
+  SELECT * FROM Outputs$$
+  ORDER BY outputName DESC
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `getEnabledOutputs`()
+READS SQL DATA
+  SELECT * FROM Outputs WHERE Oenabled = 1$$
+  ORDER BY outputName DESC
+DELIMITER ;
 #############SENSOR HARDWARE#############
 
 ##Insert new sensorType
@@ -167,6 +184,15 @@ DELIMITER $$
 CREATE PROCEDURE `getAllSensors`()
 READS SQL DATA
   SELECT * FROM Sensors;
+$$
+DELIMITER ;
+
+##Get sensor data for all ENABLED sensors
+DELIMITER $$
+CREATE PROCEDURE `getEnabledSensors`()
+READS SQL DATA
+  SELECT * FROM Sensors WHERE SSenabled = 1
+  ORDER BY sensorType DESC
 $$
 DELIMITER ;
 
