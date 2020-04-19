@@ -44,8 +44,13 @@ app.use(cookieParser());
 
 //Static routes for public resources
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/css', express.static(path.join(__dirname, '/node_modules/@fortawesome/fontawesome-free/css')));
+app.use('/webfonts', express.static(path.join(__dirname, '/node_modules/@fortawesome/fontawesome-free/webfonts')));
 app.use('/css', express.static(path.join(__dirname, '/node_modules/bootstrap/dist/css')));
+app.use('/css', express.static(path.join(__dirname, '/node_modules/tempusdominus-bootstrap-4/build/css')));
 app.use('/js', express.static(path.join(__dirname, '/node_modules/bootstrap/dist/js')));
+app.use('/js', express.static(path.join(__dirname, '/node_modules/tempusdominus-bootstrap-4/build/js')));
+app.use('/js', express.static(path.join(__dirname, '/node_modules/moment/min')));
 app.use('/js', express.static(path.join(__dirname, '/node_modules/@popperjs/core/dist/umd')));
 app.use('/js', express.static(path.join(__dirname, '/node_modules/jquery/dist')));
 

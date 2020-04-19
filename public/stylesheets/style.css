@@ -115,6 +115,10 @@
   color: var(--website-text-normal);
 }
 
+#timePicker {
+  z-index: 9999;
+}
+
 .green {
   color: var(--website-text-green);
 }

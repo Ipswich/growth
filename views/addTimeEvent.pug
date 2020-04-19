@@ -6,9 +6,41 @@ div
         select(id="TimeEvent" name="TimeEvent").form-control
           each event, index in events
             option(value=event.eventID) #{event.eventName}
-      div.col
-        label(for="TimeTrigger") Event Time
-        input(type="time" id="TimeTrigger" name="TimeTrigger").form-control
+      div.col(id="timeDiv")
+        script.
+          if (!Modernizr.inputtypes.time) {
+            $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+            icons: {
+                time: 'fas fa-clock',
+                date: 'fas fa-calendar',
+                up: 'fas fa-arrow-up',
+                down: 'fas fa-arrow-down',
+                previous: 'fas fa-chevron-left',
+                next: 'fas fa-chevron-right',
+                today: 'fas fa-calendar-check-o',
+                clear: 'fas fa-trash',
+                close: 'fas fa-times'
+            } });
+            document.getElementById("timeDiv").innerHTML = 
+            `            
+            <label for="TimeTrigger"> Event Time</label>
+            <div class="input-group date" id="TimeTrigger" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input" data-toggle="datetimepicker" data-target="#TimeTrigger"/>
+            </div>
+            `;
+            $(function () {
+              $('#TimeTrigger').datetimepicker({
+                format: 'LT'
+              });
+            });
+          } else {
+            document.getElementById("timeDiv").innerHTML = 
+            `
+            <label for="TimeTrigger"> Event Time</label>
+            <input type="time" id="TimeTrigger" name="TimeTrigger" class="form-control">
+            `;
+            
+          }
 
     div.form-row
       div.col
@@ -21,4 +53,3 @@ div
         select(id="TimeOutputValue" name="TimeOutputValue").form-control
           - for(var i = 100; i>= 1; i--)
             option= i            
-      
