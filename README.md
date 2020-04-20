@@ -1,5 +1,5 @@
 # growth
-Raspberry Pi/Arduino based grow room controller.
+Raspberry Pi/Arduino based grow room controller. Mostly designed to run on an iPhone 8, but still functional on pretty much any other platform.
 
 ### Software:
 * Node.js
