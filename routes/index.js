@@ -29,9 +29,19 @@ router.get('/', function(req, res, next) {
                 for (var key in scheduleData.scheduleData){
                   scheduleData.scheduleData[key].eventTriggerTime = formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
                 }
-                var web_data = req.app.get('web_data');
-                var data = Object.assign({}, web_data, sensorTypes, sensorData, scheduleData);
-                res.render('index', data);
+                con.query('CALL getEnabledOutputs()', (error, results, fields) => {
+                  var outputs = {outputs: results[0]};
+                  con.query('CALL getEnabledEvents()', (error, results, fields) => {
+                    var events = {events: results[0]};
+                    con.query('CALL getEnabledSensors()', (error, results, fields) => {
+                      var sensors = {sensors: results[0]};
+                      var web_data = req.app.get('web_data');
+                      var data = Object.assign({}, web_data, sensorTypes, sensorData, scheduleData, outputs, events, sensors);
+                      console.log(data);
+                      res.render('index', data);
+                    })
+                  })
+                })
               })
           })
     });

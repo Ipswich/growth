@@ -1,0 +1,109 @@
+div
+  form(action="#")
+    div.form-group
+      div.form-row
+        div.col-5
+          label(for="TimeEvent") Event
+          select(id="TimeEvent" name="TimeEvent").form-control.custom-select.formStyle
+            each event, index in events
+              option(value=event.eventID) #{event.eventName}
+        div.col-4(id="TimeTimeDiv")
+          script.
+            if (!Modernizr.inputtypes.time) {
+              $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+              icons: {
+                  time: 'fas fa-clock',
+                  date: 'fas fa-calendar',
+                  up: 'fas fa-arrow-up',
+                  down: 'fas fa-arrow-down',
+                  previous: 'fas fa-chevron-left',
+                  next: 'fas fa-chevron-right',
+                  today: 'fas fa-calendar-check-o',
+                  clear: 'fas fa-trash',
+                  close: 'fas fa-times'
+              } });
+              document.getElementById("TimeTimeDiv").innerHTML = 
+              `            
+              <label for="TimeTrigger"> Event Time</label>
+              <div class="input-group date" id="TimeTrigger" data-target-input="nearest">
+                  <input type="text" name="TimeTrigger" class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#TimeTrigger" required/>
+              </div>
+              `;
+              $(function () {
+                $('#TimeTrigger').datetimepicker({
+                  format: 'LT'
+                });
+              });
+            } else {
+              document.getElementById("TimeTimeDiv").innerHTML = 
+              `
+              <label for="TimeTrigger"> Event Time</label>
+              <input type="time" id="TimeTrigger" name="TimeTrigger" class="form-control formStyle" required>
+              `;
+            }  
+    div.form-group
+      div.form-row
+        div.col
+          label(for="TimeOutput") Output
+          select(id="TimeOutput" name="TimeOutput" required).form-control.formStyle.custom-select
+            each output, index in outputs
+              option(value=output.outputID) #{output.outputName}
+        div.col-4
+          label(for="TimeOutputValue") Output Value
+          select(id="TimeOutputValue" name="TimeOutputValue" required).form-control.formStyle.custom-select
+            - for(var i = 100; i>= 1; i--)
+              option= i   
+    div.form-group           
+      label(for="TimeDateDiv") #[a(href="#TimeDateDiv" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseStart").website-link Optional]
+      div(id="TimeDateDiv").form-row.collapse
+        script.
+          if (!Modernizr.inputtypes.date) {
+              document.getElementById("TimeDateDiv").innerHTML =
+              `
+              <div class="col">
+                <label for="TimeStartDate"> Start Date </label>
+                  <div class="input-group date" id="TimeStartDate" data-target-input="nearest">
+                    <input type="text" name="TimeStartDate" class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#TimeStartDate"/>
+                  </div>
+              </div>
+              <div class="col">
+                <label for="TimeEndDate"> End Date </label>
+                <div class="input-group date" id="TimeEndDate" data-target-input="nearest">
+                    <input type="text" name="TimeEndDate" class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#TimeEndDate"/>
+                </div>
+              </div>
+              `;
+              $(function () {
+                $('#TimeStartDate').datetimepicker({
+                  format: 'L'
+                });
+                $('#TimeEndDate').datetimepicker({
+                  format: 'L'
+                });
+              });
+            } else {
+              document.getElementById("TimeDateDiv").innerHTML =
+              `
+              <div class="col">
+                <label for="TimeStartDate"> Start Date </label>
+                <input type="date" id="TimeStartDate" name="TimeStartDate" class="formStyle form-control">
+              </div>
+              <div class="col">
+                <label for="TimeEndDate"> End Date </label>
+                <input type="date" id="TimeEndDate" name="TimeEndDate" class="formStyle form-control">
+              </div>
+              `;
+            }
+    div.form-group   
+      div.form-row
+        div.col-5
+          label(for="username") Username
+          input(type="text" name="username" required).form-control.formStyle
+        div.col
+          label(for="password") Password
+          input(type="password" name="password" required).form-control.formStyle
+    div.form-group
+      div.form-row
+        div.col
+          button(type="submit").btn.float-right.submitButton Submit
+    

@@ -1,31 +1,33 @@
 :root {
   --website-bg-normal: hsl(222, 11%, 18%);
   --website-bg-almost-light: hsl(222, 11%, 23%);
-  --website-bg-light: hsl(222, 11%, 25%);
+  --website-bg-light: hsl(222, 11%, 24%);
   --website-bg-lighter: hsl(222, 11%, 28%);
-  --website-text-normal: #c35353;
-  --website-text-light: #a98181;
-  --website-text-green: hsl(125, 30%, 45%);
+  --website-text-normal: hsl(0, 58%, 55%);
+  --website-text-light: hsl(0, 19%, 58%);
+  --website-text-dark: hsl(0, 58%, 45%);
+  --website-text-green: hsl(125, 40%, 45%);
+  --website-text-blue: hsl(210, 58%, 50%);
 }
 
 .nav-pill {
+  color: var(--website-text-dark);
+  background-color: var(--website-bg-almost-light);
+}
+
+.nav-pill:hover {
+  color: var(--website-text-dark);
+  background-color: var(--website-bg-lighter);
+}
+
+.nav-container .nav-pill.active {
   color: var(--website-text-normal);
   background-color: var(--website-bg-lighter);
 }
 
-.nav-pill:hover {
-  color: var(--website-text-normal);
-  background-color: var(--website-bg-almost-light);
-}
-
-.nav-container .nav-pill.active {
-  color: var(--website-text-green);
-  background-color: var(--website-bg-almost-light);
-}
-
 #body {
   text-align: center;
-    padding: 40px;
+    padding: 20px;
 }
 
 #data-list {
@@ -64,6 +66,7 @@
 
 }
 
+
 .scheduleContainer {
 }
 
@@ -85,6 +88,61 @@
   color: var(--website-text-normal);
 }
 
+#addEventButton {
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+
+.modal-content .modalStyle {
+  color: var(--website-text-normal);
+  background-color: var(--website-bg-normal);
+  border-bottom: 0 none;
+  border-top: 0 none;
+  text-align: left;
+}
+
+.modal-body.modalStyle {
+  border: rounded;
+}
+
+#modalXButton {
+  color: var(--website-text-normal);
+  opacity: 100%;
+  text-shadow: none;
+  box-shadow: none;
+}
+#modalSubmitButton {
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+#modalCloseButton {
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+
+.modal-body.modalStyle .submitButton {
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+
+.modal-body.modalStyle .formStyle {
+  border: none;
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+
+.green {
+  color: var(--website-text-green);
+}
+.blue {
+  color: var(--website-text-blue);
+}
+
 .sensor-data {
   color:var(--website-text-green);
 }
@@ -94,8 +152,11 @@
   text-align: center;
 }
 
-.footer-link {
+.website-link {
   color: var(--website-text-light);
+}
+.website-link:hover {
+  color: var(--website-text-dark);
 }
 
 hr {
@@ -106,7 +167,6 @@ body {
   background-color: var(--website-bg-normal);
   color: var(--website-text-normal);
 }
-
 
 pre {
     text-align: justify;
