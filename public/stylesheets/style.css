@@ -91,6 +91,7 @@
 #addEventButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);
+  box-shadow: none;
 }
 
 .modal-content .modalStyle {
@@ -101,22 +102,38 @@
   text-align: left;
 }
 
+.modal-body.modalStyle {
+  border: rounded;
+}
+
 #modalXButton {
   color: var(--website-text-normal);
   opacity: 100%;
   text-shadow: none;
+  box-shadow: none;
 }
 #modalSubmitButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);
+  box-shadow: none;
 }
 #modalCloseButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);
+  box-shadow: none;
 }
 
-#timePicker {
-  z-index: 9999;
+.modal-body.modalStyle .submitButton {
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+
+.modal-body.modalStyle .formStyle {
+  border: none;
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
 }
 
 .green {
@@ -135,8 +152,11 @@
   text-align: center;
 }
 
-.footer-link {
+.website-link {
   color: var(--website-text-light);
+}
+.website-link:hover {
+  color: var(--website-text-dark);
 }
 
 hr {
@@ -147,7 +167,6 @@ body {
   background-color: var(--website-bg-normal);
   color: var(--website-text-normal);
 }
-
 
 pre {
     text-align: justify;

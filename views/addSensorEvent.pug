@@ -1,1 +1,94 @@
-p DOOOOG
+div
+  form(action="#")
+    div.form-group
+      div.form-row
+        div.col-5
+          label(for="SensorEvent") Event
+          select(id="SensorEvent" name="SensorEvent").form-control.custom-select.formStyle
+            each event, index in events
+              option(value=event.eventID) #{event.eventName}
+    div.form-group
+      div.form-row
+        div.col-11
+          label(for="SensorSensorName") Sensor
+          select(id="SensorName" name="SensorSensorName").form-control.custom-select.formStyle
+            each sensor, index in sensors
+              option(value=sensor.sensorID) #{sensor.sensorType} @ #{sensor.sensorLocation}
+    div.form-group
+      div.form-row
+        div.col-3
+          label(for="SensorComparator") Comparator
+          select(id="SensorComparator").form-control.custom-select.formStyle
+            option <
+            option >
+    
+        div.col-4
+          label(for="SensorSensorValue") Sensor Value
+          input(type="number" name="SensorSensorValue" min="0" step="1" maxlength="4" required).form-control.formStyle
+    div.form-group
+      div.form-row
+        div.col
+          label(for="SensorOutput") Output
+          select(id="SensorOutput" name="SensorOutput" required).form-control.formStyle.custom-select
+            each output, index in outputs
+              option(value=output.outputID) #{output.outputName}
+        div.col-4
+          label(for="SensorOutputValue") Output Value
+          select(id="SensorOutputValue" name="SensorOutputValue" required).form-control.formStyle.custom-select
+            - for(var i = 100; i>= 1; i--)
+              option= i   
+              
+    div.form-group           
+      label(for="SensorDateDiv") #[a(href="#SensorDateDiv" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseStart").website-link Optional]
+      div(id="SensorDateDiv").form-row.collapse
+        script.
+          if (!Modernizr.inputtypes.date) {
+              document.getElementById("SensorDateDiv").innerHTML =
+              `
+              <div class="col">
+                <label for="SensorStartDate"> Start Date </label>
+                  <div class="input-group date" id="SensorStartDate" data-target-input="nearest">
+                    <input type="text" name="SensorStartDate" class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#SensorStartDate"/>
+                  </div>
+              </div>
+              <div class="col">
+                <label for="SensorEndDate"> End Date </label>
+                <div class="input-group date" id="SensorEndDate" data-target-input="nearest">
+                    <input type="text" name="SensorEndDate" class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#SensorEndDate"/>
+                </div>
+              </div>
+              `;
+              $(function () {
+                $('#SensorStartDate').datetimepicker({
+                  format: 'L'
+                });
+                $('#SensorEndDate').datetimepicker({
+                  format: 'L'
+                });
+              });
+            } else {
+              document.getElementById("SensorDateDiv").innerHTML =
+              `
+              <div class="col">
+                <label for="SensorStartDate"> Start Date </label>
+                <input type="date" id="SensorStartDate" name="SensorStartDate" class="formStyle form-control">
+              </div>
+              <div class="col">
+                <label for="SensorEndDate"> End Date </label>
+                <input type="date" id="SensorEndDate" name="SensorEndDate" class="formStyle form-control">
+              </div>
+              `;
+            }
+    div.form-group   
+      div.form-row
+        div.col-5
+          label(for="username") Username
+          input(type="text" name="username" required).form-control.formStyle
+        div.col
+          label(for="password") Password
+          input(type="password" name="password" required).form-control.formStyle
+    div.form-group
+      div.form-row
+        div.col
+          button(type="submit").btn.float-right.submitButton Submit
+    

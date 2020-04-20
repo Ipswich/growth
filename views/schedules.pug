@@ -41,7 +41,7 @@ div(id="newScheduleModal" tabindex="-1" role="dialog" aria-labelledby="modalLabe
         h5 Add Event
         button(type="button" id="modalXButton" data-dismiss="modal" aria-label="Close").close
           span(aria-hidden="true") &times;
-      div.modal-body.modalStyle
+      div.modal-body.modalStyle.rounded-bottom
         div.nav-container
           ul(id="pills-tab-event" role="tablist").nav.nav-pills.nav-justified
             li.nav-item
@@ -51,10 +51,7 @@ div(id="newScheduleModal" tabindex="-1" role="dialog" aria-labelledby="modalLabe
         br
         div(id="pills-tabContent-event").tab-content
           div(id="time" role="tabpanel" arealabelledby="nav-time").tab-pane.fade.active.show
-            h5 TIME
             include ./addTimeEvent.pug
           div(id="sensor" role="tabpanel" arealabelledby="nav-sensor").tab-pane.fade
-            h5 SENSOR
             include ./addSensorEvent.pug
-      div.modal-footer.modalStyle
         
