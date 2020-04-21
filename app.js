@@ -8,6 +8,8 @@ var fs = require('fs');
 
 //Routes
 var indexRouter = require('./routes/index');
+var addTimeEventRouter = require('./routes/addTimeEvent');
+var addSensorEventRouter = require('./routes/addSensorEvent');
 
 //App setup - load config
 try{
@@ -56,6 +58,8 @@ app.use('/js', express.static(path.join(__dirname, '/node_modules/jquery/dist'))
 
 //Routes for web pages
 app.use('/', indexRouter);
+app.use('/addTimeEvent', addTimeEventRouter);
+app.use('/addSensorEvent', addSensorEventRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

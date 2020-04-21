@@ -33,7 +33,7 @@ CALL addNewScheduleType ('CarbonDioxide', 0);
 CALL addNewEvent ('Output On', 'ON', 1);
 CALL addNewEvent ('Output Off', 'OFF', 1);
 
-CALL addUser ('admin', '$2a$10$ccMWTwsZfOkFCekCpWI8l.neh3eeRAWhNMF0x5xll.iNIiANaYKEm');
+CALL addUser ('admin', '$2b$10$KDSExpDtZd1HXxCZemfxxeZlRCqXD1ZhDPNkIBxjeaYZyaxMUVi9m');
 
 CALL addNewSchedule('Time', 1, NULL, NULL, 1, 100, NULL, '11:30:00', '1000-01-01', '9999-12-31', 1, 'admin', NULL);
 CALL addNewSchedule('Time', 1, NULL, NULL, 1, 50, NULL, '12:30:00', '1000-01-01', '9999-12-31', 1, 'admin', NULL);

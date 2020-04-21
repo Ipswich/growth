@@ -37,7 +37,7 @@ router.get('/', function(req, res, next) {
                       var sensors = {sensors: results[0]};
                       var web_data = req.app.get('web_data');
                       var data = Object.assign({}, web_data, sensorTypes, sensorData, scheduleData, outputs, events, sensors);
-                      console.log(data);
+                      con.destroy();
                       res.render('index', data);
                     })
                   })
@@ -45,10 +45,9 @@ router.get('/', function(req, res, next) {
               })
           })
     });
-    con.destroy
   },
   (err) => {
-    con.destroy
+    con.destroy();
     res.render('error')
   });
 
