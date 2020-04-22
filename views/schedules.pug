@@ -23,7 +23,7 @@ div.scheduleContainer.table-responsive-sm.rounded
             th(scope="col") Limit
         tbody.scheduleTableBody
         each schedule, index in scheduleData
-          if schedule.scheduleType != 'Time'
+          if schedule.scheduleType == 'Sensor'
             tr.scheduleTableRow
               if(schedule.outputValue != null && schedule.outputValue != '0')
                 td.align-middle #{schedule.outputName}<br> #[span.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
