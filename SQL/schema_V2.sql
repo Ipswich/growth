@@ -387,10 +387,7 @@ JOIN Events AS e ON s.eventID=e.eventID
 LEFT JOIN Sensors AS n on s.sensorID=n.sensorID
 JOIN Outputs AS o on s.outputID=o.outputID
 WHERE s.Senabled = 1
-  AND (
-    (LOCALTIMESTAMP BETWEEN s.scheduleStartDate AND s.scheduleStopDate)
-    OR (LOCALTIMESTAMP <= s.scheduleStopDate AND s.scheduleStartDate IS NULL)
-    OR s.scheduleStopDate IS NULL)
+  AND ((LOCALTIMESTAMP <= s.scheduleStopDate OR s.scheduleStopDate IS NULL) AND (LOCALTIMESTAMP >= s.scheduleStartDate OR s.scheduleStartDate IS NULL))
 ORDER BY -eventTriggerTime DESC, outputName DESC
 $$
 DELIMITER ;
