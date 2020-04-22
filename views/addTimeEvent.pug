@@ -1,5 +1,5 @@
 div
-  form(action="#")
+  form(id="TimeForm")
     div.form-group
       div.form-row
         div.col-5
@@ -105,5 +105,29 @@ div
     div.form-group
       div.form-row
         div.col
-          button(type="submit").btn.float-right.submitButton Submit
-    
+          button(id="TimeSubmitButton" type="submit").btn.float-right.submitButton Submit
+
+script.
+  $(document).ready(function() {
+    $('#TimeForm').submit(function(e) {
+      e.preventDefault();
+      $('#submitButton').attr("disabled", true);
+      
+      var form = $(this);
+      var data = form.serializeArray();
+      $.ajax({
+        type: 'POST',
+        url: '/addTimeEvent',
+        data: data,
+        cache: false,
+        success: function(res) {
+          $('#TimeSubmitButton').attr("disabled", false);
+          alert(res);
+        },
+        error: function(res) {
+          $('#TimeSubmitButton').attr("disabled", false);
+          alert("Server could not be reached.");
+        }
+      });
+    });
+  });

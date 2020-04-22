@@ -24,19 +24,16 @@ CALL addSensorReading(2, 600);
 CALL addSensorReading(3, 54.7);
 
 CALL addNewScheduleType ('Time', 1);
-CALL addNewScheduleType ('Temperature', 1);
-CALL addNewScheduleType ('Pressure', 1);
-CALL addNewScheduleType ('Humidity', 1);
-CALL addNewScheduleType ('CarbonDioxide', 0);
+CALL addNewScheduleType ('Sensor', 1);
 
 ##Light 1
 CALL addNewEvent ('Output On', 'ON', 1);
 CALL addNewEvent ('Output Off', 'OFF', 1);
 
-CALL addUser ('admin', '$2a$10$ccMWTwsZfOkFCekCpWI8l.neh3eeRAWhNMF0x5xll.iNIiANaYKEm');
+CALL addUser ('admin', '$2b$10$KDSExpDtZd1HXxCZemfxxeZlRCqXD1ZhDPNkIBxjeaYZyaxMUVi9m');
 
 CALL addNewSchedule('Time', 1, NULL, NULL, 1, 100, NULL, '11:30:00', '1000-01-01', '9999-12-31', 1, 'admin', NULL);
 CALL addNewSchedule('Time', 1, NULL, NULL, 1, 50, NULL, '12:30:00', '1000-01-01', '9999-12-31', 1, 'admin', NULL);
 CALL addNewSchedule('Time', 2, NULL, NULL, 1, 0, NULL, '13:30:00', '1000-01-01', '9999-12-31', 1, 'admin', NULL);
-CALL addNewSchedule('Temperature', 1, 1, 65, 5, NULL, '>', NULL, NULL, NULL, 1, 'admin', NULL);
-CALL addNewSchedule('Humidity', 1, 3, 50, 1, 72, '>', NULL, NULL, NULL, 1, 'admin', NULL);
+CALL addNewSchedule('Sensor', 1, 1, 65, 5, NULL, '>', NULL, NULL, NULL, 1, 'admin', NULL);
+CALL addNewSchedule('Sensor', 1, 3, 50, 1, 72, '>', NULL, NULL, NULL, 1, 'admin', NULL);
