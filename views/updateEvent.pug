@@ -1,0 +1,36 @@
+div(id="updateScheduleModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true").modal.fade
+  div(role="document").modal-dialog
+    div.modal-content
+      div.modal-header.modalStyle
+        h5 Update/Remove Event
+        button(type="button" id="modalRemoveScheduleXButton" data-dismiss="modal" aria-label="Close").close
+          span(aria-hidden="true") &times;
+      div(id="updateScheduleContent").modal-body.modalStyle.rounded-bottom
+        
+script.
+  $(document).ready(function() {
+    $(function(){
+      $('#updateScheduleModal').modal({
+        keyboard: true,
+        show: false
+      }).on('show.bs.modal', function(){
+        var data = $(event.target).closest('tr').data('scheduleid');
+        var datagram = {};
+        datagram.data = data;
+        $.ajax({
+          type: 'POST',
+          url: '/getScheduleData',
+          data: datagram,
+          cache: false,
+          success: function(res) {
+            $('#updateScheduleContent').html(res);
+          },
+          error: function(res) {
+            alert("Server could not be reached.");
+          }
+        });
+      }).on('hidden.bs.modal', function(){
+          $('#updateScheduleContent').html("Loading. . .");
+      });
+    });
+  });

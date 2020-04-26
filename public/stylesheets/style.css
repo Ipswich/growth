@@ -112,6 +112,13 @@
   text-shadow: none;
   box-shadow: none;
 }
+
+#modalRemoveScheduleXButton {
+  color: var(--website-text-normal);
+  opacity: 100%;
+  text-shadow: none;
+  box-shadow: none;
+}
 #modalSubmitButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);

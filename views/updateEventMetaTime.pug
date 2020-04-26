@@ -1,0 +1,110 @@
+div.form-group
+  div.form-row
+    div.col-5
+      label(for="eventUpdateEvent") Event
+      select(id="eventUpdateEvent" name="SensorEvent").form-control.custom-select.formStyle
+        each event, index in events
+          if event.eventName == defaults.eventName
+            option(value=event.eventID selected) #{event.eventName}
+          else 
+            option(value=event.eventID) #{event.eventName}
+    div(id="UpdateTimeDiv" data-defaultTime=defaults.eventTriggerTime).col-4
+      script.
+        if (!Modernizr.inputtypes.time) {
+          $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+          icons: {
+              time: 'fas fa-clock',
+              date: 'fas fa-calendar',
+              up: 'fas fa-arrow-up',
+              down: 'fas fa-arrow-down',
+              previous: 'fas fa-chevron-left',
+              next: 'fas fa-chevron-right',
+              today: 'fas fa-calendar-check-o',
+              clear: 'fas fa-trash',
+              close: 'fas fa-times'
+          } });
+          var defaultTime = $("#UpdateTimeDiv").data('defaulttime');
+          document.getElementById("UpdateTimeDiv").innerHTML = 
+          `            
+          <label for="UpdateTrigger"> Event Time</label>
+          <div class="input-group date" id="UpdateTrigger" data-target-input="nearest">
+              <input type="text" name="UpdateTrigger" value=`+ defaultTime + ` class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#UpdateTrigger" required/>
+          </div>
+          `;
+          $(function () {
+            $('#UpdateTrigger').datetimepicker({
+              format: 'LT'
+            });
+          });
+        } else {
+          document.getElementById("UpdateTimeDiv").innerHTML = 
+          `
+          <label for="UpdateTrigger"> Event Time</label>
+          <input type="time" id="UpdateTrigger" name="UpdateTrigger" value=` + defaultTime + ` class="form-control formStyle" required>
+          `;
+        }        
+div.form-group      
+  div.form-row
+    div.col
+      label(for="UpdateOutput") Output
+      select(id="UpdateOutput" name="UpdateOutput" required).form-control.formStyle.custom-select
+        each output, index in outputs
+          if output.outputID == schedule.outputID
+            option(value=output.outputID selected) #{output.outputName}
+          else 
+            option(value=output.outputID) #{output.outputName}
+    div.col-4
+      label(for="UpdateOutputValue") Output Value
+      select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
+        - for(var i = 100; i>= 1; i--)
+          if i == defaults.outputValue
+            option(selected)= i
+          else 
+            option= i        
+div.form-group
+  div.form-row
+    div.col
+      label(for="UpdateDateDiv") #[a(href="#UpdateDateDiv" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseStart").website-link Optional]
+      div(id="UpdateDateDiv" data-startdatedefault=defaults.scheduleStartDate data-stopdatedefault=defaults.scheduleStopDate).form-row.collapse
+        script.
+          var defaultStartDate = $("#UpdateDateDiv").data('startdatedefault');
+          var defaultStopDate = $("#UpdateDateDiv").data('stopdatedefault');
+          if (!Modernizr.inputtypes.date) {
+              document.getElementById("UpdateDateDiv").innerHTML =
+              `
+              <div class="col">
+                <label for="UpdateStartDate"> Start Date </label>
+                  <div class="input-group date" id="UpdateStartDate" data-target-input="nearest">
+                    <input type="text" name="UpdateStartDate" class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#UpdateStartDate"/>
+                  </div>
+              </div>
+              <div class="col">
+                <label for="UpdateEndDate"> End Date </label>
+                <div class="input-group date" id="UpdateEndDate" data-target-input="nearest">
+                    <input type="text" name="UpdateEndDate" class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#UpdateEndDate"/>
+                </div>
+              </div>
+              `;
+              $(function () {
+                $('#UpdateStartDate').datetimepicker({
+                  format: 'L',
+                  defaultDate: defaultStartDate
+                });
+                $('#UpdateEndDate').datetimepicker({
+                  format: 'L',
+                  defaultDate: defaultStopDate
+                });
+              });
+            } else {
+              document.getElementById("UpdateDateDiv").innerHTML =
+              `
+              <div class="col">
+                <label for="UpdateStartDate"> Start Date </label>
+                <input type="date" id="UpdateStartDate" name="UpdateStartDate" class="formStyle form-control">
+              </div>
+              <div class="col">
+                <label for="UpdateEndDate"> End Date </label>
+                <input type="date" id="UpdateEndDate" name="UpdateEndDate" class="formStyle form-control">
+              </div>
+              `;
+            }        

@@ -392,6 +392,15 @@ ORDER BY -eventTriggerTime DESC, outputName DESC
 $$
 DELIMITER ;
 
+##Get schedule by ID
+DELIMITER $$
+CREATE PROCEDURE `getScheduleByID` (IN `p_id` INT)
+READS SQL DATA
+SELECT * FROM Schedules
+WHERE ScheduleID = p_id
+$$
+DELIMITER ;
+
 #############Users##############
 
 ##Add New User

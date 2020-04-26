@@ -8,7 +8,7 @@ div.scheduleContainer.table-responsive-sm.rounded
       tbody.scheduleTableBody
       each schedule, index in scheduleData
         if schedule.scheduleType == 'Time'
-          tr.scheduleTableRow
+          tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
             td.align-middle #{schedule.eventTriggerTime}
             if(schedule.outputValue != null && schedule.outputValue != '0')
               td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
@@ -24,7 +24,7 @@ div.scheduleContainer.table-responsive-sm.rounded
         tbody.scheduleTableBody
         each schedule, index in scheduleData
           if schedule.scheduleType == 'Sensor'
-            tr.scheduleTableRow
+            tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
               if(schedule.outputValue != null && schedule.outputValue != '0')
                 td.align-middle #{schedule.outputName}<br> #[span.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
               else  
@@ -34,24 +34,7 @@ div.scheduleContainer.table-responsive-sm.rounded
 div
   button(id="addEventButton" type="button" data-toggle="modal" data-target="#newScheduleModal").btn Add Event
 
-div(id="newScheduleModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true").modal.fade
-  div(role="document").modal-dialog
-    div.modal-content
-      div.modal-header.modalStyle
-        h5 Add Event
-        button(type="button" id="modalXButton" data-dismiss="modal" aria-label="Close").close
-          span(aria-hidden="true") &times;
-      div.modal-body.modalStyle.rounded-bottom
-        div.nav-container
-          ul(id="pills-tab-event" role="tablist").nav.nav-pills.nav-justified
-            li.nav-item
-                a(id="nav-time" data-toggle="pill" href="#time" role="tab" aria-controls="time" aria-selected="true").nav-pill.nav-link.active Time
-            li.nav-item
-                a(id="nav-sensor" data-toggle="pill" href="#sensor" role="tab" aria-controls="sensor" aria-selected="false").nav-pill.nav-link Sensor
-        br
-        div(id="pills-tabContent-event").tab-content
-          div(id="time" role="tabpanel" arealabelledby="nav-time").tab-pane.fade.active.show
-            include ./addTimeEvent.pug
-          div(id="sensor" role="tabpanel" arealabelledby="nav-sensor").tab-pane.fade
-            include ./addSensorEvent.pug
-        
+include ./addEvent.pug
+            
+include ./updateEvent.pug
+          
