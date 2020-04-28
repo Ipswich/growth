@@ -2,7 +2,7 @@ div.form-group
   div.form-row
     div.col-5
       label(for="UpdateEvent") Event
-      select(id="UpdateEvent" name="SensorEvent").form-control.custom-select.formStyle
+      select(id="UpdateEvent" name="UpdateEvent").form-control.custom-select.formStyle
         each event, index in events
           if event.eventName == defaults.eventName
             option(value=event.eventID selected) #{event.eventName}
@@ -29,8 +29,8 @@ div.form-group
 div.form-group
   div.form-row
     div.col-11
-      label(for="UpdateSensorName") Sensor
-      select(id="UpdateName" name="UpdateSensorName").form-control.custom-select.formStyle
+      label(for="UpdateName") Sensor
+      select(id="UpdateName" name="UpdateName").form-control.custom-select.formStyle
         each sensor, index in sensors
           if(sensor.sensorID == schedule.sensorID)
             option(value=sensor.sensorID selected) #{sensor.sensorType} @ #{sensor.sensorLocation}

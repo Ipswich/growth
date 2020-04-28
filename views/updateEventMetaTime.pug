@@ -2,7 +2,7 @@ div.form-group
   div.form-row
     div.col-5
       label(for="eventUpdateEvent") Event
-      select(id="eventUpdateEvent" name="SensorEvent").form-control.custom-select.formStyle
+      select(id="eventUpdateEvent" name="UpdateEvent").form-control.custom-select.formStyle
         each event, index in events
           if event.eventName == defaults.eventName
             option(value=event.eventID selected) #{event.eventName}
