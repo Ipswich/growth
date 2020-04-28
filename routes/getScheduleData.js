@@ -5,6 +5,7 @@ var mysql = require('mysql');
 var pug = require('pug');
 const path = require('path');
 const moment = require('moment')
+const utils = require('../custom_node_modules/Utils.js')
 
 
 router.post('/', function(req, res, next) {
@@ -35,7 +36,7 @@ router.post('/', function(req, res, next) {
           defaults.sensorValue = schedule.schedule.sensorValue;
           defaults.outputValue = schedule.schedule.outputValue;
           defaults.comparator = schedule.schedule.scheduleComparator;
-          defaults.eventTriggerTime = formatTimeString(schedule.schedule.eventTriggerTime);
+          defaults.eventTriggerTime = utils.formatTimeStringH(schedule.schedule.eventTriggerTime);
           if (schedule.schedule.scheduleStartDate) {
             defaults.scheduleStartDate = moment(schedule.schedule.scheduleStartDate).format("MM/DD/YYYY");
           } else {
@@ -96,7 +97,6 @@ router.post('/', function(req, res, next) {
                           defaultData.defaults = defaults;
                           var data = Object.assign({}, defaultData, schedule, sensorTypes, outputs, events, sensors);
                           con.destroy();
-                          console.log(data);
                           var html = fn(data);
                           res.send(html);
                         }
@@ -114,25 +114,5 @@ router.post('/', function(req, res, next) {
   con.destroy();
   res.send("Database error!");
 };
-
-function formatTimeString(input){
-  if (input == null){
-    return "";
-  }
-  var destructed = input.split(":");
-  if(destructed[0] < 12){
-    if (destructed[0] == 0){
-      return ('12' + ':' + destructed[1] + ' AM');
-    } else {
-      return (destructed[0] + ':' + destructed[1] + ' AM');
-    }
-  } else {
-    if (destructed[0] == 12){
-      return (destructed[0] + ':' + destructed[1] + ' PM');
-    } else{
-      return ((destructed[0] - 12) + ':' + destructed[1] + ' PM');
-    }
-  }
-}
 
 module.exports = router;

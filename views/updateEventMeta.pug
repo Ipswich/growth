@@ -1,5 +1,7 @@
 div
-  form(id="eventUpdateForm" method="POST")
+  form(id="UpdateForm" method="POST")
+    input(type="hidden" id="UpdateScheduleID" name="UpdateScheduleID" value=schedule.scheduleID)
+    input(type="hidden" id="UpdateMode" name="UpdateMode" value='')
     if schedule.scheduleType == 'Time'    
       include ./updateEventMetaTime.pug
     else
@@ -15,6 +17,49 @@ div
           input(type="password" name="password" required).form-control.formStyle
     div.form-group
       div.form-row
-        div.col
-          button(id="UpdateDeleteButton" name="UpdateDelete" type="submit").btn.float-left.submitButton Delete
-          button(id="UpdateUpdateButton" name="UpdateUpdate" type="submit").btn.float-right.submitButton Update
+        div.col          
+          button(id="UpdateDeleteButton" name="UpdateDelete" onclick="setDelete()" type="submit").btn.float-left.submitButton Delete
+          button(id="UpdateUpdateButton" name="UpdateUpdate" onclick="setUpdate()" type="submit").btn.float-right.submitButton Update
+
+
+script.
+  $(document).ready(function() {
+    $('#UpdateForm').off().submit(function(e) {
+
+      e.preventDefault();
+      $('#UpdateDeleteButton').attr("disabled", true);
+      $('#UpdateUpdateButton').attr("disabled", true);
+      var form = $(this);
+      var data = form.serializeArray();
+      $.ajax({
+        type: 'POST',
+        url: '/updateSchedule',
+        data: data,
+        cache: false,
+        success: function(res) {
+          $('#schedule').html(res.schedules);
+          $('#current-conditions').html(res.currentConditions);
+          $('#UpdateDeleteButton').attr("disabled", false);
+          $('#UpdateUpdateButton').attr("disabled", false);
+          alert(res.msg);
+          $('#updateScheduleModal').modal('hide');
+          $('#UpdateForm').trigger("reset");
+        },
+        error: function(res) {
+          $('#UpdateDeleteButton').attr("disabled", false);
+          $('#UpdateUpdateButton').attr("disabled", false);
+          console.log(res);
+          alert(res);
+        }
+      });
+    });
+  });
+  
+  function setDelete(){
+    $('#UpdateMode').val('Delete');
+  }
+  
+  function setUpdate(){
+    $('#UpdateMode').val('Update');
+  }
+  

@@ -1,3 +1,9 @@
+//Refresh document every 5 minutes to keep table values fresh.
+$(document).ready(function() {
+  setInterval(function() {
+  window.location.reload();
+  }, 300000);
+});
 
 //Prevent accidental form entries
 $(document).ready(function() {
@@ -95,31 +101,37 @@ $(document).ready(function() {
 });
 
 //AJAX for updating schedule (updateSchedule.js)
-$(document).ready(function() {
-  $('#UpdateForm').submit(function(e) {
-    e.preventDefault();
-    $('#UpdateDeleteButton').attr("disabled", true);
-    $('#UpdateUpdateButton').attr("disabled", true);
+//Weirdly doesn't seem to work when placed here, so it's commented out but located
+//in the PUG file under a script element.
 
-    var form = $(this);
-    var data = form.serializeArray();
-    $.ajax({
-      type: 'POST',
-      url: '/updateSchedule',
-      data: data,
-      cache: false,
-      success: function(res) {
-        $('#UpdateDeleteButton').attr("disabled", false);
-        $('#UpdateUpdateButton').attr("disabled", false);
-        $('#UpdateScheduleModal').modal('hide');
-        $('#UpdateScheduleModal').trigger("reset");
-        alert("Schedule successfully changed.");
-      },
-      error: function(res) {
-        $('#UpdateDeleteButton').attr("disabled", false);
-        $('#UpdateUpdateButton').attr("disabled", false);
-        alert("Server could not be reached.");
-      }
-    });
-  });
-});
+// $(document).ready(function() {
+//   $('#UpdateForm').off().submit(function(e) {
+//
+//     e.preventDefault();
+//     $('#UpdateDeleteButton').attr("disabled", true);
+//     $('#UpdateUpdateButton').attr("disabled", true);
+//     var form = $(this);
+//     var data = form.serializeArray();
+//     $.ajax({
+//       type: 'POST',
+//       url: '/updateSchedule',
+//       data: data,
+//       cache: false,
+//       success: function(res) {
+//         $('#schedule').html(res.schedules);
+//         $('#current-conditions').html(res.currentConditions);
+//         $('#UpdateDeleteButton').attr("disabled", false);
+//         $('#UpdateUpdateButton').attr("disabled", false);
+//         alert(res.msg);
+//         $('#updateScheduleModal').modal('hide');
+//         $('#UpdateForm').trigger("reset");
+//       },
+//       error: function(res) {
+//         $('#UpdateDeleteButton').attr("disabled", false);
+//         $('#UpdateUpdateButton').attr("disabled", false);
+//         console.log(res);
+//         alert(res);
+//       }
+//     });
+//   });
+// });

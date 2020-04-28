@@ -6,6 +6,7 @@ var bcrypt = require('bcrypt');
 var dateFormat = require ('dateformat');
 const path = require('path');
 var pug = require('pug');
+const utils = require('../custom_node_modules/Utils.js')
 
 var saltRounds = 10;
 
@@ -35,7 +36,7 @@ router.post('/', function(req, res, next) {
                 sanitizedData[key] = mysql.escape(sanitizedData[key])
               }
               //DO STUFF WITH ESCAPED DATA
-              var query = "CALL addNewSchedule('Time', "+sanitizedData.TimeEvent+", NULL, NULL, "+sanitizedData.TimeOutput+", "+sanitizedData.TimeOutputValue+", NULL, '"+formatTimeString(sanitizedData.TimeTrigger)+"', "+formatDateString(sanitizedData.TimeStartDate)+", "+formatDateString(sanitizedData.TimeEndDate)+", '1', "+sanitizedData.username+", NULL)";
+              var query = "CALL addNewSchedule('Time', "+sanitizedData.TimeEvent+", NULL, NULL, "+sanitizedData.TimeOutput+", "+sanitizedData.TimeOutputValue+", NULL, '"+utils.formatTimeString(sanitizedData.TimeTrigger)+"', "+utils.formatDateString(sanitizedData.TimeStartDate)+", "+utils.formatDateString(sanitizedData.TimeEndDate)+", '1', "+sanitizedData.username+", NULL)";
               con.query(query, (error, results, fields) => {
                 if(error){
                   con.destroy();
@@ -58,7 +59,7 @@ router.post('/', function(req, res, next) {
                         con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
                           var scheduleData = {scheduleData: results[0]};
                             for (var key in scheduleData.scheduleData){
-                              scheduleData.scheduleData[key].eventTriggerTime = formatTimeStringH(scheduleData.scheduleData[key].eventTriggerTime);
+                              scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeStringH(scheduleData.scheduleData[key].eventTriggerTime);
                             }
                             con.query('CALL getEnabledOutputs()', (error, results, fields) => {
                               var outputs = {outputs: results[0]};
@@ -72,8 +73,6 @@ router.post('/', function(req, res, next) {
                                   var currentConditionsPug = {currentConditions: cCurrentConditions(data)};
                                   var msg = {msg: "Time event successfully added!"};
                                   var packet = Object.assign({}, schedulesPug, currentConditionsPug, msg);
-                                  console.log(packet)
-                                  console.log("done")
                                   res.send(packet);
 
                                 })
@@ -101,56 +100,4 @@ router.post('/', function(req, res, next) {
   res.send("Database error!")
 };
 
-function formatTimeString(input){
-  var string = "";
-  if (input == undefined || input == '' || input == null){
-    return input;
-  }
-  input = input.substring(1, input.length-1);
-  var destructed = input.split(" ");
-  var time = destructed[0].split(":");
-  if(destructed[0] == 'AM') {
-    if(time[0] == '12'){
-      time[0] = '00'
-    }
-  } else {
-    if (time[0] != '12'){
-      time[0] = parseInt(time[0]) + 12
-    }
-  }
-  string = time[0] + ":" + time[1] + ":" + '00';
-  return string
-}
-
-function formatDateString(input){
-  if (input == 'NULL'){
-    return input;
-  }
-  input = input.substring(1, input.length-1);
-  var string = "";
-  var destructed = input.split("/");
-  string = "'" + destructed[2] + "-" + destructed[0] + "-" + destructed[1] + "'"
-  return string;
-}
-
-//Format time string for readability.
-function formatTimeStringH(input){
-  if (input == null){
-    return "";
-  }
-  var destructed = input.split(":");
-  if(destructed[0] < 12){
-    if (destructed[0] == 0){
-      return ('12' + ':' + destructed[1] + ' AM');
-    } else {
-      return (destructed[0] + ':' + destructed[1] + ' AM');
-    }
-  } else {
-    if (destructed[0] == 12){
-      return (destructed[0] + ':' + destructed[1] + ' PM');
-    } else{
-      return ((destructed[0] - 12) + ':' + destructed[1] + ' PM');
-    }
-  }
-}
 module.exports = router;

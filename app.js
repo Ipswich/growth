@@ -11,6 +11,7 @@ var indexRouter = require('./routes/index');
 var addTimeEventRouter = require('./routes/addTimeEvent');
 var addSensorEventRouter = require('./routes/addSensorEvent');
 var getScheduleDataRouter = require('./routes/getScheduleData');
+var updateScheduleRouter = require('./routes/updateSchedule');
 
 //App setup - load config
 try{
@@ -62,6 +63,7 @@ app.use('/', indexRouter);
 app.use('/addTimeEvent', addTimeEventRouter);
 app.use('/addSensorEvent', addSensorEventRouter);
 app.use('/getScheduleData', getScheduleDataRouter);
+app.use('/updateSchedule', updateScheduleRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

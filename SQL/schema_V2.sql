@@ -401,6 +401,16 @@ WHERE ScheduleID = p_id
 $$
 DELIMITER ;
 
+##Disable Schedule by
+DELIMITER $$
+CREATE PROCEDURE `DisableSchedule` (IN `p_id` INT, `p_user` VARCHAR(32))
+MODIFIES SQL DATA
+UPDATE Schedules
+SET SEnabled = 0, disabledBy = p_user
+WHERE ScheduleID = p_id
+$$
+DELIMITER ;
+
 #############Users##############
 
 ##Add New User
