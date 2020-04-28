@@ -1,5 +1,5 @@
 div
-  form(id="eventUpdateForm")
+  form(id="eventUpdateForm" method="POST")
     if schedule.scheduleType == 'Time'    
       include ./updateEventMetaTime.pug
     else
@@ -18,32 +18,3 @@ div
         div.col
           button(id="UpdateDeleteButton" name="UpdateDelete" type="submit").btn.float-left.submitButton Delete
           button(id="UpdateUpdateButton" name="UpdateUpdate" type="submit").btn.float-right.submitButton Update
-  
-script.
-  $(document).ready(function() {
-    $('#UpdateForm').submit(function(e) {
-      e.preventDefault();
-      $('#UpdateDeleteButton').attr("disabled", true);
-      $('#UpdateUpdateButton').attr("disabled", true);
-            
-      var form = $(this);
-      var data = form.serializeArray();
-      $.ajax({
-        type: 'POST',
-        url: '#',
-        data: data,
-        cache: false,
-        success: function(res) {
-          $('#UpdateDeleteButton').attr("disabled", false);
-          $('#UpdateUpdateButton').attr("disabled", false);
-          $('UpdateScheduleModal').modal('hide');
-          alert(res);
-        },
-        error: function(res) {
-          $('#UpdateDeleteButton').attr("disabled", false);
-          $('#UpdateUpdateButton').attr("disabled", false);
-          alert("Server could not be reached.");
-        }
-      });
-    });
-  });

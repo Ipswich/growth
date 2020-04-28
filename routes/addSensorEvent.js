@@ -3,12 +3,16 @@ var router = express.Router();
 var app = require('../app.js');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
+var dateFormat = require ('dateformat');
+const path = require('path');
+var pug = require('pug');
 
 var saltRounds = 10;
 
 
 router.post('/', function(req, res, next) {
   var config = req.app.get('config');
+  var web_data = req.app.get('web_data');
   new Promise((resolve, reject) => {
     var con = mysql.createConnection(config.database);
     con.connect((err) => {
@@ -38,8 +42,47 @@ router.post('/', function(req, res, next) {
                   con.destroy();
                   res.send("Database error! Event not added.");
                 } else {
-                  con.destroy();
-                  res.send("Sensor event successfully added!");
+                  //Redo old pages
+                  const schedules = path.join(req.app.get('views'), '/schedules.pug');
+                  const currentConditions = path.join(req.app.get('views'), '/currentConditions.pug');
+                  var cSchedules = pug.compileFile(schedules);
+                  var cCurrentConditions = pug.compileFile(currentConditions);
+                  //grab Index Page Data
+
+                  con.query('CALL getSensorLastReadings()', (error, results, fields) => {
+                      var sensorData = {sensorData: results[0]};
+                      for (var key in sensorData.sensorData){
+                        sensorData.sensorData[key].logTime = dateFormat(sensorData.sensorData[key].logTime, "mmmm d, h:MM:ss TT");
+                      }
+                      con.query('CALL getEnabledSensorTypes()', (error, results, fields) => {
+                        var sensorTypes = {sensorTypes: results[0]};
+                        con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
+                          var scheduleData = {scheduleData: results[0]};
+                            for (var key in scheduleData.scheduleData){
+                              scheduleData.scheduleData[key].eventTriggerTime = formatTimeStringH(scheduleData.scheduleData[key].eventTriggerTime);
+                            }
+                            con.query('CALL getEnabledOutputs()', (error, results, fields) => {
+                              var outputs = {outputs: results[0]};
+                              con.query('CALL getEnabledEvents()', (error, results, fields) => {
+                                var events = {events: results[0]};
+                                con.query('CALL getEnabledSensors()', (error, results, fields) => {
+                                  var sensors = {sensors: results[0]};
+                                  var data = Object.assign({}, web_data, sensorTypes, sensorData, scheduleData, outputs, events, sensors);
+                                  con.destroy();
+                                  var schedulesPug = {schedules: cSchedules(data)};
+                                  var currentConditionsPug = {currentConditions: cCurrentConditions(data)};
+                                  var msg = {msg: "Sensor event successfully added!"};
+                                  var packet = Object.assign({}, schedulesPug, currentConditionsPug, msg);
+                                  console.log(packet)
+                                  console.log("done")
+                                  res.send(packet);
+
+                                })
+                              })
+                            })
+                          })
+                      })
+                    })
                 }
               });
             } else {
@@ -89,5 +132,28 @@ function formatDateString(input){
   string = "'" + destructed[2] + "-" + destructed[0] + "-" + destructed[1] + "'"
   return string;
 }
+
+
+//Format time string for readability.
+function formatTimeStringH(input){
+  if (input == null){
+    return "";
+  }
+  var destructed = input.split(":");
+  if(destructed[0] < 12){
+    if (destructed[0] == 0){
+      return ('12' + ':' + destructed[1] + ' AM');
+    } else {
+      return (destructed[0] + ':' + destructed[1] + ' AM');
+    }
+  } else {
+    if (destructed[0] == 12){
+      return (destructed[0] + ':' + destructed[1] + ' PM');
+    } else{
+      return ((destructed[0] - 12) + ':' + destructed[1] + ' PM');
+    }
+  }
+}
+
 
 module.exports = router;

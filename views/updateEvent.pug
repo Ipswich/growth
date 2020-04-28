@@ -5,32 +5,5 @@ div(id="updateScheduleModal" tabindex="-1" role="dialog" aria-labelledby="modalL
         h5 Update/Remove Event
         button(type="button" id="modalRemoveScheduleXButton" data-dismiss="modal" aria-label="Close").close
           span(aria-hidden="true") &times;
-      div(id="updateScheduleContent").modal-body.modalStyle.rounded-bottom
-        
-script.
-  $(document).ready(function() {
-    $(function(){
-      $('#updateScheduleModal').modal({
-        keyboard: true,
-        show: false
-      }).on('show.bs.modal', function(){
-        var data = $(event.target).closest('tr').data('scheduleid');
-        var datagram = {};
-        datagram.data = data;
-        $.ajax({
-          type: 'POST',
-          url: '/getScheduleData',
-          data: datagram,
-          cache: false,
-          success: function(res) {
-            $('#updateScheduleContent').html(res);
-          },
-          error: function(res) {
-            alert("Server could not be reached.");
-          }
-        });
-      }).on('hidden.bs.modal', function(){
-          $('#updateScheduleContent').html("Loading. . .");
-      });
-    });
-  });
+      div(id="updateScheduleContent").modal-body.modalStyle.rounded-bottom.collapse
+        p Loading . . .

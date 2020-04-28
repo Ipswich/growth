@@ -1,5 +1,5 @@
 div
-  form(id="SensorForm")
+  form(id="SensorForm" method='POST')
     div.form-group
       div.form-row
         div.col-5
@@ -91,28 +91,3 @@ div
       div.form-row
         div.col
           button(id="EventSubmitButton" type="submit").btn.float-right.submitButton Submit
-    
-script.
-  $(document).ready(function() {
-    $('#SensorForm').submit(function(e) {
-      e.preventDefault();
-      $('#EventSubmitButton').attr("disabled", true);
-      
-      var form = $(this);
-      var data = form.serializeArray();
-      $.ajax({
-        type: 'POST',
-        url: '/addSensorEvent',
-        data: data,
-        cache: false,
-        success: function(res) {
-          $('#EventSubmitButton').attr("disabled", false);
-          alert(res);
-        },
-        error: function(res) {
-          $('#EventSubmitButton').attr("disabled", false);
-          alert("Server could not be reached.");
-        }
-      });
-    });
-  });
