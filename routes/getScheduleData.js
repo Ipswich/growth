@@ -21,7 +21,6 @@ router.post('/', function(req, res, next) {
         resolve(con);
       });
     }).then((con) => {
-      // console.log(req.body.data);
       var sensorID = mysql.escape(req.body.data);
       //DO STUFF WITH ESCAPED DATA
       var query = "CALL getScheduleByID(" + sensorID + ")";
@@ -36,7 +35,10 @@ router.post('/', function(req, res, next) {
           defaults.sensorValue = schedule.schedule.sensorValue;
           defaults.outputValue = schedule.schedule.outputValue;
           defaults.comparator = schedule.schedule.scheduleComparator;
-          defaults.eventTriggerTime = utils.formatTimeStringH(schedule.schedule.eventTriggerTime);
+          if(schedule.schedule.eventTriggerTime) {
+            var triggerTime = moment(schedule.schedule.eventTriggerTime, "HH:mm:ss");
+            defaults.eventTriggerTime = triggerTime.format('HH:mm');
+          }
           if (schedule.schedule.scheduleStartDate) {
             defaults.scheduleStartDate = moment(schedule.schedule.scheduleStartDate).format("MM/DD/YYYY");
           } else {

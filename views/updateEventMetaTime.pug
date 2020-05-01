@@ -10,6 +10,7 @@ div.form-group
             option(value=event.eventID) #{event.eventName}
     div(id="UpdateTimeDiv" data-defaultTime=defaults.eventTriggerTime).col-4
       script.
+        var defaultTime = $("#UpdateTimeDiv").data('defaulttime');
         if (!Modernizr.inputtypes.time) {
           $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
           icons: {
@@ -23,12 +24,11 @@ div.form-group
               clear: 'fas fa-trash',
               close: 'fas fa-times'
           } });
-          var defaultTime = $("#UpdateTimeDiv").data('defaulttime');
           document.getElementById("UpdateTimeDiv").innerHTML = 
           `            
           <label for="UpdateTrigger"> Event Time</label>
           <div class="input-group date" id="UpdateTrigger" data-target-input="nearest">
-              <input type="text" name="UpdateTrigger" value=`+ defaultTime + ` class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#UpdateTrigger" required/>
+              <input type="text" name="UpdateTrigger" value="`+ defaultTime + `" class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#UpdateTrigger" required/>
           </div>
           `;
           $(function () {
@@ -40,7 +40,7 @@ div.form-group
           document.getElementById("UpdateTimeDiv").innerHTML = 
           `
           <label for="UpdateTrigger"> Event Time</label>
-          <input type="time" id="UpdateTrigger" name="UpdateTrigger" value=` + defaultTime + ` class="form-control formStyle" required>
+          <input type="time" id="UpdateTrigger" name="UpdateTrigger" value="` + defaultTime + `" class="form-control formStyle" required>
           `;
         }        
 div.form-group      

@@ -3,6 +3,8 @@ var router = express.Router();
 var app = require('../app.js');
 var mysql = require('mysql');
 var dateFormat = require ('dateformat');
+var utils = require('../custom_node_modules/Utils.js');
+var moment = require('moment');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -27,7 +29,7 @@ router.get('/', function(req, res, next) {
             con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
               var scheduleData = {scheduleData: results[0]};
                 for (var key in scheduleData.scheduleData){
-                  scheduleData.scheduleData[key].eventTriggerTime = formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
+                  scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
                 }
                 con.query('CALL getEnabledOutputs()', (error, results, fields) => {
                   var outputs = {outputs: results[0]};
@@ -52,25 +54,5 @@ router.get('/', function(req, res, next) {
   });
 
 });
-
-function formatTimeString(input){
-  if (input == null){
-    return "";
-  }
-  var destructed = input.split(":");
-  if(destructed[0] < 12){
-    if (destructed[0] == 0){
-      return ('12' + ':' + destructed[1] + ' AM');
-    } else {
-      return (destructed[0] + ':' + destructed[1] + ' AM');
-    }
-  } else {
-    if (destructed[0] == 12){
-      return (destructed[0] + ':' + destructed[1] + ' PM');
-    } else{
-      return ((destructed[0] - 12) + ':' + destructed[1] + ' PM');
-    }
-  }
-}
 
 module.exports = router;
