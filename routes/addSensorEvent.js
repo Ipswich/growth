@@ -60,7 +60,7 @@ router.post('/', function(req, res, next) {
                         con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
                           var scheduleData = {scheduleData: results[0]};
                             for (var key in scheduleData.scheduleData){
-                              scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeStringH(scheduleData.scheduleData[key].eventTriggerTime);
+                              scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
                             }
                             con.query('CALL getEnabledOutputs()', (error, results, fields) => {
                               var outputs = {outputs: results[0]};

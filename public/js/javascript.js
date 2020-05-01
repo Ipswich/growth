@@ -1,9 +1,10 @@
-//Refresh document every 5 minutes to keep table values fresh.
-$(document).ready(function() {
-  setInterval(function() {
-  window.location.reload();
-  }, 300000);
-});
+
+//TODO NEEDS MORE AJAX
+// $(document).ready(function(){
+//   setInterval(function() {
+//   window.location.reload();
+//   }, 300000);
+// })
 
 //Prevent accidental form entries
 $(document).ready(function() {
@@ -34,6 +35,8 @@ $(document).ready(function() {
         $('#current-conditions').html(res.currentConditions);
         $('#EventSubmitButton').attr("disabled", false);
         alert(res.msg);
+        $('#newScheduleModal').modal('hide');
+        $('#SensorForm').trigger("reset");
       },
       error: function(res) {
         $('#EventSubmitButton').attr("disabled", false);
@@ -61,6 +64,8 @@ $(document).ready(function() {
         $('#current-conditions').html(res.currentConditions);
         $('#TimeSubmitButton').attr("disabled", false);
         alert(res.msg);
+        $('#newScheduleModal').modal('hide');
+        $('#TimeForm').trigger("reset");
       },
       error: function(res) {
         $('#TimeSubmitButton').attr("disabled", false);

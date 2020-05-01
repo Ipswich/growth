@@ -36,7 +36,7 @@ router.post('/', function(req, res, next) {
                 sanitizedData[key] = mysql.escape(sanitizedData[key])
               }
               //DO STUFF WITH ESCAPED DATA
-              var query = "CALL addNewSchedule('Time', "+sanitizedData.TimeEvent+", NULL, NULL, "+sanitizedData.TimeOutput+", "+sanitizedData.TimeOutputValue+", NULL, '"+utils.formatTimeString(sanitizedData.TimeTrigger)+"', "+utils.formatDateString(sanitizedData.TimeStartDate)+", "+utils.formatDateString(sanitizedData.TimeEndDate)+", '1', "+sanitizedData.username+", NULL)";
+              var query = "CALL addNewSchedule('Time', "+sanitizedData.TimeEvent+", NULL, NULL, "+sanitizedData.TimeOutput+", "+sanitizedData.TimeOutputValue+", NULL, '"+utils.formatTimeStringForDB(sanitizedData.TimeTrigger)+"', "+utils.formatDateString(sanitizedData.TimeStartDate)+", "+utils.formatDateString(sanitizedData.TimeEndDate)+", '1', "+sanitizedData.username+", NULL)";
               con.query(query, (error, results, fields) => {
                 if(error){
                   con.destroy();
@@ -59,7 +59,7 @@ router.post('/', function(req, res, next) {
                         con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
                           var scheduleData = {scheduleData: results[0]};
                             for (var key in scheduleData.scheduleData){
-                              scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeStringH(scheduleData.scheduleData[key].eventTriggerTime);
+                              scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
                             }
                             con.query('CALL getEnabledOutputs()', (error, results, fields) => {
                               var outputs = {outputs: results[0]};

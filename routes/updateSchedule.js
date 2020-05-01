@@ -58,13 +58,14 @@ router.post('/', function(req, res, next) {
                     //If marked for update, add new schedule with passed values.
                     if (sanitizedData.UpdateMode == "'Update'"){
                       if (dbschedule.scheduleType == 'Time'){
-                        var query = "CALL addNewSchedule('Time', "+sanitizedData.UpdateEvent+", NULL, NULL, "+sanitizedData.UpdateOutput+", "+sanitizedData.UpdateOutputValue+", NULL, '"+utils.formatTimeString(sanitizedData.UpdateTrigger)+"', "+utils.formatDateString(sanitizedData.UpdateStartDate)+", "+utils.formatDateString(sanitizedData.UpdateEndDate)+", '1', "+sanitizedData.username+", NULL)";
+                        var query = "CALL addNewSchedule('Time', "+sanitizedData.UpdateEvent+", NULL, NULL, "+sanitizedData.UpdateOutput+", "+sanitizedData.UpdateOutputValue+", NULL, '"+utils.formatTimeStringForDB(sanitizedData.UpdateTrigger)+"', "+utils.formatDateString(sanitizedData.UpdateStartDate)+", "+utils.formatDateString(sanitizedData.UpdateEndDate)+", '1', "+sanitizedData.username+", NULL)";
                       }
                       else {
                         var query = "CALL addNewSchedule('Sensor', "+sanitizedData.UpdateEvent+", "+sanitizedData.UpdateName+", "+sanitizedData.UpdateSensorValue+", "+sanitizedData.UpdateOutput+", "+sanitizedData.UpdateOutputValue+", "+sanitizedData.UpdateComparator+", NULL, "+utils.formatDateString(sanitizedData.UpdateStartDate)+", "+utils.formatDateString(sanitizedData.UpdateEndDate)+", '1', "+sanitizedData.username+", NULL)";
                       }
                       con.query(query, (error, results, fields) => {
                         if (error){
+                          console.log(query);
                           con.destroy();
                           res.status(500).send("Database error! Event not changed. (failed at update)");
                         }
@@ -87,7 +88,7 @@ router.post('/', function(req, res, next) {
                         con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
                           var scheduleData = {scheduleData: results[0]};
                           for (var key in scheduleData.scheduleData){
-                            scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeStringH(scheduleData.scheduleData[key].eventTriggerTime);
+                            scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
                           }
                           con.query('CALL getEnabledOutputs()', (error, results, fields) => {
                             var outputs = {outputs: results[0]};
