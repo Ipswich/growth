@@ -73,7 +73,7 @@ router.post('/', function(req, res, next) {
                                   var currentConditionsPug = {currentConditions: cCurrentConditions(data)};
                                   var msg = {msg: "Time event successfully added!"};
                                   var packet = Object.assign({}, schedulesPug, currentConditionsPug, msg);
-                                  res.send(packet);
+                                  res.status(200).send(packet);
 
                                 })
                               })
@@ -84,20 +84,18 @@ router.post('/', function(req, res, next) {
                 }
               });
             } else {
-
                 con.destroy();
-                res.send("Invalid credentials!");
+                res.status(400).send("Invalid credentials!");
             }
           });
         } else {
           con.destroy();
-          res.send("Invalid credentials!");
+          res.status(400).send("Invalid credentials!");
         }
     });
   });
 }), (err) => {
-  con.destroy();
-  res.send("Database error!")
+  res.status(500).send("Database error!")
 };
 
 module.exports = router;

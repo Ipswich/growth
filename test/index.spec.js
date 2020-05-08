@@ -1,15 +1,18 @@
-const supertest = require("supertest");
-const assert = require('assert');
+const request = require("supertest");
 const app = require("../app");
 
 describe("GET /", function() {
   it("it should have status code 200", function(done) {
-    supertest(app)
+    request(app)
       .get("/")
-      .expect(200)
-      .end(function(err, res){
-        if (err) done(err);
-        done();
-      });
+      .expect(200, done);
+  });
+});
+
+describe("GET INVALID ADDRESS", function() {
+  it("it should have status code 404", function(done) {
+    request(app)
+      .get("/asdf")
+      .expect(404, done);
   });
 });

@@ -9,7 +9,6 @@ var moment = require('moment');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   var config = req.app.get('config');
-
   new Promise((resolve, reject) => {
     var con = mysql.createConnection(config.database);
     con.connect((err) => {
@@ -40,7 +39,7 @@ router.get('/', function(req, res, next) {
                       var web_data = req.app.get('web_data');
                       var data = Object.assign({}, web_data, sensorTypes, sensorData, scheduleData, outputs, events, sensors);
                       con.destroy();
-                      res.render('index', data);
+                      res.status(200).render('index', data);
                     })
                   })
                 })
@@ -49,8 +48,7 @@ router.get('/', function(req, res, next) {
     });
   },
   (err) => {
-    con.destroy();
-    res.render('error')
+    res.status(500).render('error')
   });
 
 });
