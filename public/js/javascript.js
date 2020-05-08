@@ -40,7 +40,7 @@ $(document).ready(function() {
       },
       error: function(res) {
         $('#EventSubmitButton').attr("disabled", false);
-        alert("Server could not be reached.");
+        alert(res);
       }
     });
   });
@@ -69,7 +69,7 @@ $(document).ready(function() {
       },
       error: function(res) {
         $('#TimeSubmitButton').attr("disabled", false);
-        alert("Server could not be reached.");
+        alert(res);
       }
     });
   });
@@ -107,7 +107,7 @@ $(document).ready(function() {
 
 //AJAX for updating schedule (updateSchedule.js)
 //Weirdly doesn't seem to work when placed here, so it's commented out but located
-//in the PUG file under a script element.
+//in the PUG (updateEventMeta.pug) file under a script element.
 
 // $(document).ready(function() {
 //   $('#UpdateForm').off().submit(function(e) {
