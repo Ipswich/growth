@@ -3,7 +3,6 @@ var router = express.Router();
 var app = require('../app.js');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
-var dateFormat = require ('dateformat');
 const path = require('path');
 var pug = require('pug');
 const utils = require('../custom_node_modules/Utils.js')
@@ -52,7 +51,7 @@ router.post('/', function(req, res, next) {
                   con.query('CALL getSensorLastReadings()', (error, results, fields) => {
                       var sensorData = {sensorData: results[0]};
                       for (var key in sensorData.sensorData){
-                        sensorData.sensorData[key].logTime = dateFormat(sensorData.sensorData[key].logTime, "mmmm d, h:MM:ss TT");
+                        sensorData.sensorData[key].logTime = utils.dateFormat(sensorData.sensorData[key].logTime, "mmmm d, h:MM:ss TT");
                       }
                       con.query('CALL getEnabledSensorTypes()', (error, results, fields) => {
                         var sensorTypes = {sensorTypes: results[0]};
