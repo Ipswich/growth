@@ -51,7 +51,7 @@ router.post('/', function(req, res, next) {
                   con.query('CALL getSensorLastReadings()', (error, results, fields) => {
                       var sensorData = {sensorData: results[0]};
                       for (var key in sensorData.sensorData){
-                        sensorData.sensorData[key].logTime = utils.dateFormat(sensorData.sensorData[key].logTime, "mmmm d, h:MM:ss TT");
+                        sensorData.sensorData[key].logTime = utils.dateFormat(sensorData.sensorData[key].logTime);
                       }
                       con.query('CALL getEnabledSensorTypes()', (error, results, fields) => {
                         var sensorTypes = {sensorTypes: results[0]};
