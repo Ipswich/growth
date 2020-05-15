@@ -21,9 +21,14 @@ router.post('/', function(req, res, next) {
       }
         resolve(con);
       });
-    }).then((con) => {
-      var escapedUsername = mysql.escape(req.body.username);
-      con.query('CALL getUser('+escapedUsername+')', (error, results, fields) => {
+  }).then((con) => {
+    var escapedUsername = mysql.escape(req.body.username);
+    con.query('CALL getUser('+escapedUsername+')', (error, results, fields) => {
+      //If error, error
+      if (error) {
+        con.destroy();
+        res.status(500).send("Database error!");
+      } else {
         if (results[0].length != 0){
           var hash = results[0][0].passhash;
           bcrypt.compare(req.body.password, hash, (err, result) => {
@@ -140,6 +145,7 @@ router.post('/', function(req, res, next) {
           con.destroy();
           res.status(400).send("Invalid credentials!");
         }
+      }
     });
   });
 }), (err) => {

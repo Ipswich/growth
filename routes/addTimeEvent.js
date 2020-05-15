@@ -22,10 +22,15 @@ router.post('/', function(req, res, next) {
       }
         resolve(con);
       });
-    }).then((con) => {
-      //Check to see if usename is valid.
-      var escapedUsername = mysql.escape(req.body.username);
-      con.query('CALL getUser('+escapedUsername+')', (error, results, fields) => {
+  }).then((con) => {
+    //Check to see if usename is valid.
+    var escapedUsername = mysql.escape(req.body.username);
+    con.query('CALL getUser('+escapedUsername+')', (error, results, fields) => {
+      //If error, error
+      if (error) {
+        con.destroy();
+        res.status(500).send("Database error!");
+      } else {
         if (results[0].length != 0){
           //If it is, compare password to hash.
           var hash = results[0][0].passhash;
@@ -134,7 +139,6 @@ router.post('/', function(req, res, next) {
                       })
                     }
                   })
-
                 }
               });
             } else {
@@ -146,6 +150,7 @@ router.post('/', function(req, res, next) {
           con.destroy();
           res.status(400).send("Invalid credentials!");
         }
+      }
     });
   });
 }), (err) => {
