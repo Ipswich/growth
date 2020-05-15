@@ -1,11 +1,3 @@
-
-//TODO NEEDS MORE AJAX
-// $(document).ready(function(){
-//   setInterval(function() {
-//   window.location.reload();
-//   }, 300000);
-// })
-
 //Prevent accidental form entries
 $(document).ready(function() {
   $(window).keydown(function(event){

@@ -3,7 +3,6 @@ var router = express.Router();
 var app = require('../app.js');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
-var dateFormat = require ('dateformat');
 const utils = require('../custom_node_modules/Utils.js')
 const path = require('path');
 var pug = require('pug');
@@ -22,9 +21,14 @@ router.post('/', function(req, res, next) {
       }
         resolve(con);
       });
-    }).then((con) => {
-      var escapedUsername = mysql.escape(req.body.username);
-      con.query('CALL getUser('+escapedUsername+')', (error, results, fields) => {
+  }).then((con) => {
+    var escapedUsername = mysql.escape(req.body.username);
+    con.query('CALL getUser('+escapedUsername+')', (error, results, fields) => {
+      //If error, error
+      if (error) {
+        con.destroy();
+        res.status(500).send("Database error!");
+      } else {
         if (results[0].length != 0){
           var hash = results[0][0].passhash;
           bcrypt.compare(req.body.password, hash, (err, result) => {
@@ -44,44 +48,92 @@ router.post('/', function(req, res, next) {
                   res.status(500).send("Database error! Event not added.");
                 } else {
                   //Redo old pages
+                  //setup paths
                   const schedules = path.join(req.app.get('views'), '/schedules.pug');
                   const currentConditions = path.join(req.app.get('views'), '/currentConditions.pug');
+                  //Create pug render functions
                   var cSchedules = pug.compileFile(schedules);
                   var cCurrentConditions = pug.compileFile(currentConditions);
-                  //grab Index Page Data
 
+                  //grab Index Page Data
+                  //Get last readings from sensors
                   con.query('CALL getSensorLastReadings()', (error, results, fields) => {
+                    if(error){
+                      //Error on problem.
+                      con.destroy();
+                      res.status(500).send("Database error! Website not updated.");
+                    } else {
                       var sensorData = {sensorData: results[0]};
                       for (var key in sensorData.sensorData){
-                        sensorData.sensorData[key].logTime = dateFormat(sensorData.sensorData[key].logTime, "mmmm d, h:MM:ss TT");
+                        //Format logtime to be human readable
+                        sensorData.sensorData[key].logTime = utils.dateFormat(sensorData.sensorData[key].logTime);
                       }
+                      //Get enabled sensor types
                       con.query('CALL getEnabledSensorTypes()', (error, results, fields) => {
-                        var sensorTypes = {sensorTypes: results[0]};
-                        con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
-                          var scheduleData = {scheduleData: results[0]};
-                            for (var key in scheduleData.scheduleData){
-                              scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
-                            }
-                            con.query('CALL getEnabledOutputs()', (error, results, fields) => {
-                              var outputs = {outputs: results[0]};
-                              con.query('CALL getEnabledEvents()', (error, results, fields) => {
-                                var events = {events: results[0]};
-                                con.query('CALL getEnabledSensors()', (error, results, fields) => {
-                                  var sensors = {sensors: results[0]};
-                                  var data = Object.assign({}, web_data, sensorTypes, sensorData, scheduleData, outputs, events, sensors);
+                        if(error){
+                          //Error on problem.
+                          con.destroy();
+                          res.status(500).send("Database error! Website not updated.");
+                        } else {
+                          var sensorTypes = {sensorTypes: results[0]};
+                          //Get enabled live schedules
+                          con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
+                            if(error){
+                              //Error on problem.
+                              con.destroy();
+                              res.status(500).send("Database error! Website not updated.");
+                            } else {
+                              var scheduleData = {scheduleData: results[0]};
+                              //Format trigger Time to be human readable
+                              for (var key in scheduleData.scheduleData){
+                                scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
+                              }
+                              //Get enabled outputs
+                              con.query('CALL getEnabledOutputs()', (error, results, fields) => {
+                                if(error){
+                                  //Error on problem.
                                   con.destroy();
-                                  var schedulesPug = {schedules: cSchedules(data)};
-                                  var currentConditionsPug = {currentConditions: cCurrentConditions(data)};
-                                  var msg = {msg: "Sensor event successfully added!"};
-                                  var packet = Object.assign({}, schedulesPug, currentConditionsPug, msg);
-                                  res.status(200).send(packet);
-
-                                })
+                                  res.status(500).send("Database error! Website not updated.");
+                                } else {
+                                  var outputs = {outputs: results[0]};
+                                  //Get enabled events
+                                  con.query('CALL getEnabledEvents()', (error, results, fields) => {
+                                    if(error){
+                                      //Error on problem.
+                                      con.destroy();
+                                      res.status(500).send("Database error! Website not updated.");
+                                    } else {
+                                      var events = {events: results[0]};
+                                      //Get enabled sensors
+                                      con.query('CALL getEnabledSensors()', (error, results, fields) => {
+                                        if(error){
+                                          //Error on problem.
+                                          con.destroy();
+                                          res.status(500).send("Database error! Website not updated.");
+                                        } else {
+                                          var sensors = {sensors: results[0]};
+                                          //Create data object for rendering html
+                                          var data = Object.assign({}, web_data, sensorTypes, sensorData, scheduleData, outputs, events, sensors);
+                                          con.destroy();
+                                          //Render and add to object
+                                          var schedulesPug = {schedules: cSchedules(data)};
+                                          var currentConditionsPug = {currentConditions: cCurrentConditions(data)};
+                                          var msg = {msg: "Time event successfully added!"};
+                                          //Create packet, send.
+                                          var packet = Object.assign({}, schedulesPug, currentConditionsPug, msg);
+                                          res.status(200).send(packet);
+                                        }
+                                      })
+                                    }
+                                  })
+                                }
                               })
-                            })
+                            }
                           })
+                        }
                       })
-                    })
+                    }
+                  })
                 }
               });
             } else {
@@ -93,6 +145,7 @@ router.post('/', function(req, res, next) {
           con.destroy();
           res.status(400).send("Invalid credentials!");
         }
+      }
     });
   });
 }), (err) => {
