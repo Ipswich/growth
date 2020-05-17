@@ -10,6 +10,14 @@
   --website-text-blue: hsl(210, 58%, 50%);
 }
 
+.green {
+  color: var(--website-text-green);
+}
+
+.blue {
+  color: var(--website-text-blue);
+}
+
 .nav-pill {
   color: var(--website-text-dark);
   background-color: var(--website-bg-almost-light);
@@ -66,10 +74,6 @@
 
 }
 
-
-.scheduleContainer {
-}
-
 .scheduleTable {
   color: var(--website-text-normal);
   background-Color:var(--website-bg-light);
@@ -78,10 +82,6 @@
 .scheduleTableHeader {
     background-color:var(--website-bg-lighter);
     border-bottom: 1px solid var(--website-text-light);
-}
-.scheduleTableBody {
-}
-.scheduleTableRow {
 }
 .scheduleTableRow:hover {
   background-color:var(--website-bg-normal);
@@ -92,6 +92,11 @@
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);
   box-shadow: none;
+}
+
+#addEventButton:hover {
+  background-color: var(--website-bg-light);
+  color: var(--website-text-dark);
 }
 
 .modal-content .modalStyle {
@@ -143,15 +148,71 @@
   box-shadow: none;
 }
 
-.green {
-  color: var(--website-text-green);
+.datepicker table tr td.active:active,
+.datepicker table tr td.active.highlighted:active,
+.datepicker table tr td.active.active,
+.datepicker table tr td.active.highlighted.active {
+   color: var(--website-text-dark);
+   background: var(--website-bg-normal);
 }
-.blue {
-  color: var(--website-text-blue);
+
+.bootstrap-datetimepicker-widget table,
+.bootstrap-datetimepicker-widget table th,
+.bootstrap-datetimepicker-widget table td,
+.bootstrap-datetimepicker-widget table td span {
+  color: var(--website-text-normal);
+  border-color: var(--website-bg-lighter);
+}
+
+.bootstrap-datetimepicker-widget table span.fas {
+  color: var(--website-text-dark);
+}
+
+.bootstrap-datetimepicker-widget table span.fas:hover,
+.bootstrap-datetimepicker-widget table span.timepicker-minute:hover,
+.bootstrap-datetimepicker-widget table span.timepicker-hour:hover,
+.bootstrap-datetimepicker-widget table th.next:hover,
+.bootstrap-datetimepicker-widget table th.prev:hover,
+.bootstrap-datetimepicker-widget table th.picker-switch:hover,
+.bootstrap-datetimepicker-widget table td.day:hover {
+  color: var(--website-text-dark) !important;
+  background: var(--website-bg-normal) !important;
+}
+
+.bootstrap-datetimepicker-widget.dropdown-menu.top:before,
+.bootstrap-datetimepicker-widget.dropdown-menu.bottom:after,
+.bootstrap-datetimepicker-widget.dropdown-menu.top:after,
+.bootstrap-datetimepicker-widget.dropdown-menu.bottom:after {
+  border-bottom-color: var(--website-text-blue);
+  border-top-color: var(--website-text-blue);
+}
+
+.bootstrap-datetimepicker-widget table td.today:before {
+  border-bottom-color: var(--website-text-blue);
+}
+
+.bootstrap-datetimepicker-widget table td.active.today:before {
+  border-bottom-color: var(--website-text-green);
+}
+
+.bootstrap-datetimepicker-widget {
+  background: var(--website-bg-lighter);
+}
+
+.bootstrap-datetimepicker-widget table button {
+  color: var(--website-text-dark);
+  background: var(--website-bg-light);
+  border-color: var(--website-bg-light);
+}
+
+.bootstrap-datetimepicker-widget table button:hover {
+  color: var(--website-text-dark);
+  background: var(--website-bg-normal);
+  border-color: var(--website-bg-normal);
 }
 
 .sensor-data {
-  color:var(--website-text-green);
+  color: var(--website-text-green);
 }
 
 .error-messages {
