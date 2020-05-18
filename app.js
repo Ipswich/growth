@@ -8,7 +8,7 @@ var fs = require('fs');
 
 //Custom Modules for Events/Readings
 var tEventHandler = require('./custom_node_modules/TimeEventHandler.js')
-// var tEventHandler = require('./custom_node_modules/SensorEventHandler.js')
+var sEventHandler = require('./custom_node_modules/SensorEventHandler.js')
 
 //Routes
 var indexRouter = require('./routes/index');
@@ -88,8 +88,10 @@ app.use(function(err, req, res, next) {
 //Logic for  event checking - checks once a minute
 //Check once on load, then every minute thereafter.
 tEventHandler.TimeEventHandler();
+sEventHandler.SensorEventHandler();
 setInterval(function() {
   tEventHandler.TimeEventHandler();
+  sEventHandler.SensorEventHandler();
 }, 60 * 1000);
 
 
