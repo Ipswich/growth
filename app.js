@@ -6,6 +6,10 @@ var logger = require('morgan');
 var app = express();
 var fs = require('fs');
 
+//Custom Modules for Events/Readings
+var tEventHandler = require('./custom_node_modules/TimeEventHandler.js')
+// var tEventHandler = require('./custom_node_modules/SensorEventHandler.js')
+
 //Routes
 var indexRouter = require('./routes/index');
 var addTimeEventRouter = require('./routes/addTimeEvent');
@@ -80,5 +84,14 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+//Logic for  event checking - checks once a minute
+//Check once on load, then every minute thereafter.
+tEventHandler.TimeEventHandler();
+setInterval(function() {
+  tEventHandler.TimeEventHandler();
+}, 60 * 1000);
+
+
 
 module.exports = app;
