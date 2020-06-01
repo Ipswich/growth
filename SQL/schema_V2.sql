@@ -39,6 +39,8 @@ CREATE TABLE Sensors (
   sensorLocation VARCHAR(64) NOT NULL,
   sensorUnits VARCHAR(16) DEFAULT NULL,
   SSenabled BOOLEAN NOT NULL DEFAULT 1,
+  sensorHardwareID INT NOT NULL,
+  sensorProtocol VARCHAR(32) NOT NULL,
   PRIMARY KEY (sensorID),
   FOREIGN KEY (sensorType) REFERENCES SensorTypes(sensorType)
 );
@@ -173,9 +175,9 @@ DELIMITER ;
 
 ##Insert new sensor
 DELIMITER $$
-CREATE PROCEDURE `addNewSensor` (IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16))
+CREATE PROCEDURE `addNewSensor` (IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_sensorProtocol` VARCHAR(32))
 MODIFIES SQL DATA
-	INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits) VALUES (p_model, p_type, p_location, p_units);
+	INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits, sensorHardwareID, sensorProtocol) VALUES (p_model, p_type, p_location, p_units, p_hardwareID, p_sensorProtocol);
 $$
 DELIMITER ;
 

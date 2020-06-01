@@ -7,8 +7,10 @@ var app = express();
 var fs = require('fs');
 
 //Custom Modules for Events/Readings
-var tEventHandler = require('./custom_node_modules/TimeEventHandler.js')
-var sEventHandler = require('./custom_node_modules/SensorEventHandler.js')
+var tEventHandler = require('./custom_node_modules/TimeEventHandler.js');
+var sEventHandler = require('./custom_node_modules/SensorEventHandler.js');
+var sLogger = require('./custom_node_modules/SensorLogger.js');
+var mappings = require('./custom_node_modules/Mappings.js');
 
 //Routes
 var indexRouter = require('./routes/index');
@@ -18,7 +20,7 @@ var getScheduleDataRouter = require('./routes/getScheduleData');
 var updateScheduleRouter = require('./routes/updateSchedule');
 
 //App setup - load config
-try{
+try {
   var config = require('./config/config.json');
 } catch (e) {
   console.log("ERROR: Could not locate config.json, using default_config.json instead.");
@@ -30,7 +32,7 @@ try{
   });
 }
 
-if(process.env.NODE_ENV == 'development'){
+if (process.env.NODE_ENV == 'development') {
   config = config.development;
   app.set('development', true);
 } else {
@@ -85,10 +87,13 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-//Logic for  event checking - checks once a minute
+
+//Logic for event checking - checks once a minute
 //Check once on load, then every minute thereafter.
 tEventHandler.TimeEventHandler();
 sEventHandler.SensorEventHandler();
+sLogger.addSensorReading('1', '89.000');
+
 setInterval(function() {
   tEventHandler.TimeEventHandler();
   sEventHandler.SensorEventHandler();

@@ -15,9 +15,10 @@ CALL addNewSensorType('Pressure', 1);
 CALL addNewSensorType('Humidity', 1);
 CALL addNewSensorType('CarbonDioxide', 0);
 
-CALL addNewSensor('BME280', 'Temperature', 'Control Box', '°C');
-CALL addNewSensor('BME280', 'Pressure', 'Control Box', 'hPa');
-CALL addNewSensor('BME280', 'Humidity', 'Control Box', '% rH');
+CALL addNewSensor('BME280', 'Temperature', 'Control Box', '°C', 1, 'I2C');
+CALL addNewSensor('BME280', 'Pressure', 'Control Box', 'hPa', 1, 'I2C');
+CALL addNewSensor('BME280', 'Humidity', 'Control Box', '% rH', 1, 'I2C');
+CALL addNewSensor('DS18B20', 'Temperature', 'Outside', '°C', 2, 'ONEWIRE');
 
 CALL addSensorReading(1, 75.389);
 CALL addSensorReading(2, 600);
