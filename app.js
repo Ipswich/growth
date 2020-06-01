@@ -95,15 +95,17 @@ initializeSchedule();
 //Check once on load, then every minute thereafter.
 async function initializeSchedule() {
   new Promise(async (resolve) => {
+    //load state from outputs
     let state = await new outputState();
     resolve(state);
   }).then(async (state) => {
+    //Get sensors for board initialization
+    sensors = await mappings.getSensorMappings();
+    console.log(sensors);
+
+    //Run events when ready, then set Interval.
     await tEventHandler.TimeEventHandler(state);
     await sEventHandler.SensorEventHandler(state);
-
-    sensors = await mappings.getSensorMappings();
-    console.log(sensors)
-
     setInterval(function() {
       tEventHandler.TimeEventHandler(state);
       sEventHandler.SensorEventHandler(state);
