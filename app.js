@@ -106,10 +106,7 @@ async function initializeSchedule() {
       tEventHandler.TimeEventHandler(state);
       sEventHandler.SensorEventHandler(state);
     }, 60 * 1000);
-
   })
-
-
 }
 
 module.exports = app;
