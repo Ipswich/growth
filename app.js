@@ -92,7 +92,7 @@ app.use(function(err, req, res, next) {
 //Check once on load, then every minute thereafter.
 tEventHandler.TimeEventHandler();
 sEventHandler.SensorEventHandler();
-sLogger.addSensorReading('1', '89.000');
+// sLogger.addSensorReading('1', '89.000');
 
 setInterval(function() {
   tEventHandler.TimeEventHandler();
