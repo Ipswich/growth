@@ -88,7 +88,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-
 initializeSchedule();
 // sLogger.addSensorReading('1', '89.000');
 
@@ -101,11 +100,14 @@ async function initializeSchedule() {
   }).then(async (state) => {
     await tEventHandler.TimeEventHandler(state);
     await sEventHandler.SensorEventHandler(state);
-    var i = 1;
+
+    sensors = await mappings.getSensorMappings();
+    console.log(sensors)
+
     setInterval(function() {
       tEventHandler.TimeEventHandler(state);
       sEventHandler.SensorEventHandler(state);
-    }, 60 * 1000);
+    }, 5 * 1000);
   })
 }
 

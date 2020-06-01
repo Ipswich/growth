@@ -44,27 +44,32 @@
 #data-list-header {
   background-color:var(--website-bg-lighter);
   text-align: center;
+  border: none;
 }
 
-#data-list-group {
+.data-list-group.list-group-item {
   background-color:var(--website-bg-light);
   text-align: left;
   color: var(--website-text-normal);
   font-weight: bold;
   text-decoration: underline;
+  border: none;
 }
-#data-list-group:hover {
+.data-list-group.list-group-item:hover {
   background-color:var(--website-bg-normal);
+  border: none;
 }
 
-#data-list-item {
+.data-list-item.list-group-item {
   background-color:var(--website-bg-light);
   text-align: left;
   padding-left: 50px;
   color: var(--website-text-normal);
+  border: none;
 }
-#data-list-item:hover {
+.data-list-item.list-group-item:hover {
   background-color:var(--website-bg-normal);
+  border: none;
 }
 
 #chart-container {

@@ -23,6 +23,7 @@ CALL addNewSensor('DS18B20', 'Temperature', 'Outside', '°C', 2, 'ONEWIRE');
 CALL addSensorReading(1, 75.389);
 CALL addSensorReading(2, 600);
 CALL addSensorReading(3, 54.7);
+CALL addSensorReading(4, 75.7);
 
 CALL addNewScheduleType ('Time', 1);
 CALL addNewScheduleType ('Sensor', 1);
