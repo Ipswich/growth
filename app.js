@@ -11,6 +11,7 @@ var tEventHandler = require('./custom_node_modules/TimeEventHandler.js');
 var sEventHandler = require('./custom_node_modules/SensorEventHandler.js');
 var sLogger = require('./custom_node_modules/SensorLogger.js');
 var mappings = require('./custom_node_modules/Mappings.js');
+var outputState = require('./custom_node_modules/OutputState.js');
 
 //Routes
 var indexRouter = require('./routes/index');
@@ -88,17 +89,27 @@ app.use(function(err, req, res, next) {
 });
 
 
-//Logic for event checking - checks once a minute
-//Check once on load, then every minute thereafter.
-tEventHandler.TimeEventHandler();
-sEventHandler.SensorEventHandler();
+initializeSchedule();
 // sLogger.addSensorReading('1', '89.000');
 
-setInterval(function() {
-  tEventHandler.TimeEventHandler();
-  sEventHandler.SensorEventHandler();
-}, 60 * 1000);
+//Logic for event checking - checks once a minute
+//Check once on load, then every minute thereafter.
+async function initializeSchedule() {
+  new Promise(async (resolve) => {
+    let state = await new outputState();
+    resolve(state);
+  }).then(async (state) => {
+    await tEventHandler.TimeEventHandler(state);
+    await sEventHandler.SensorEventHandler(state);
+    var i = 1;
+    setInterval(function() {
+      tEventHandler.TimeEventHandler(state);
+      sEventHandler.SensorEventHandler(state);
+    }, 60 * 1000);
+
+  })
 
 
+}
 
 module.exports = app;
