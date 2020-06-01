@@ -225,15 +225,20 @@ MODIFIES SQL DATA
 DELIMITER ;
 
 ##GET OLD READINGS##
+SELECT sensorID, data, logTime
+FROM SensorData s1
+WHERE logTime = (SELECT MAX(logTime) FROM SensorData s2 WHERE s1.sensorID = s2.sensorID)
+ORDER BY sensorID, logTime;
 ##Get most recent readings from ALL sensors
 DELIMITER $$
 CREATE PROCEDURE `getSensorLastReadings`()
   READS SQL DATA
-  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, data, s.sensorUnits, MAX(logTime) AS logTime
+  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, data, s.sensorUnits, d.logTime
   FROM Sensors s
   JOIN (
     SELECT sensorID, data, logTime
-    FROM SensorData
+		FROM SensorData s1
+		WHERE logTime = (SELECT MAX(logTime) FROM SensorData s2 WHERE s1.sensorID = s2.sensorID)
   ) AS d ON s.sensorID=d.sensorID
   GROUP BY sensorID
   ORDER BY sensorType DESC, sensorID DESC
@@ -248,7 +253,8 @@ CREATE PROCEDURE `getSensorLastReadingsByHours` (IN `p_hours` INT)
   FROM Sensors s
   JOIN (
     SELECT sensorID, data, logTime
-    FROM SensorData
+		FROM SensorData s1
+		WHERE logTime = (SELECT MAX(logTime) FROM SensorData s2 WHERE s1.sensorID = s2.sensorID)
   ) AS d ON s.sensorID=d.sensorID AND d.logTime > DATE_SUB(logTime, INTERVAL p_hours HOUR)
   ORDER BY sensorType DESC, sensorID DESC
 $$
