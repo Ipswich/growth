@@ -10,4 +10,4 @@ br
 div#chart-container
 each val, index in sensorData
   div(id=val.sensorID).chart-div
-      h5 #{val.sensorType}
+      h5 #{val.sensorType} @ #{val.sensorLocation}

@@ -19,6 +19,7 @@ CALL addNewSensor('BME280', 'Temperature', 'Control Box', '°C', 1, 'I2C');
 CALL addNewSensor('BME280', 'Pressure', 'Control Box', 'hPa', 1, 'I2C');
 CALL addNewSensor('BME280', 'Humidity', 'Control Box', '% rH', 1, 'I2C');
 CALL addNewSensor('DS18B20', 'Temperature', 'Outside', '°C', 2, 'ONEWIRE');
+CALL addNewSensor('DS18B20', 'Temperature', 'Outside', '°C', 3, 'ONEWIRE');
 
 CALL addSensorReading(1, 75.389);
 CALL addSensorReading(2, 600);

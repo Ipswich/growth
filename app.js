@@ -12,6 +12,8 @@ var sEventHandler = require('./custom_node_modules/SensorEventHandler.js');
 var sLogger = require('./custom_node_modules/SensorLogger.js');
 var mappings = require('./custom_node_modules/Mappings.js');
 var outputState = require('./custom_node_modules/OutputState.js');
+var sensorState = require('./custom_node_modules/SensorState.js');
+var hardwareInitializer = require('./custom_node_modules/HardwareInitialization.js')
 
 //Routes
 var indexRouter = require('./routes/index');
@@ -88,29 +90,45 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-initializeSchedule();
-// sLogger.addSensorReading('1', '89.000');
+var state = {};
+new Promise(async (resolve) => {
+  //load output state
+  state.outputState = await new outputState();
+  resolve(state);
+}).then(async (state) => {
+  //load sensor state
+  state.sensorState = await new sensorState();
+  return state;
+}).then(async (state) => {
+  //Initialize the hardware based on those states
+  await initializeHardware(state);
+  return state;
+}).then(async (state) => {
+  //Initialize schedule tracking
+  await initializeSchedule(state);
+});
+
 
 //Logic for event checking - checks once a minute
 //Check once on load, then every minute thereafter.
-async function initializeSchedule() {
-  new Promise(async (resolve) => {
-    //load state from outputs
-    let state = await new outputState();
-    resolve(state);
-  }).then(async (state) => {
-    //Get sensors for board initialization
-    sensors = await mappings.getSensorMappings();
-    console.log(sensors);
-
+async function initializeSchedule(state) {
+    //Take initial reading to update database
+    await sLogger.addSensorReadings(state);
     //Run events when ready, then set Interval.
-    await tEventHandler.TimeEventHandler(state);
-    await sEventHandler.SensorEventHandler(state);
-    setInterval(function() {
-      tEventHandler.TimeEventHandler(state);
-      sEventHandler.SensorEventHandler(state);
+    await tEventHandler.TimeEventHandler(state.outputState);
+    await sEventHandler.SensorEventHandler(state.outputState);
+    setInterval(async function() {
+      await sLogger.addSensorReadings(state);
+      await tEventHandler.TimeEventHandler(state.outputState);
+      await sEventHandler.SensorEventHandler(state.outputState);
     }, 5 * 1000);
-  })
+}
+
+async function initializeHardware(state){
+  if (app.get('development')){
+    var board = await hardwareInitializer.initialize(state);
+  }
+
 }
 
 module.exports = app;
