@@ -6,6 +6,15 @@ var logger = require('morgan');
 var app = express();
 var fs = require('fs');
 
+//Custom Modules for Events/Readings
+var tEventHandler = require('./custom_node_modules/TimeEventHandler.js');
+var sEventHandler = require('./custom_node_modules/SensorEventHandler.js');
+var sLogger = require('./custom_node_modules/SensorLogger.js');
+var mappings = require('./custom_node_modules/Mappings.js');
+var outputState = require('./custom_node_modules/OutputState.js');
+var sensorState = require('./custom_node_modules/SensorState.js');
+var hardwareInitializer = require('./custom_node_modules/HardwareInitialization.js')
+
 //Routes
 var indexRouter = require('./routes/index');
 var addTimeEventRouter = require('./routes/addTimeEvent');
@@ -14,7 +23,7 @@ var getScheduleDataRouter = require('./routes/getScheduleData');
 var updateScheduleRouter = require('./routes/updateSchedule');
 
 //App setup - load config
-try{
+try {
   var config = require('./config/config.json');
 } catch (e) {
   console.log("ERROR: Could not locate config.json, using default_config.json instead.");
@@ -26,7 +35,7 @@ try{
   });
 }
 
-if(process.env.NODE_ENV == 'development'){
+if (process.env.NODE_ENV == 'development') {
   config = config.development;
   app.set('development', true);
 } else {
@@ -80,5 +89,45 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+var state = {};
+new Promise(async (resolve) => {
+  //load output state
+  state.outputState = await new outputState();
+  resolve(state);
+}).then(async (state) => {
+  //load sensor state
+  state.sensorState = await new sensorState();
+  return state;
+}).then(async (state) => {
+  //Initialize the hardware based on those states
+  await initializeHardware(state);
+  return state;
+}).then(async (state) => {
+  //Initialize schedule tracking
+  state.board.on("ready", async () => {
+    await initializeSchedule(state);
+  });
+});
+
+
+//Logic for event checking - checks once a minute
+//Check once on load, then every minute thereafter.
+async function initializeSchedule(state) {
+  //Take initial reading to update database
+  await sLogger.addSensorReadings(state);
+  //Run events when ready, then set Interval.
+  await tEventHandler.TimeEventHandler(state);
+  await sEventHandler.SensorEventHandler(state);
+  setInterval(async function() {
+    await sLogger.addSensorReadings(state);
+    await tEventHandler.TimeEventHandler(state);
+    await sEventHandler.SensorEventHandler(state);
+  }, 5 * 1000);
+}
+
+async function initializeHardware(state){
+  return await hardwareInitializer.initialize(state);
+}
 
 module.exports = app;

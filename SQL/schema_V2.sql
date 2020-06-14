@@ -39,6 +39,8 @@ CREATE TABLE Sensors (
   sensorLocation VARCHAR(64) NOT NULL,
   sensorUnits VARCHAR(16) DEFAULT NULL,
   SSenabled BOOLEAN NOT NULL DEFAULT 1,
+  sensorHardwareID INT NOT NULL,
+  sensorProtocol VARCHAR(32) NOT NULL,
   PRIMARY KEY (sensorID),
   FOREIGN KEY (sensorType) REFERENCES SensorTypes(sensorType)
 );
@@ -173,9 +175,9 @@ DELIMITER ;
 
 ##Insert new sensor
 DELIMITER $$
-CREATE PROCEDURE `addNewSensor` (IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16))
+CREATE PROCEDURE `addNewSensor` (IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_sensorProtocol` VARCHAR(32))
 MODIFIES SQL DATA
-	INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits) VALUES (p_model, p_type, p_location, p_units);
+	INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits, sensorHardwareID, sensorProtocol) VALUES (p_model, p_type, p_location, p_units, p_hardwareID, p_sensorProtocol);
 $$
 DELIMITER ;
 
@@ -223,18 +225,23 @@ MODIFIES SQL DATA
 DELIMITER ;
 
 ##GET OLD READINGS##
+SELECT sensorID, data, logTime
+FROM SensorData s1
+WHERE logTime = (SELECT MAX(logTime) FROM SensorData s2 WHERE s1.sensorID = s2.sensorID)
+ORDER BY sensorID, logTime;
 ##Get most recent readings from ALL sensors
 DELIMITER $$
 CREATE PROCEDURE `getSensorLastReadings`()
   READS SQL DATA
-  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, data, s.sensorUnits, MAX(logTime) AS logTime
+  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, data, s.sensorUnits, d.logTime
   FROM Sensors s
   JOIN (
     SELECT sensorID, data, logTime
-    FROM SensorData
+		FROM SensorData s1
+		WHERE logTime = (SELECT MAX(logTime) FROM SensorData s2 WHERE s1.sensorID = s2.sensorID)
   ) AS d ON s.sensorID=d.sensorID
   GROUP BY sensorID
-  ORDER BY sensorType DESC, sensorID DESC
+  ORDER BY sensorType DESC, sensorID ASC
 $$
 DELIMITER ;
 
@@ -246,9 +253,10 @@ CREATE PROCEDURE `getSensorLastReadingsByHours` (IN `p_hours` INT)
   FROM Sensors s
   JOIN (
     SELECT sensorID, data, logTime
-    FROM SensorData
+		FROM SensorData s1
+		WHERE logTime = (SELECT MAX(logTime) FROM SensorData s2 WHERE s1.sensorID = s2.sensorID)
   ) AS d ON s.sensorID=d.sensorID AND d.logTime > DATE_SUB(logTime, INTERVAL p_hours HOUR)
-  ORDER BY sensorType DESC, sensorID DESC
+  ORDER BY sensorType DESC, sensorID ASC
 $$
 DELIMITER ;
 

@@ -1,13 +1,13 @@
 div#data-list.list-group
   a#data-list-header.list-group-item.py-1 Most Recent Conditions
   each type, index in sensorTypes
-    a(href='#' + type.sensorType)#data-list-group.list-group-item.list-group-item-action.py-1 #{type.sensorType}
+    a(href='#' + type.sensorType).data-list-group.list-group-item.list-group-item-action.py-1 #{type.sensorType}
     div(id=type.sensorType).data-list-group
       each val, index in sensorData
         if val.sensorType == type.sensorType
-          a(href='#' + val.sensorID)#data-list-item.list-group-item.list-group-item-action.py-1 #{val.sensorLocation} @ #{val.logTime} #[br] #[span.sensor-data #{val.data} #{val.sensorUnits}]
+          a(href='#' + val.sensorID).data-list-item.list-group-item.list-group-item-action.py-1 #{val.sensorLocation} @ #{val.logTime} #[br] #[span.sensor-data #{val.data} #{val.sensorUnits}]
 br
 div#chart-container
 each val, index in sensorData
   div(id=val.sensorID).chart-div
-      h5 #{val.sensorType}
+      h5 #{val.sensorType} @ #{val.sensorLocation}
