@@ -105,30 +105,29 @@ new Promise(async (resolve) => {
   return state;
 }).then(async (state) => {
   //Initialize schedule tracking
-  await initializeSchedule(state);
+  state.board.on("ready", async () => {
+    await initializeSchedule(state);
+  });
 });
 
 
 //Logic for event checking - checks once a minute
 //Check once on load, then every minute thereafter.
 async function initializeSchedule(state) {
-    //Take initial reading to update database
+  //Take initial reading to update database
+  await sLogger.addSensorReadings(state);
+  //Run events when ready, then set Interval.
+  await tEventHandler.TimeEventHandler(state);
+  await sEventHandler.SensorEventHandler(state);
+  setInterval(async function() {
     await sLogger.addSensorReadings(state);
-    //Run events when ready, then set Interval.
-    await tEventHandler.TimeEventHandler(state.outputState);
-    await sEventHandler.SensorEventHandler(state.outputState);
-    setInterval(async function() {
-      await sLogger.addSensorReadings(state);
-      await tEventHandler.TimeEventHandler(state.outputState);
-      await sEventHandler.SensorEventHandler(state.outputState);
-    }, 5 * 1000);
+    await tEventHandler.TimeEventHandler(state);
+    await sEventHandler.SensorEventHandler(state);
+  }, 5 * 1000);
 }
 
 async function initializeHardware(state){
-  if (app.get('development')){
-    var board = await hardwareInitializer.initialize(state);
-  }
-
+  return await hardwareInitializer.initialize(state);
 }
 
 module.exports = app;
