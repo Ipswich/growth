@@ -118,7 +118,7 @@ router.post('/', function(req, res, next) {
                                           //Render and add to object
                                           var schedulesPug = {schedules: cSchedules(data)};
                                           var currentConditionsPug = {currentConditions: cCurrentConditions(data)};
-                                          var msg = {msg: "Time event successfully added!"};
+                                          var msg = {msg: "Sensor event successfully added!"};
                                           //Create packet, send.
                                           var packet = Object.assign({}, schedulesPug, currentConditionsPug, msg);
                                           res.status(200).send(packet);

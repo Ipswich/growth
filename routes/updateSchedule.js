@@ -67,20 +67,18 @@ router.post('/', function(req, res, next) {
                         con.destroy();
                         res.status(500).send("Database error! Event not changed. (failed at delete)");
                       } else {
-                        //If schedule ID exists in outputs list, remove it
-                        if(state.outputState.checkOutputSchedules(dbschedule.outputID, dbschedule.scheduleID)){
-                          state.outputState.removeOutputSchedules(dbschedule.outputID, dbschedule.scheduleID);
-                        }
-                        //If no more output schedules, turn off device
-                        if(state.outputState.getOutputSchedulesLength(dbschedule.outputID) == 0){
-                          for(let i = 0; i < state.outputState.getOutputState().length; i++){
-                            //if current output ID matches passed schedule output ID
-                            if (state.outputState.getOutputState()[i].outputID == dbschedule.outputID){
-                              //set output to that output
-                              var output = state.outputState.getOutputState()[i];
-                              eventTriggers.turnOffOutput(state, output);
-                            }
+                        //Get output for scheduleID
+                        for(let i = 0; i < state.outputState.getOutputState().length; i++){
+                          //if current output ID matches passed schedule output ID
+                          if (state.outputState.getOutputState()[i].outputID == dbschedule.outputID){
+                            //set output to that output
+                            var output = state.outputState.getOutputState()[i];
                           }
+                        }
+                        //If no more output schedules turn off device; else remove schedule from regardless
+                        state.outputState.removeOutputSchedules(output.outputID, dbschedule.scheduleID);
+                        if(state.outputState.getOutputSchedulesLength(dbschedule.outputID) == 0){
+                          eventTriggers.turnOffOutput(state, output, dbschedule);
                         }
                         var msg = {msg: "Event successfully removed!"};
                         //If marked for update, add new schedule with passed values.
