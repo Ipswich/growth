@@ -233,13 +233,14 @@ ORDER BY sensorID, logTime;
 DELIMITER $$
 CREATE PROCEDURE `getSensorLastReadings`()
   READS SQL DATA
-  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, data, s.sensorUnits, d.logTime
+  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, s.SSenabled, data, s.sensorUnits, d.logTime
   FROM Sensors s
   JOIN (
     SELECT sensorID, data, logTime
 		FROM SensorData s1
 		WHERE logTime = (SELECT MAX(logTime) FROM SensorData s2 WHERE s1.sensorID = s2.sensorID)
   ) AS d ON s.sensorID=d.sensorID
+  WHERE SSenabled = 1
   GROUP BY sensorID
   ORDER BY sensorType DESC, sensorID ASC
 $$
@@ -249,13 +250,14 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getSensorLastReadingsByHours` (IN `p_hours` INT)
   READS SQL DATA
-  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, data, s.sensorUnits, logTime
+  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, s.SSenabled, data, s.sensorUnits, logTime
   FROM Sensors s
   JOIN (
     SELECT sensorID, data, logTime
-		FROM SensorData s1
-		WHERE logTime = (SELECT MAX(logTime) FROM SensorData s2 WHERE s1.sensorID = s2.sensorID)
-  ) AS d ON s.sensorID=d.sensorID AND d.logTime > DATE_SUB(logTime, INTERVAL p_hours HOUR)
+		FROM SensorData
+		WHERE logTime > DATE_SUB(LOCALTIMESTAMP(), INTERVAL p_hours HOUR)
+  ) AS d ON s.sensorID=d.sensorID
+  WHERE SSenabled = 1
   ORDER BY sensorType DESC, sensorID ASC
 $$
 DELIMITER ;

@@ -29,12 +29,13 @@ CALL addNewSensor('BME280', 'Temperature', 'Control Box', '°C', 1, 'I2C');
 CALL addNewSensor('BME280', 'Pressure', 'Control Box', 'kPa', 1, 'I2C');
 CALL addNewSensor('BME280', 'Humidity', 'Control Box', '% rH', 1, 'I2C');
 CALL addNewSensor('DS18B20', 'Temperature', 'Outside', '°C', 2, 'ONEWIRE');
-CALL addNewSensor('DS18B20', 'Temperature', 'Outside', '°C', 3, 'ONEWIRE');
+CALL addNewSensor('DS18B20', 'Temperature', 'Light', '°C', 3, 'ONEWIRE');
 
 CALL addSensorReading(1, 75.389);
 CALL addSensorReading(2, 600);
 CALL addSensorReading(3, 54.7);
 CALL addSensorReading(4, 75.7);
+CALL addSensorReading(5, 75.7);
 
 CALL addNewSchedule('Time', 1, NULL, NULL, 1, 100, NULL, '11:30:00', '1000-01-01', '9999-12-31', 1, 'admin', NULL);
 CALL addNewSchedule('Time', 1, NULL, NULL, 1, 50, NULL, '12:30:00', '1000-01-01', '9999-12-31', 1, 'admin', NULL);
