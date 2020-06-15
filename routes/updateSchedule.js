@@ -73,8 +73,14 @@ router.post('/', function(req, res, next) {
                         }
                         //If no more output schedules, turn off device
                         if(state.outputState.getOutputSchedulesLength(dbschedule.outputID) == 0){
-                          let device = state.outputState.getOutputObject(dbschedule.outputID);
-                          device.off();
+                          for(let i = 0; i < state.outputState.getOutputState().length; i++){
+                            //if current output ID matches passed schedule output ID
+                            if (state.outputState.getOutputState()[i].outputID == dbschedule.outputID){
+                              //set output to that output
+                              var output = state.outputState.getOutputState()[i];
+                              eventTriggers.turnOffOutput(state, output);
+                            }
+                          }
                         }
                         var msg = {msg: "Event successfully removed!"};
                         //If marked for update, add new schedule with passed values.
