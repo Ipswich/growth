@@ -6,6 +6,7 @@ var bcrypt = require('bcrypt');
 const path = require('path');
 var pug = require('pug');
 const utils = require('../custom_node_modules/Utils.js')
+const eventTriggers = require('../custom_node_modules/EventTriggers.js')
 
 var saltRounds = 10;
 
@@ -13,6 +14,7 @@ router.post('/', function(req, res, next) {
   //Get config and web data from app
   var config = req.app.get('config');
   var web_data = req.app.get('web_data');
+  var state = req.app.get('state');
   //Create promise/connection to DB
   new Promise((resolve, reject) => {
     var con = mysql.createConnection(config.database);
@@ -65,6 +67,15 @@ router.post('/', function(req, res, next) {
                         con.destroy();
                         res.status(500).send("Database error! Event not changed. (failed at delete)");
                       } else {
+                        //If schedule ID exists in outputs list, remove it
+                        if(state.outputState.checkOutputSchedules(dbschedule.outputID, dbschedule.scheduleID)){
+                          state.outputState.removeOutputSchedules(dbschedule.outputID, dbschedule.scheduleID);
+                        }
+                        //If no more output schedules, turn off device
+                        if(state.outputState.getOutputSchedulesLength(dbschedule.outputID) == 0){
+                          let device = state.outputState.getOutputObject(dbschedule.outputID);
+                          device.off();
+                        }
                         var msg = {msg: "Event successfully removed!"};
                         //If marked for update, add new schedule with passed values.
                         if (sanitizedData.UpdateMode == "'Update'"){

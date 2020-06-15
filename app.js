@@ -107,6 +107,7 @@ new Promise(async (resolve) => {
   //Initialize schedule tracking
   state.board.on("ready", async () => {
     await initializeSchedule(state);
+    app.set('state', state);
   });
 });
 
