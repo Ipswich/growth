@@ -17,11 +17,12 @@ router.get('/', function(req, res, next) {
       resolve(con);
     });
   }).then(async (con) => {
+    //Get index data
     let indexData = await utils.getIndexData(req, con);
     if(indexData.err){
       res.status(500).send(indexData.err);
     } else {
-      //Clean up to conform to expected values
+      //Clean up to conform to expected values for view engine
       delete indexData.schedules;
       delete indexData.currentConditions;
       res.status(200).render('index', indexData);

@@ -52,6 +52,7 @@ router.post('/', function(req, res, next) {
                   con.destroy();
                   res.status(500).send("Database error! Event not added.");
                 } else {
+                  //Get index data
                   let indexData = await utils.getIndexData(req, con);
                   if(indexData.err){
                     res.status(500).send(indexData.err);

@@ -80,6 +80,7 @@ router.post('/', function(req, res, next) {
                         if(state.outputState.getOutputSchedulesLength(dbschedule.outputID) == 0){
                           eventTriggers.turnOffOutput(state, output, dbschedule);
                         }
+                        //Update response
                         var msg = "Event successfully removed!";
                         //If marked for update, add new schedule with passed values.
                         if (sanitizedData.UpdateMode == "'Update'"){
@@ -89,15 +90,18 @@ router.post('/', function(req, res, next) {
                           else {
                             var query = "CALL addNewSchedule('Sensor', "+sanitizedData.UpdateEvent+", "+sanitizedData.UpdateName+", "+sanitizedData.UpdateSensorValue+", "+sanitizedData.UpdateOutput+", "+sanitizedData.UpdateOutputValue+", "+sanitizedData.UpdateComparator+", NULL, "+utils.formatDateString(sanitizedData.UpdateStartDate)+", "+utils.formatDateString(sanitizedData.UpdateEndDate)+", '1', "+sanitizedData.username+", NULL)";
                           }
+                          //Execute query
                           con.query(query, (error, results, fields) => {
                             if (error){
                               console.log(query);
                               con.destroy();
                               res.status(500).send("Database error! Event not changed. (failed at update)");
                             }
+                            //Update response
                             msg = "Event successfully modified!";
                           });
                         }
+                        //Get index data
                         let indexData = await utils.getIndexData(req, con);
                         if(indexData.err){
                           res.status(500).send(indexData.err);
