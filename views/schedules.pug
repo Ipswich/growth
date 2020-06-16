@@ -10,7 +10,7 @@ div.scheduleContainer.table-responsive-sm.rounded
         if schedule.scheduleType == 'Time'
           tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
             td.align-middle #{schedule.eventTriggerTime}
-            if(schedule.outputValue != null && schedule.outputValue != '0')
+            if(schedule.outputValue != null && schedule.outputValue != '0' && schedule.outputType == 'Light')
               td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
             else  
               td.align-middle.schedule-data #{schedule.outputName} #[span.blue #{schedule.eventDescription}]
@@ -25,7 +25,7 @@ div.scheduleContainer.table-responsive-sm.rounded
         each schedule, index in scheduleData
           if schedule.scheduleType == 'Sensor'
             tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
-              if(schedule.outputValue != null && schedule.outputValue != '0')
+              if(schedule.outputValue != null && schedule.outputValue != '0' && schedule.outputType == 'Light')
                 td.align-middle #{schedule.outputName}<br> #[span.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
               else  
                 td.align-middle #{schedule.outputName}<br>#[span.blue #{schedule.eventDescription}]
