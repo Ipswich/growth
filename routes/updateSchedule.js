@@ -62,7 +62,7 @@ router.post('/', function(req, res, next) {
                     var dbschedule = results[0][0];
                     //Disable schedule
                     query = 'CALL DisableSchedule(' + dbschedule.scheduleID + ', ' + sanitizedData.username + ');'
-                    con.query(query, (error, results, fields) => {
+                    con.query(query, async (error, results, fields) => {
                       if (error){
                         con.destroy();
                         res.status(500).send("Database error! Event not changed. (failed at delete)");
@@ -80,7 +80,7 @@ router.post('/', function(req, res, next) {
                         if(state.outputState.getOutputSchedulesLength(dbschedule.outputID) == 0){
                           eventTriggers.turnOffOutput(state, output, dbschedule);
                         }
-                        var msg = {msg: "Event successfully removed!"};
+                        var msg = "Event successfully removed!";
                         //If marked for update, add new schedule with passed values.
                         if (sanitizedData.UpdateMode == "'Update'"){
                           if (dbschedule.scheduleType == 'Time'){
@@ -95,95 +95,16 @@ router.post('/', function(req, res, next) {
                               con.destroy();
                               res.status(500).send("Database error! Event not changed. (failed at update)");
                             }
-                            msg = {msg: "Event successfully modified!"};
+                            msg = "Event successfully modified!";
                           });
                         }
-                        //Redo old pages
-                        //setup paths
-                        const schedules = path.join(req.app.get('views'), '/schedules.pug');
-                        const currentConditions = path.join(req.app.get('views'), '/currentConditions.pug');
-                        //Create pug render functions
-                        var cSchedules = pug.compileFile(schedules);
-                        var cCurrentConditions = pug.compileFile(currentConditions);
-
-                        //grab Index Page Data
-                        //Get last readings from sensors
-                        con.query('CALL getSensorLastReadings()', (error, results, fields) => {
-                          if(error){
-                            //Error on problem.
-                            con.destroy();
-                            res.status(500).send("Database error! Website not updated.");
-                          } else {
-                            var sensorData = {sensorData: results[0]};
-                            for (var key in sensorData.sensorData){
-                              //Format logtime to be human readable
-                              sensorData.sensorData[key].logTime = utils.dateFormat(sensorData.sensorData[key].logTime);
-                            }
-                            //Get enabled sensor types
-                            con.query('CALL getEnabledSensorTypes()', (error, results, fields) => {
-                              if(error){
-                                //Error on problem.
-                                con.destroy();
-                                res.status(500).send("Database error! Website not updated.");
-                              } else {
-                                var sensorTypes = {sensorTypes: results[0]};
-                                //Get enabled live schedules
-                                con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
-                                  if(error){
-                                    //Error on problem.
-                                    con.destroy();
-                                    res.status(500).send("Database error! Website not updated.");
-                                  } else {
-                                    var scheduleData = {scheduleData: results[0]};
-                                    //Format trigger Time to be human readable
-                                    for (var key in scheduleData.scheduleData){
-                                      scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
-                                    }
-                                    //Get enabled outputs
-                                    con.query('CALL getEnabledOutputs()', (error, results, fields) => {
-                                      if(error){
-                                        //Error on problem.
-                                        con.destroy();
-                                        res.status(500).send("Database error! Website not updated.");
-                                      } else {
-                                        var outputs = {outputs: results[0]};
-                                        //Get enabled events
-                                        con.query('CALL getEnabledEvents()', (error, results, fields) => {
-                                          if(error){
-                                            //Error on problem.
-                                            con.destroy();
-                                            res.status(500).send("Database error! Website not updated.");
-                                          } else {
-                                            var events = {events: results[0]};
-                                            //Get enabled sensors
-                                            con.query('CALL getEnabledSensors()', (error, results, fields) => {
-                                              if(error){
-                                                //Error on problem.
-                                                con.destroy();
-                                                res.status(500).send("Database error! Website not updated.");
-                                              } else {
-                                                var sensors = {sensors: results[0]};
-                                                //Create data object for rendering html
-                                                var data = Object.assign({}, web_data, sensorTypes, sensorData, scheduleData, outputs, events, sensors);
-                                                con.destroy();
-                                                //Render and add to object
-                                                var schedulesPug = {schedules: cSchedules(data)};
-                                                var currentConditionsPug = {currentConditions: cCurrentConditions(data)};
-                                                //Create packet, send.
-                                                var packet = Object.assign({}, schedulesPug, currentConditionsPug, msg);
-                                                res.status(200).send(packet);
-                                              }
-                                            })
-                                          }
-                                        })
-                                      }
-                                    })
-                                  }
-                                })
-                              }
-                            })
-                          }
-                        })
+                        let indexData = await utils.getIndexData(req, con);
+                        if(indexData.err){
+                          res.status(500).send(indexData.err);
+                        } else {
+                          indexData.msg = msg;
+                          res.status(200).send(indexData);
+                        }
                       }
                     });
                   };
