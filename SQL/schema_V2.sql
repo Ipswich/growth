@@ -41,6 +41,7 @@ CREATE TABLE Sensors (
   SSenabled BOOLEAN NOT NULL DEFAULT 1,
   sensorHardwareID INT NOT NULL,
   sensorProtocol VARCHAR(32) NOT NULL,
+  sensorAddress VARCHAR(64) DEFAULT NULL,
   PRIMARY KEY (sensorID),
   FOREIGN KEY (sensorType) REFERENCES SensorTypes(sensorType)
 );
@@ -142,7 +143,6 @@ DELIMITER $$
 CREATE PROCEDURE `getAllOutputs`()
 READS SQL DATA
   SELECT * FROM Outputs
-  ORDER BY outputName DESC
   $$
 DELIMITER ;
 
@@ -150,7 +150,6 @@ DELIMITER $$
 CREATE PROCEDURE `getEnabledOutputs`()
 READS SQL DATA
   SELECT * FROM Outputs WHERE Oenabled = 1
-  ORDER BY outputName DESC
   $$
 DELIMITER ;
 #############SENSOR HARDWARE#############
@@ -201,7 +200,6 @@ DELIMITER $$
 CREATE PROCEDURE `getEnabledSensors`()
 READS SQL DATA
   SELECT * FROM Sensors WHERE SSenabled = 1
-  ORDER BY sensorType DESC
 $$
 DELIMITER ;
 
@@ -220,6 +218,14 @@ sp:BEGIN
 END;
 $$
 DELIMITER ;
+
+##Update sensor Address
+DELIMITER $$
+CREATE PROCEDURE `updateSensorAddress`(IN `p_sensorAddress` VARCHAR(64), IN `p_sensorID` INT)
+MODIFIES SQL DATA
+  UPDATE Sensors SET sensorAddress = p_sensorAddress WHERE sensorID = p_sensorID
+$$
+DELIMITER $$
 
 
 #############SENSOR READINGS#############

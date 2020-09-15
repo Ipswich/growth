@@ -77,9 +77,9 @@ router.post('/', function(req, res, next) {
                         }
                         //If no more output schedules turn off device; else remove schedule from regardless
                         state.outputState.removeOutputSchedules(output.outputID, dbschedule.scheduleID);
-                        if(state.outputState.getOutputSchedulesLength(dbschedule.outputID) == 0){
-                          eventTriggers.turnOffOutput(state, output, dbschedule);
-                        }
+                        // if(state.outputState.getOutputSchedulesLength(dbschedule.outputID) == 0){
+                        //   eventTriggers.turnOffOutput(state, output);
+                        // }
                         //Update response
                         var msg = "Event successfully removed!";
                         //If marked for update, add new schedule with passed values.
@@ -93,7 +93,6 @@ router.post('/', function(req, res, next) {
                           //Execute query
                           con.query(query, (error, results, fields) => {
                             if (error){
-                              console.log(query);
                               con.destroy();
                               res.status(500).send("Database error! Event not changed. (failed at update)");
                             }

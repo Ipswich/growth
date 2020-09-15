@@ -1,36 +1,43 @@
 
-div.scheduleContainer.table-responsive-sm.rounded
-    table.table.table-sm.table-borderless.scheduleTable.rounded
-      thead.scheduleTableHeader 
-        tr
-          th(scope="col") Time
-          th(scope="col") Event
-      tbody.scheduleTableBody
-      each schedule, index in scheduleData
-        if schedule.scheduleType == 'Time'
-          tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
-            td.align-middle #{schedule.eventTriggerTime}
-            if(schedule.outputValue != null && schedule.outputValue != '0' && schedule.outputType == 'Light')
-              td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
-            else  
-              td.align-middle.schedule-data #{schedule.outputName} #[span.blue #{schedule.eventDescription}]
-    div.scheduleContainer.table-responsive-sm.rounded
+div.card.schedule-card
+  div.scheduleContainer.table-responsive-sm.rounded
       table.table.table-sm.table-borderless.scheduleTable.rounded
         thead.scheduleTableHeader 
           tr
-            th(scope="col") Sensor
-            th(scope="col") Limit
+            th(scope="col") Time
             th(scope="col") Event
         tbody.scheduleTableBody
         each schedule, index in scheduleData
-          if schedule.scheduleType == 'Sensor'
+          if schedule.scheduleType == 'Time'
             tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
-              td.align-middle #{schedule.sensorType} @<br> #{schedule.sensorLocation}
-              td.align-middle.green #{schedule.scheduleComparator} #{schedule.sensorValue}#{schedule.sensorUnits}            
-              if(schedule.outputValue != null && schedule.outputValue != '0' && schedule.outputType == 'Light')
-                td.align-middle #{schedule.outputName}<br> #[span.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
+              td.align-middle #{schedule.eventTriggerTime}
+              if(schedule.outputType == 'Light')
+                if(schedule.eventID == 2)
+                  td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}]
+                else
+                  td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
               else  
-                td.align-middle #{schedule.outputName}<br>#[span.blue #{schedule.eventDescription}]
+                td.align-middle.schedule-data #{schedule.outputName} #[span.blue #{schedule.eventDescription}]
+br                
+div.card.schedule-card
+  div.scheduleContainer.table-responsive-sm.rounded
+    table.table.table-sm.table-borderless.scheduleTable.rounded
+      thead.scheduleTableHeader 
+        tr
+          th(scope="col") Sensor
+          th(scope="col") Limit
+          th(scope="col") Event
+      tbody.scheduleTableBody
+      each schedule, index in scheduleData
+        if schedule.scheduleType == 'Sensor'
+          tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
+            td.align-middle #{schedule.sensorType} @<br> #{schedule.sensorLocation}
+            td.align-middle.green #{schedule.scheduleComparator} #{schedule.sensorValue}#{schedule.sensorUnits}            
+            if(schedule.outputValue != null && schedule.outputValue != '0' && schedule.outputType == 'Light')
+              td.align-middle #{schedule.outputName}<br> #[span.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
+            else  
+              td.align-middle #{schedule.outputName}<br>#[span.blue #{schedule.eventDescription}]
+br
 div
   button(id="addEventButton" type="button" data-toggle="modal" data-target="#newScheduleModal").btn Add Event
 
