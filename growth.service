@@ -1,0 +1,13 @@
+[Unit]
+Description=growth environmental control service
+
+[Service]
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=10
+KillMode=process
+User=pi
+WorkingDirectory=/home/pi/growth
+
+[Install]
+WantedBy=multi-user.target
