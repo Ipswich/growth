@@ -40,7 +40,7 @@ CREATE TABLE Sensors (
   sensorUnits VARCHAR(16) DEFAULT NULL,
   SSenabled BOOLEAN NOT NULL DEFAULT 1,
   sensorHardwareID INT NOT NULL,
-  sensorProtocol VARCHAR(32) NOT NULL,
+  sensorProtocol VARCHAR(32) DEFAULT NULL,
   sensorAddress VARCHAR(64) DEFAULT NULL,
   PRIMARY KEY (sensorID),
   FOREIGN KEY (sensorType) REFERENCES SensorTypes(sensorType)
