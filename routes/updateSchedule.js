@@ -1,19 +1,13 @@
 var express = require('express');
 var router = express.Router();
-var app = require('../app.js');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
-const path = require('path');
-var pug = require('pug');
 const utils = require('../custom_node_modules/Utils.js')
 const eventTriggers = require('../custom_node_modules/EventTriggers.js')
-
-var saltRounds = 10;
 
 router.post('/', function(req, res, next) {
   //Get config and web data from app
   var config = req.app.get('config');
-  var web_data = req.app.get('web_data');
   var state = req.app.get('state');
   //Create promise/connection to DB
   new Promise((resolve, reject) => {

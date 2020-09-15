@@ -1,18 +1,12 @@
 var express = require('express');
 var router = express.Router();
-var app = require('../app.js');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
-const path = require('path');
-var pug = require('pug');
 const utils = require('../custom_node_modules/Utils.js')
-
-var saltRounds = 10;
 
 router.post('/', function(req, res, next) {
   //Load data from app
   var config = req.app.get('config');
-  var web_data = req.app.get('web_data');
   //Create promise/connection to database
   new Promise((resolve, reject) => {
     var con = mysql.createConnection(config.database);

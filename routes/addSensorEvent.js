@@ -1,13 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var app = require('../app.js');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
 const utils = require('../custom_node_modules/Utils.js')
-const path = require('path');
-var pug = require('pug');
-
-var saltRounds = 10;
 
 
 router.post('/', function(req, res, next) {

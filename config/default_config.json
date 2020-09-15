@@ -9,12 +9,12 @@
       "database": "growth-dev",
       "multipleStatements": "true"
     },
-    "node_port": 26420
+    "node_port": 26420,
+    "salt_rounds": 10
   },
   "production": {
     "config_ID": "production",
     "web_data": "../config/web-data-config.json",
-    "node_port": 26420,
     "database": {
       "host": "localhost",
       "user": "null",
@@ -22,6 +22,7 @@
       "database": "growth-prod",
       "multipleStatements": "true"
     },
-    "node_port": 26420
+    "node_port": 26420,
+    "salt_rounds": 10
   }
 }
