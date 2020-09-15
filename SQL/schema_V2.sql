@@ -41,6 +41,7 @@ CREATE TABLE Sensors (
   SSenabled BOOLEAN NOT NULL DEFAULT 1,
   sensorHardwareID INT NOT NULL,
   sensorProtocol VARCHAR(32) NOT NULL,
+  sensorAddress VARCHAR(64) DEFAULT NULL,
   PRIMARY KEY (sensorID),
   FOREIGN KEY (sensorType) REFERENCES SensorTypes(sensorType)
 );
@@ -116,15 +117,17 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getAllOutputTypes`()
 READS SQL DATA
-  SELECT * FROM OutputTypes$$
+  SELECT * FROM OutputTypes
   ORDER BY outputType DESC
+  $$
 DELIMITER ;
 
 DELIMITER $$
 CREATE PROCEDURE `getEnabledOutputTypes`()
 READS SQL DATA
-  SELECT * FROM OutputTypes WHERE OTenabled = 1$$
+  SELECT * FROM OutputTypes WHERE OTenabled = 1
   ORDER BY outputType DESC
+  $$
 DELIMITER ;
 
 ##Insert new Output
@@ -139,15 +142,15 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getAllOutputs`()
 READS SQL DATA
-  SELECT * FROM Outputs$$
-  ORDER BY outputName DESC
+  SELECT * FROM Outputs
+  $$
 DELIMITER ;
 
 DELIMITER $$
 CREATE PROCEDURE `getEnabledOutputs`()
 READS SQL DATA
-  SELECT * FROM Outputs WHERE Oenabled = 1$$
-  ORDER BY outputName DESC
+  SELECT * FROM Outputs WHERE Oenabled = 1
+  $$
 DELIMITER ;
 #############SENSOR HARDWARE#############
 
@@ -155,22 +158,25 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `addNewSensorType` (IN `p_type` VARCHAR(32), IN `p_enabled` BOOLEAN)
 MODIFIES SQL DATA
-  INSERT INTO SensorTypes (sensorType, STenabled) VALUES (p_type, p_enabled)$$
+  INSERT INTO SensorTypes (sensorType, STenabled) VALUES (p_type, p_enabled)
+  $$
 DELIMITER ;
 
 ##Get sensorTypes
 DELIMITER $$
 CREATE PROCEDURE `getAllSensorTypes`()
 READS SQL DATA
-  SELECT * FROM SensorTypes$$
+  SELECT * FROM SensorTypes
   ORDER BY sensorType DESC
+  $$
 DELIMITER ;
 
 DELIMITER $$
 CREATE PROCEDURE `getEnabledSensorTypes`()
 READS SQL DATA
-  SELECT * FROM SensorTypes WHERE STenabled = 1$$
+  SELECT * FROM SensorTypes WHERE STenabled = 1
   ORDER BY sensorType DESC
+  $$
 DELIMITER ;
 
 ##Insert new sensor
@@ -194,7 +200,6 @@ DELIMITER $$
 CREATE PROCEDURE `getEnabledSensors`()
 READS SQL DATA
   SELECT * FROM Sensors WHERE SSenabled = 1
-  ORDER BY sensorType DESC
 $$
 DELIMITER ;
 
@@ -213,6 +218,14 @@ sp:BEGIN
 END;
 $$
 DELIMITER ;
+
+##Update sensor Address
+DELIMITER $$
+CREATE PROCEDURE `updateSensorAddress`(IN `p_sensorAddress` VARCHAR(64), IN `p_sensorID` INT)
+MODIFIES SQL DATA
+  UPDATE Sensors SET sensorAddress = p_sensorAddress WHERE sensorID = p_sensorID
+$$
+DELIMITER $$
 
 
 #############SENSOR READINGS#############
@@ -233,13 +246,14 @@ ORDER BY sensorID, logTime;
 DELIMITER $$
 CREATE PROCEDURE `getSensorLastReadings`()
   READS SQL DATA
-  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, data, s.sensorUnits, d.logTime
+  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, s.SSenabled, data, s.sensorUnits, d.logTime
   FROM Sensors s
   JOIN (
     SELECT sensorID, data, logTime
 		FROM SensorData s1
 		WHERE logTime = (SELECT MAX(logTime) FROM SensorData s2 WHERE s1.sensorID = s2.sensorID)
   ) AS d ON s.sensorID=d.sensorID
+  WHERE SSenabled = 1
   GROUP BY sensorID
   ORDER BY sensorType DESC, sensorID ASC
 $$
@@ -249,13 +263,14 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getSensorLastReadingsByHours` (IN `p_hours` INT)
   READS SQL DATA
-  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, data, s.sensorUnits, logTime
+  SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, s.SSenabled, data, s.sensorUnits, logTime
   FROM Sensors s
   JOIN (
     SELECT sensorID, data, logTime
-		FROM SensorData s1
-		WHERE logTime = (SELECT MAX(logTime) FROM SensorData s2 WHERE s1.sensorID = s2.sensorID)
-  ) AS d ON s.sensorID=d.sensorID AND d.logTime > DATE_SUB(logTime, INTERVAL p_hours HOUR)
+		FROM SensorData
+		WHERE logTime > DATE_SUB(LOCALTIMESTAMP(), INTERVAL p_hours HOUR)
+  ) AS d ON s.sensorID=d.sensorID
+  WHERE SSenabled = 1
   ORDER BY sensorType DESC, sensorID ASC
 $$
 DELIMITER ;
@@ -282,8 +297,9 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getEnabledEvents` ()
 READS SQL DATA
-  SELECT * FROM Events WHERE Eenabled = 1$$
+  SELECT * FROM Events WHERE Eenabled = 1
   ORDER BY eventName DESC
+  $$
 DELIMITER ;
 
 #############SCHEDULES#############
@@ -309,8 +325,9 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getEnabledScheduleTypes` ()
 READS SQL DATA
-  SELECT * FROM ScheduleTypes WHERE STenabled = 1$$
+  SELECT * FROM ScheduleTypes WHERE STenabled = 1
   ORDER BY scheduleTypes DESC
+  $$
 DELIMITER ;
 
 ##Insert new schedule

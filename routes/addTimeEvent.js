@@ -46,99 +46,21 @@ router.post('/', function(req, res, next) {
               }
               //DO STUFF WITH ESCAPED DATA
               var query = "CALL addNewSchedule('Time', "+sanitizedData.TimeEvent+", NULL, NULL, "+sanitizedData.TimeOutput+", "+sanitizedData.TimeOutputValue+", NULL, '"+utils.formatTimeStringForDB(sanitizedData.TimeTrigger)+"', "+utils.formatDateString(sanitizedData.TimeStartDate)+", "+utils.formatDateString(sanitizedData.TimeEndDate)+", '1', "+sanitizedData.username+", NULL)";
-              con.query(query, (error, results, fields) => {
+              con.query(query, async (error, results, fields) => {
                 //If error, destroy and error.
                 if(error){
                   con.destroy();
                   res.status(500).send("Database error! Event not added.");
                 } else {
-                  //Redo old pages
-                  //setup paths
-                  const schedules = path.join(req.app.get('views'), '/schedules.pug');
-                  const currentConditions = path.join(req.app.get('views'), '/currentConditions.pug');
-                  //Create pug render functions
-                  var cSchedules = pug.compileFile(schedules);
-                  var cCurrentConditions = pug.compileFile(currentConditions);
-
-                  //grab Index Page Data
-                  //Get last readings from sensors
-                  con.query('CALL getSensorLastReadings()', (error, results, fields) => {
-                    if(error){
-                      //Error on problem.
-                      con.destroy();
-                      res.status(500).send("Database error! Website not updated.");
-                    } else {
-                      var sensorData = {sensorData: results[0]};
-                      for (var key in sensorData.sensorData){
-                        //Format logtime to be human readable
-                        sensorData.sensorData[key].logTime = utils.dateFormat(sensorData.sensorData[key].logTime);
-                      }
-                      //Get enabled sensor types
-                      con.query('CALL getEnabledSensorTypes()', (error, results, fields) => {
-                        if(error){
-                          //Error on problem.
-                          con.destroy();
-                          res.status(500).send("Database error! Website not updated.");
-                        } else {
-                          var sensorTypes = {sensorTypes: results[0]};
-                          //Get enabled live schedules
-                          con.query('CALL getEnabledLiveSchedules()', (error, results, fields) => {
-                            if(error){
-                              //Error on problem.
-                              con.destroy();
-                              res.status(500).send("Database error! Website not updated.");
-                            } else {
-                              var scheduleData = {scheduleData: results[0]};
-                              //Format trigger Time to be human readable
-                              for (var key in scheduleData.scheduleData){
-                                scheduleData.scheduleData[key].eventTriggerTime = utils.formatTimeString(scheduleData.scheduleData[key].eventTriggerTime);
-                              }
-                              //Get enabled outputs
-                              con.query('CALL getEnabledOutputs()', (error, results, fields) => {
-                                if(error){
-                                  //Error on problem.
-                                  con.destroy();
-                                  res.status(500).send("Database error! Website not updated.");
-                                } else {
-                                  var outputs = {outputs: results[0]};
-                                  //Get enabled events
-                                  con.query('CALL getEnabledEvents()', (error, results, fields) => {
-                                    if(error){
-                                      //Error on problem.
-                                      con.destroy();
-                                      res.status(500).send("Database error! Website not updated.");
-                                    } else {
-                                      var events = {events: results[0]};
-                                      //Get enabled sensors
-                                      con.query('CALL getEnabledSensors()', (error, results, fields) => {
-                                        if(error){
-                                          //Error on problem.
-                                          con.destroy();
-                                          res.status(500).send("Database error! Website not updated.");
-                                        } else {
-                                          var sensors = {sensors: results[0]};
-                                          //Create data object for rendering html
-                                          var data = Object.assign({}, web_data, sensorTypes, sensorData, scheduleData, outputs, events, sensors);
-                                          con.destroy();
-                                          //Render and add to object
-                                          var schedulesPug = {schedules: cSchedules(data)};
-                                          var currentConditionsPug = {currentConditions: cCurrentConditions(data)};
-                                          var msg = {msg: "Time event successfully added!"};
-                                          //Create packet, send.
-                                          var packet = Object.assign({}, schedulesPug, currentConditionsPug, msg);
-                                          res.status(200).send(packet);
-                                        }
-                                      })
-                                    }
-                                  })
-                                }
-                              })
-                            }
-                          })
-                        }
-                      })
-                    }
-                  })
+                  //Get index data
+                  let indexData = await utils.getIndexData(req, con);
+                  if(indexData.err){
+                    res.status(500).send(indexData.err);
+                  } else {
+                    var msg = "Time event successfully added!";
+                    indexData.msg = msg;
+                    res.status(200).send(indexData);
+                  }
                 }
               });
             } else {

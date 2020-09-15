@@ -42,7 +42,8 @@
   color: var(--website-text-normal);
 }
 #data-list-header {
-  background-color:var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  background-color:var(--website-bg-light);
   text-align: center;
   border: none;
 }
@@ -77,6 +78,10 @@
 }
 #chart-div {
 
+}
+
+.schedule-card {
+  background-Color:var(--website-bg-light);
 }
 
 .scheduleTable {
