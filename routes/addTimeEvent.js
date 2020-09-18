@@ -1,82 +1,50 @@
 var express = require('express');
 var router = express.Router();
-var app = require('../app.js');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
-const path = require('path');
-var pug = require('pug');
 const utils = require('../custom_node_modules/Utils.js')
+const dbcalls = require('../custom_node_modules/database_calls.js')
 
-var saltRounds = 10;
-
-router.post('/', function(req, res, next) {
-  //Load data from app
-  var config = req.app.get('config');
-  var web_data = req.app.get('web_data');
-  //Create promise/connection to database
-  new Promise((resolve, reject) => {
-    var con = mysql.createConnection(config.database);
-    con.connect((err) => {
-      if(err){
-        reject(err);
-      }
-        resolve(con);
-      });
-  }).then((con) => {
-    //Check to see if usename is valid.
-    var escapedUsername = mysql.escape(req.body.username);
-    con.query('CALL getUser('+escapedUsername+')', (error, results, fields) => {
-      //If error, error
-      if (error) {
-        con.destroy();
-        res.status(500).send("Database error!");
+router.post('/', async function(req, res, next) {
+  var results = await dbcalls.getUser(mysql.escape(req.body.username))
+  .catch(() => {
+    // Error on database failure
+    res.status(500).send("Database error!");
+  })
+  if (results.length == 0){
+    // Error on no results from database
+    res.status(400).send("Invalid credentials!");
+  } else {
+    //Compare hash and password
+    var hash = results[0].passhash;
+    bcrypt.compare(req.body.password, hash, async (err, result) => {
+      if (result != true){
+        res.status(400).send("Invalid credentials!");
       } else {
-        if (results[0].length != 0){
-          //If it is, compare password to hash.
-          var hash = results[0][0].passhash;
-          bcrypt.compare(req.body.password, hash, (err, result) => {
-            if (result == true){
-              //If yes, sanitize each entry in body and pass add it to sanitized data
-              var sanitizedData = Object.assign({}, req.body);
-              for (const key in sanitizedData){
-                if (sanitizedData[key] == ''){
-                  sanitizedData[key] = null
-                }
-                sanitizedData[key] = mysql.escape(sanitizedData[key])
-              }
-              //DO STUFF WITH ESCAPED DATA
-              var query = "CALL addNewSchedule('Time', "+sanitizedData.TimeEvent+", NULL, NULL, "+sanitizedData.TimeOutput+", "+sanitizedData.TimeOutputValue+", NULL, '"+utils.formatTimeStringForDB(sanitizedData.TimeTrigger)+"', "+utils.formatDateString(sanitizedData.TimeStartDate)+", "+utils.formatDateString(sanitizedData.TimeEndDate)+", '1', "+sanitizedData.username+", NULL)";
-              con.query(query, async (error, results, fields) => {
-                //If error, destroy and error.
-                if(error){
-                  con.destroy();
-                  res.status(500).send("Database error! Event not added.");
-                } else {
-                  //Get index data
-                  let indexData = await utils.getIndexData(req, con);
-                  if(indexData.err){
-                    res.status(500).send(indexData.err);
-                  } else {
-                    var msg = "Time event successfully added!";
-                    indexData.msg = msg;
-                    res.status(200).send(indexData);
-                  }
-                }
-              });
-            } else {
-                con.destroy();
-                res.status(400).send("Invalid credentials!");
-            }
-          });
-        } else {
-          con.destroy();
-          res.status(400).send("Invalid credentials!");
-        }
+        //Escape Data
+        var sanitizedData = Object.assign({}, req.body);
+        for (const key in sanitizedData){
+          if (sanitizedData[key] == ''){
+            sanitizedData[key] = null
+          }
+          sanitizedData[key] = mysql.escape(sanitizedData[key])
+        }  
+        //DO STUFF WITH ESCAPED DATA
+        await dbcalls.addNewSchedule("'Time'", sanitizedData.TimeEvent, null, null, sanitizedData.TimeOutput, sanitizedData.TimeOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.TimeTrigger) + "'", utils.formatDateString(sanitizedData.TimeStartDate), utils.formatDateString(sanitizedData.TimeEndDate), '1', sanitizedData.username, null)
+        .catch(() => {
+          res.status(500).send("Database error! Event not added.");
+        });
+        //Get index data
+        let indexData = await utils.getIndexData(req)
+        .catch(() => {
+          res.status(500).send("Database error! Could not fetch index.");                              
+        })
+        indexData.msg = "Time event successfully added!"
+        console.log("4")
+        res.status(200).send(indexData);              
       }
     });
-  });
-}), (err) => {
-  res.status(500).send("Database error!")
-};
+  }    
+});
 
 module.exports = router;

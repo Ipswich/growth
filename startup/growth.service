@@ -3,7 +3,7 @@ Description=growth environmental control service
 After=network.target
 
 [Service]
-ExecStart=/home/pi/growth/startup_script.sh
+ExecStart=/home/pi/growth/startup/startup_script.sh
 Restart=on-failure
 RestartSec=10
 KillMode=process

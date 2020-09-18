@@ -40,7 +40,7 @@ CREATE TABLE Sensors (
   sensorUnits VARCHAR(16) DEFAULT NULL,
   SSenabled BOOLEAN NOT NULL DEFAULT 1,
   sensorHardwareID INT NOT NULL,
-  sensorProtocol VARCHAR(32) NOT NULL,
+  sensorProtocol VARCHAR(32) DEFAULT NULL,
   sensorAddress VARCHAR(64) DEFAULT NULL,
   PRIMARY KEY (sensorID),
   FOREIGN KEY (sensorType) REFERENCES SensorTypes(sensorType)
@@ -440,7 +440,7 @@ DELIMITER ;
 
 ##Add New User
 DELIMITER $$
-CREATE PROCEDURE `AddUser` (IN `p_username` VARCHAR(32), IN `p_hash` VARCHAR(60))
+CREATE PROCEDURE `addNewUser` (IN `p_username` VARCHAR(32), IN `p_hash` VARCHAR(60))
 MODIFIES SQL DATA
   INSERT INTO Users (username, passhash) VALUES (p_username, p_hash)
 $$
@@ -448,7 +448,7 @@ DELIMITER ;
 
 ##Get user
 DELIMITER $$
-CREATE PROCEDURE `GetUser` (IN `p_username` VARCHAR(32))
+CREATE PROCEDURE `getUser` (IN `p_username` VARCHAR(32))
 READS SQL DATA
   SELECT * FROM Users WHERE Users.username = p_username
 $$
