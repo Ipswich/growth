@@ -18,6 +18,9 @@ var addSensorEventRouter = require('./routes/addSensorEvent');
 var getScheduleDataRouter = require('./routes/getScheduleData');
 var updateScheduleRouter = require('./routes/updateSchedule');
 
+//API
+var getEnvironmentRouter = require('./api/getEnvironment')
+
 //App setup - load config
 try {
   var config = require('./config/config.json');
@@ -62,6 +65,9 @@ app.use('/addSensorEvent', addSensorEventRouter);
 app.use('/getScheduleData', getScheduleDataRouter);
 app.use('/updateSchedule', updateScheduleRouter);
 
+//Routes for API
+app.use('/api/getEnvironment', getEnvironmentRouter);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -71,7 +77,7 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = err;
 
   // render the error page
   res.status(err.status || 500);

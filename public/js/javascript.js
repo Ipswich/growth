@@ -132,3 +132,22 @@ $(document).ready(function() {
 //     });
 //   });
 // });
+
+//Conditions and schedule refresh
+$(document).ready(function() {
+  setInterval(function() {
+    $.ajax({
+    type: 'GET',
+    url: '/api/getEnvironment',
+    cache: false,
+    success: function(res) {
+      console.log(res)
+      $('#schedule').html(res.schedules);
+      $('#current-conditions').html(res.currentConditions);
+    },
+    error: function(res) {
+    }
+  });
+  }
+  , 60 * 1000)
+});
