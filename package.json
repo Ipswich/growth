@@ -3,8 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start-prod": "NODE_ENV='production' node ./bin/www",
-    "start-dev": "NODE_ENV='development' node ./bin/www",
     "test": "mocha"
   },
   "dependencies": {
