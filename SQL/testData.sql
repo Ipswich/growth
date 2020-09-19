@@ -11,7 +11,7 @@ CALL addNewScheduleType ('Sensor', 1);
 CALL addNewEvent ('Output On', 'ON', 1);
 CALL addNewEvent ('Output Off', 'OFF', 1);
 
-CALL addUser ('admin', '$2b$10$KDSExpDtZd1HXxCZemfxxeZlRCqXD1ZhDPNkIBxjeaYZyaxMUVi9m');
+CALL addNewUser ('admin', '$2b$10$KDSExpDtZd1HXxCZemfxxeZlRCqXD1ZhDPNkIBxjeaYZyaxMUVi9m');
 
 CALL addNewSensorType('Temperature', 1);
 CALL addNewSensorType('Pressure', 1);

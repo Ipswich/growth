@@ -1,3 +1,5 @@
+const REFRESH_INTERVAL = 60 * 1000 // 1 minute
+
 //Prevent accidental form entries
 $(document).ready(function() {
   $(window).keydown(function(event){
@@ -32,7 +34,7 @@ $(document).ready(function() {
       },
       error: function(res) {
         $('#EventSubmitButton').attr("disabled", false);
-        alert(res);
+        alert(res.responseText);
       }
     });
   });
@@ -61,7 +63,7 @@ $(document).ready(function() {
       },
       error: function(res) {
         $('#TimeSubmitButton').attr("disabled", false);
-        alert(res);
+        alert(res.responseText);
       }
     });
   });
@@ -132,3 +134,22 @@ $(document).ready(function() {
 //     });
 //   });
 // });
+
+//Conditions and schedule refresh
+$(document).ready(function() {
+  setInterval(function() {
+    $.ajax({
+    type: 'GET',
+    url: '/api/getEnvironment',
+    cache: false,
+    success: function(res) {
+      console.log(res)
+      $('#schedule').html(res.schedules);
+      $('#current-conditions').html(res.currentConditions);
+    },
+    error: function(res) {
+    }
+  });
+  }
+  , REFRESH_INTERVAL)
+});

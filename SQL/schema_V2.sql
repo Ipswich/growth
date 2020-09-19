@@ -1,8 +1,8 @@
 START TRANSACTION;
 
-DROP DATABASE IF EXISTS `growth-dev`;
-CREATE DATABASE `growth-dev`;
-USE `growth-dev`;
+DROP DATABASE IF EXISTS `growth`;
+CREATE DATABASE `growth`;
+USE `growth`;
 
 CREATE TABLE Users (
   username VARCHAR(32) NOT NULL,

@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
-const dbcalls = require('../custom_node_modules/database_calls.js')
-const utils = require('../custom_node_modules/Utils.js')
+const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
+const utils = require('../custom_node_modules/utility_modules/Utils.js')
 
 router.post('/', async function(req, res, next) {
   var state = req.app.get('state');
@@ -16,7 +16,7 @@ router.post('/', async function(req, res, next) {
   //If results, compare hash
   if (userResults.length == 0){
     // Error on no results from database
-    res.status(400).send("Invalid credentials!");
+    res.status(400).send('Invalid credentials!');
   } else {
     var hash = userResults[0].passhash;
     bcrypt.compare(req.body.password, hash, async (err, result) => {

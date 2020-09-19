@@ -7,8 +7,8 @@ var app = express();
 var fs = require('fs');
 
 //Custom Modules for Events/Readings
-var outputState = require('./custom_node_modules/OutputState.js');
-var sensorState = require('./custom_node_modules/SensorState.js');
+var outputState = require('./custom_node_modules/state_modules/OutputState.js');
+var sensorState = require('./custom_node_modules/state_modules/SensorState.js');
 var systemInitializer = require('./custom_node_modules/SystemInitializer.js')
 
 //Routes
@@ -17,6 +17,9 @@ var addTimeEventRouter = require('./routes/addTimeEvent');
 var addSensorEventRouter = require('./routes/addSensorEvent');
 var getScheduleDataRouter = require('./routes/getScheduleData');
 var updateScheduleRouter = require('./routes/updateSchedule');
+
+//API
+var getEnvironmentRouter = require('./api/getEnvironment')
 
 //App setup - load config
 try {
@@ -38,7 +41,7 @@ app.set('config', config);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
+// app.use(logger('dev')); QUIET YE PRINTOUTS
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -62,6 +65,9 @@ app.use('/addSensorEvent', addSensorEventRouter);
 app.use('/getScheduleData', getScheduleDataRouter);
 app.use('/updateSchedule', updateScheduleRouter);
 
+//Routes for API
+app.use('/api/getEnvironment', getEnvironmentRouter);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -71,7 +77,7 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = err;
 
   // render the error page
   res.status(err.status || 500);
