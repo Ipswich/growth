@@ -1,28 +1,16 @@
 {
-  "development": {
-    "config_ID": "development",
-    "web_data": "../config/web-data-config-default.json",
-    "database": {
-      "host": "localhost",
-      "user": "null",
-      "password": "null",
-      "database": "growth-dev",
-      "multipleStatements": "true"
-    },
-    "node_port": 26420,
-    "salt_rounds": 10
+  "config_ID": "development",
+  "web_data": "../config/web-data-config-default.json",
+  "database": {
+    "host": "localhost",
+    "user": "null",
+    "password": "null",
+    "database": "growth-dev",
+    "multipleStatements": "true",
+    "connectionLimit": 25
   },
-  "production": {
-    "config_ID": "production",
-    "web_data": "../config/web-data-config.json",
-    "database": {
-      "host": "localhost",
-      "user": "null",
-      "password": "null",
-      "database": "growth-prod",
-      "multipleStatements": "true"
-    },
-    "node_port": 26420,
-    "salt_rounds": 10
-  }
+  "node_port": 26420,
+  "salt_rounds": 10,
+  "log_interval": 60000
+  
 }
