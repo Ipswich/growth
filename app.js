@@ -7,8 +7,8 @@ var app = express();
 var fs = require('fs');
 
 //Custom Modules for Events/Readings
-var outputState = require('./custom_node_modules/OutputState.js');
-var sensorState = require('./custom_node_modules/SensorState.js');
+var outputState = require('./custom_node_modules/state_modules/OutputState.js');
+var sensorState = require('./custom_node_modules/state_modules/SensorState.js');
 var systemInitializer = require('./custom_node_modules/SystemInitializer.js')
 
 //Routes

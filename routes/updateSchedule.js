@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');
-const dbcalls = require('../custom_node_modules/database_calls.js')
-const utils = require('../custom_node_modules/Utils.js')
+const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
+const utils = require('../custom_node_modules/utility_modules/Utils.js')
 
 router.post('/', async function(req, res, next) {
   var state = req.app.get('state');
