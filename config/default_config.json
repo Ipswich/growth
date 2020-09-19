@@ -1,16 +1,14 @@
 {
-  "config_ID": "development",
   "web_data": "../config/web-data-config-default.json",
   "database": {
     "host": "localhost",
     "user": "null",
     "password": "null",
-    "database": "growth-dev",
+    "database": "growth",
     "multipleStatements": "true",
     "connectionLimit": 25
   },
   "node_port": 26420,
   "salt_rounds": 10,
   "log_interval": 60000
-  
 }
