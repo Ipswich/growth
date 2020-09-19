@@ -1,3 +1,5 @@
+const REFRESH_INTERVAL = 60 * 1000 // 1 minute
+
 //Prevent accidental form entries
 $(document).ready(function() {
   $(window).keydown(function(event){
@@ -149,5 +151,5 @@ $(document).ready(function() {
     }
   });
   }
-  , 60 * 1000)
+  , REFRESH_INTERVAL)
 });
