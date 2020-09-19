@@ -32,7 +32,7 @@ $(document).ready(function() {
       },
       error: function(res) {
         $('#EventSubmitButton').attr("disabled", false);
-        alert(res);
+        alert(res.responseText);
       }
     });
   });
@@ -61,7 +61,7 @@ $(document).ready(function() {
       },
       error: function(res) {
         $('#TimeSubmitButton').attr("disabled", false);
-        alert(res);
+        alert(res.responseText);
       }
     });
   });

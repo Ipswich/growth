@@ -16,7 +16,7 @@ router.post('/', async function(req, res, next) {
   //If results, compare hash
   if (userResults.length == 0){
     // Error on no results from database
-    res.status(400).send("Invalid credentials!");
+    res.status(400).send('Invalid credentials!');
   } else {
     var hash = userResults[0].passhash;
     bcrypt.compare(req.body.password, hash, async (err, result) => {
