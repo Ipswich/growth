@@ -18,7 +18,7 @@ Setting up growth is intended to be relatively straightforward. Simply add senso
       * `"host": "localhost"`
       * `"user": "null"`
       * `"password": "null"`
-7. Add a user by running stored procedure `addUser(username, hash)` on database
+7. Add a user by running stored procedure `addNewUser(username, hash)` on database
     * hash is computed using bcrypt with 10 salt rounds. ([bcrypt-generator.com](bcrypt-generator.com))
 
 ### Output and Sensor Setup
