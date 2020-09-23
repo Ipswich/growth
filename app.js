@@ -57,6 +57,7 @@ app.use('/js', express.static(path.join(__dirname, '/node_modules/tempusdominus-
 app.use('/js', express.static(path.join(__dirname, '/node_modules/moment/min')));
 app.use('/js', express.static(path.join(__dirname, '/node_modules/@popperjs/core/dist/umd')));
 app.use('/js', express.static(path.join(__dirname, '/node_modules/jquery/dist')));
+app.use('/js', express.static(path.join(__dirname, '/node_modules/chart.js/dist')));
 
 //Routes for web pages
 app.use('/', indexRouter);

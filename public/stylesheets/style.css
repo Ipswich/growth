@@ -41,6 +41,7 @@
 #data-list {
   color: var(--website-text-normal);
 }
+
 #data-list-header {
   color: var(--website-text-normal);
   background-color:var(--website-bg-light);
@@ -56,10 +57,6 @@
   text-decoration: underline;
   border: none;
 }
-.data-list-group.list-group-item:hover {
-  background-color:var(--website-bg-normal);
-  border: none;
-}
 
 .data-list-item.list-group-item {
   background-color:var(--website-bg-light);
@@ -68,16 +65,17 @@
   color: var(--website-text-normal);
   border: none;
 }
+
 .data-list-item.list-group-item:hover {
   background-color:var(--website-bg-normal);
   border: none;
 }
 
-#chart-container {
-
-}
-#chart-div {
-
+.chart-div {
+  padding-left: 12px;
+  padding-right: 20px;
+  color: var(--website-text-normal);
+  background-color:var(--website-bg-light);
 }
 
 .schedule-card {
@@ -93,6 +91,7 @@
     background-color:var(--website-bg-lighter);
     border-bottom: 1px solid var(--website-text-light);
 }
+
 .scheduleTableRow:hover {
   background-color:var(--website-bg-normal);
   color: var(--website-text-normal);
@@ -134,11 +133,13 @@
   text-shadow: none;
   box-shadow: none;
 }
+
 #modalSubmitButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);
   box-shadow: none;
 }
+
 #modalCloseButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);
