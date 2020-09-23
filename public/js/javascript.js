@@ -143,13 +143,74 @@ $(document).ready(function() {
     url: '/api/getEnvironment',
     cache: false,
     success: function(res) {
-      console.log(res)
       $('#schedule').html(res.schedules);
       $('#current-conditions').html(res.currentConditions);
-    },
-    error: function(res) {
     }
-  });
-  }
-  , REFRESH_INTERVAL)
+    });
+  }, REFRESH_INTERVAL)
 });
+
+function generateChart(sensorID, sensorUnits, data){    
+  let config = generateChartConfig(sensorUnits, data)
+  let ctx = document.getElementById(sensorID + '-canvas').getContext("2d");
+  window.myLine = new Chart(ctx, config)
+}
+
+function generateChartConfig(sensorUnits, data){ 
+  let config = {
+    type: 'line',
+    data: {
+      datasets: [{
+        fill: false,
+        label: sensorUnits, 
+        data: data,
+        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--website-text-blue'),
+        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--website-text-blue'),
+      }]
+    },
+    options: {
+      animation:{
+        duration: 0
+      },
+      legend: {
+        display: false
+      },
+      elements: {
+        point: {
+          radius: 1
+        }
+      },
+      responsive: true,
+      scales: {
+        xAxes: [{
+          ticks: {
+            fontColor: getComputedStyle(document.documentElement).getPropertyValue('--website-text-normal')
+          },
+          gridLines: {
+            drawBorder: false,
+            color: getComputedStyle(document.documentElement).getPropertyValue('--website-bg-normal')
+          },
+          type: "time",
+          time: {
+            tooltipFormat: 'h:mm A'
+          }
+        }],
+        yAxes: [{
+          ticks: {
+            fontColor: getComputedStyle(document.documentElement).getPropertyValue('--website-text-green')
+          },
+          gridLines: {
+            drawBorder: false,
+            color: getComputedStyle(document.documentElement).getPropertyValue('--website-bg-normal')
+          },
+          scaleLabel: {
+            fontColor: getComputedStyle(document.documentElement).getPropertyValue('--website-text-green'),
+            display: true,
+            labelString: sensorUnits
+          }
+        }]
+      }
+    }
+  }
+  return config
+}
