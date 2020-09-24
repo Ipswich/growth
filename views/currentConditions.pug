@@ -15,7 +15,7 @@ div#chart-container
       h5 #{val.sensorType} @ #{val.sensorLocation}
       canvas(id=val.sensorID + '-canvas')
       script.
-        window.onload = generateChart("#{val.sensorID}", "#{val.sensorUnits}", !{JSON.stringify(last12[val.sensorID])})  
+        window.onload = generateChart("#{val.sensorID}", "#{val.sensorUnits}", !{JSON.stringify(last12[val.sensorID])}, "#{val.sensorType}")  
       a#data-list-header.list-group-item.py-1 
     br  
                 
