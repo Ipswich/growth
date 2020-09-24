@@ -150,13 +150,13 @@ $(document).ready(function() {
   }, REFRESH_INTERVAL)
 });
 
-function generateChart(sensorID, sensorUnits, data){    
-  let config = generateChartConfig(sensorUnits, data)
+function generateChart(sensorID, sensorUnits, data, sensorType){    
+  let config = generateChartConfig(sensorUnits, data, sensorType)
   let ctx = document.getElementById(sensorID + '-canvas').getContext("2d");
   window.myLine = new Chart(ctx, config)
 }
 
-function generateChartConfig(sensorUnits, data){ 
+function generateChartConfig(sensorUnits, data, sensorType){ 
   let config = {
     type: 'line',
     data: {
@@ -212,6 +212,30 @@ function generateChartConfig(sensorUnits, data){
         }]
       }
     }
+  }
+  switch (sensorType) {
+    case 'Temperature':
+      if (sensorUnits == "°C" || sensorUnits == "C") {
+        config.options.scales.yAxes[0].ticks.suggestedMin = 15     
+        config.options.scales.yAxes[0].ticks.suggestedMax = 30
+      } else if (sensorUnits == "°F" || sensorUnits == "F") {
+        config.options.scales.yAxes[0].ticks.suggestedMin = 60     
+        config.options.scales.yAxes[0].ticks.suggestedMax = 85
+      }
+      break;
+    case 'Humidity':      
+      config.options.scales.yAxes[0].ticks.suggestedMin = 40     
+      config.options.scales.yAxes[0].ticks.suggestedMax = 60
+      break;
+    case 'Pressure':      
+      config.options.scales.yAxes[0].ticks.suggestedMin = 99     
+      config.options.scales.yAxes[0].ticks.suggestedMax = 102
+      break;
+    case 'CarbonDioxide':      
+      break;
+  
+    default:
+      break;
   }
   return config
 }
