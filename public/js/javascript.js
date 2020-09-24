@@ -192,6 +192,7 @@ function generateChartConfig(sensorUnits, data){
           },
           type: "time",
           time: {
+            // unit: 'hour',
             tooltipFormat: 'h:mm A'
           }
         }],
