@@ -39,9 +39,10 @@ router.post('/', async function(req, res, next) {
         .catch(() => {
           res.status(500).send("Database error! Could not fetch index.");                              
         })
-        indexData.msg = "Time event successfully added!"
-        console.log("4")
-        res.status(200).send(indexData);              
+        let returnData = {}
+        returnData.msg = "Time event successfully added!"
+        returnData.schedules = indexData.schedules
+        res.status(200).send(returnData);               
       }
     });
   }    

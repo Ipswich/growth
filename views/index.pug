@@ -6,13 +6,22 @@ block content
   div.nav-container
     ul(id="pills-tab" role="tablist").nav.nav-pills
       li.nav-item
-          a(id="nav-current-conditions" data-toggle="pill" href="#current-conditions" role="tab" aria-controls="current-conditions" aria-selected="true").nav-pill.nav-link.active Current Conditions
+          a(id="nav-current-conditions" data-toggle="pill" href="#current-conditions-div" role="tab" aria-controls="current-conditions-div" aria-selected="true").nav-pill.nav-link.active Current Conditions
       li.nav-item
           a(id="nav-schedule" data-toggle="pill" href="#schedule" role="tab" aria-controls="schedule" aria-selected="false").nav-pill.nav-link Schedule
   br
   div(id="pills-tabContent").tab-content
-    div(id="current-conditions" role="tabpanel" arealabelledby="nav-current-conditions").tab-pane.fade.show.active
-      include ./currentConditions.pug
+    div(id="current-conditions-div" role="tabpanel" arealabelledby="nav-current-conditions").tab-pane.fade.show.active
+      div(id="current-conditions") 
+        include ./currentConditions.pug
+      div(id="current-conditions-selector").container
+        div.row
+          div.col-4
+          div.col-4
+            select(id='chart_interval' name='chart_interval').form-control.custom-select.formStyle
+              each val in intervals
+                option(value=val.interval, selected=val.default) #{val.title}                    
+          div.col-4
     div(id="schedule" role="tabpanel" arealabelledby="nav-schedule").tab-pane.fade
       include ./schedules.pug
       

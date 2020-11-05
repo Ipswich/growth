@@ -78,6 +78,17 @@
   background-color:var(--website-bg-light);
 }
 
+#chart_interval {
+  border: none;
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+
+#current-conditions-selector {
+  text-align: center;
+}
+
 .schedule-card {
   background-Color:var(--website-bg-light);
 }

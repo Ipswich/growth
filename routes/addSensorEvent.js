@@ -38,8 +38,10 @@ router.post('/', async function(req, res, next) {
         .catch(() => {
           res.status(500).send("Database error! Could not fetch index.");                              
         })
-        indexData.msg = "Sensor event successfully added!"
-        res.status(200).send(indexData);              
+        let returnData = {}
+        returnData.msg = "Sensor event successfully added!"
+        returnData.schedules = indexData.schedules
+        res.status(200).send(returnData);              
       }
     });
   }      

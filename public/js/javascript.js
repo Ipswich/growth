@@ -26,7 +26,6 @@ $(document).ready(function() {
       cache: false,
       success: function(res) {
         $('#schedule').html(res.schedules);
-        $('#current-conditions').html(res.currentConditions);
         $('#EventSubmitButton').attr("disabled", false);
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
@@ -55,7 +54,6 @@ $(document).ready(function() {
       cache: false,
       success: function(res) {
         $('#schedule').html(res.schedules);
-        $('#current-conditions').html(res.currentConditions);
         $('#TimeSubmitButton').attr("disabled", false);
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
@@ -138,14 +136,20 @@ $(document).ready(function() {
 //Conditions and schedule refresh
 $(document).ready(function() {
   setInterval(function() {
+    let select = document.getElementById("chart_interval")
+    let datagram = {interval: select.value}
     $.ajax({
-    type: 'GET',
-    url: '/api/getEnvironment',
-    cache: false,
-    success: function(res) {
-      $('#schedule').html(res.schedules);
-      $('#current-conditions').html(res.currentConditions);
-    }
+      type: 'POST',
+      url: '/api/getEnvironment',
+      data: datagram,
+      cache: false,
+      success: function(res) {
+        $('#schedule').html(res.schedules);
+        $('#current-conditions').html(res.currentConditions);
+      },
+      error: function(res) {
+        console.error("Could not contact server to update charts!")
+      }
     });
   }, REFRESH_INTERVAL)
 });
@@ -239,3 +243,27 @@ function generateChartConfig(sensorUnits, data, sensorType){
   }
   return config
 }
+
+// Ajax for on change of chart interval
+$(document).ready(function() {
+  $('#chart_interval').on('change', function() {
+    let select = document.getElementById("chart_interval")
+    $('#chart_interval').attr("disabled", true);
+    let datagram = {interval: select.value}
+    $.ajax({
+      type: 'POST',
+      url: '/api/getEnvironment',
+      data: datagram,
+      cache: false,
+      success: function(res) {
+        $('#chart_interval').attr("disabled", false);
+        $('#schedule').html(res.schedules);
+        $('#current-conditions').html(res.currentConditions);
+      },
+      error: function(res) {
+        $('#chart_interval').attr("disabled", false);
+        alert("Could not update charts.");
+      }
+    });
+  })
+})
