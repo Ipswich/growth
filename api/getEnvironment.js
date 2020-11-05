@@ -6,7 +6,22 @@ router.get('/', async function(req, res, next) {
     var indexData = await utils.getIndexData(req).catch(() => {
         res.status(500).send("Database error, could not fetch environment data.")
     })
-    res.status(200).send(indexData)
+    let returnData = {}
+    returnData.msg = "Sensor event successfully added!"
+    returnData.schedules = indexData.schedules
+    returnData.currentConditions = indexData.currentConditions
+    res.status(200).send(returnData);  
+})
+
+router.post('/', async function(req, res, next) {
+    var indexData = await utils.getIndexData(req, req.body.interval).catch(() => {
+        res.status(500).send("Database error, could not fetch environment data.")
+    })
+    let returnData = {}
+    returnData.msg = "Sensor event successfully added!"
+    returnData.schedules = indexData.schedules
+    returnData.currentConditions = indexData.currentConditions
+    res.status(200).send(returnData);  
 })
 
 module.exports = router;

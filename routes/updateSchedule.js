@@ -78,9 +78,11 @@ router.post('/', async function(req, res, next) {
             msg = "Event successfully modified!";
           }
           //Get index data
-          let indexData = await utils.getIndexData(req);              
-          indexData.msg = msg;
-          res.status(200).send(indexData);
+          let indexData = await utils.getIndexData(req);
+          let returnData = {}
+          returnData.msg = "Sensor event successfully added!"
+          returnData.schedules = indexData.schedules
+          res.status(200).send(returnData);  
         }
       }          
     });
