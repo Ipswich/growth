@@ -15,6 +15,7 @@ var systemInitializer = require('./custom_node_modules/SystemInitializer.js')
 var indexRouter = require('./routes/index');
 var addTimeEventRouter = require('./routes/addTimeEvent');
 var addSensorEventRouter = require('./routes/addSensorEvent');
+var addPeriodicEventRouter = require('./routes/addPeriodicEvent');
 var getScheduleDataRouter = require('./routes/getScheduleData');
 var updateScheduleRouter = require('./routes/updateSchedule');
 
@@ -63,6 +64,7 @@ app.use('/js', express.static(path.join(__dirname, '/node_modules/chart.js/dist'
 app.use('/', indexRouter);
 app.use('/addTimeEvent', addTimeEventRouter);
 app.use('/addSensorEvent', addSensorEventRouter);
+app.use('/addPeriodicEvent', addPeriodicEventRouter);
 app.use('/getScheduleData', getScheduleDataRouter);
 app.use('/updateSchedule', updateScheduleRouter);
 

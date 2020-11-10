@@ -29,7 +29,7 @@ router.post('/', async function(req, res, next) {
           sanitizedData[key] = mysql.escape(sanitizedData[key])
         }          
         //DO STUFF WITH ESCAPED DATA
-        await dbcalls.addNewSchedule("'Sensor'", sanitizedData.SensorEvent, sanitizedData.SensorSensorName, sanitizedData.SensorSensorValue, sanitizedData.SensorOutput, sanitizedData.SensorOutputValue, sanitizedData.SensorComparator, null, utils.formatDateString(sanitizedData.SensorStartDate), utils.formatDateString(sanitizedData.SensorEndDate), '1', sanitizedData.username, null)
+        await dbcalls.addNewSchedule("'Sensor'", sanitizedData.SensorEvent, sanitizedData.SensorSensorName, sanitizedData.SensorSensorValue, sanitizedData.SensorOutput, sanitizedData.SensorOutputValue, sanitizedData.SensorComparator, null, null, null, utils.formatDateString(sanitizedData.SensorStartDate), utils.formatDateString(sanitizedData.SensorEndDate), '1', sanitizedData.username, null)
         .catch(() => {
           res.status(500).send("Database error! Event not added.");
         });

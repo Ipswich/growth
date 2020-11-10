@@ -1,0 +1,103 @@
+div
+  form(id="PeriodicForm" method="POST")      
+    div.form-group
+      div.form-row
+        div.col
+          label(for="PeriodicOutput") Output
+          select(id="PeriodicOutput" name="PeriodicOutput" required).form-control.formStyle.custom-select
+            each output, index in outputs
+              option(value=output.outputID) #{output.outputName}
+        div.col-4
+          label(for="PeriodicOutputValue") Output Value
+          select(id="PeriodicOutputValue" name="PeriodicOutputValue" required).form-control.formStyle.custom-select
+            - for(var i = 100; i>= 1; i--)
+              option= i 
+
+
+    div.form-group
+      h6 Duration
+      div.form-row.justify-content-around
+        div.col-3
+          label(for="PeriodicDurationDays") Days
+          select(id="PeriodicDurationDays" name="PeriodicDurationDays" required).form-control.formStyle.custom-select
+            - for(var i = 0; i <= 90; i++)
+              option= i   
+        div.col-3
+          label(for="PeriodicDurationHours") Hours
+          select(id="PeriodicDurationHours" name="PeriodicDurationHours" required).form-control.formStyle.custom-select
+            - for(var i = 0; i < 24; i++)
+              option= i  
+        div.col-3
+          label(for="PeriodicDurationMinutes") Minutes
+          select(id="PeriodicDurationMinutes" name="PeriodicDurationMinutes" required).form-control.formStyle.custom-select
+            - for(var i = 0; i < 60; i++)
+              option= i  
+    div.form-group
+      h6 Repeat Timeout
+      div.form-row.justify-content-around
+        div.col-3
+          label(for="PeriodicIntervalDays") Days
+          select(id="PeriodicIntervalDays" name="PeriodicIntervalDays" required).form-control.formStyle.custom-select
+            - for(var i = 0; i <= 90; i++)
+              option= i   
+        div.col-3
+          label(for="PeriodicIntervalHours") Hours
+          select(id="PeriodicIntervalHours" name="PeriodicIntervalHours" required).form-control.formStyle.custom-select
+            - for(var i = 0; i < 24; i++)
+              option= i  
+        div.col-3
+          label(for="PeriodicIntervalMinutes") Minutes
+          select(id="PeriodicIntervalMinutes" name="PeriodicIntervalMinutes" required).form-control.formStyle.custom-select
+            - for(var i = 0; i < 60; i++)
+              option= i      
+    div.form-group   
+      div.form-row
+        div.col-4(id="PeriodicTimeDiv")
+            script.
+              if (!Modernizr.inputtypes.time) {
+                $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+                icons: {
+                    time: 'fas fa-clock',
+                    date: 'fas fa-calendar',
+                    up: 'fas fa-arrow-up',
+                    down: 'fas fa-arrow-down',
+                    previous: 'fas fa-chevron-left',
+                    next: 'fas fa-chevron-right',
+                    today: 'fas fa-calendar-check-o',
+                    clear: 'fas fa-trash',
+                    close: 'fas fa-times'
+                } });
+                document.getElementById("PeriodicTimeDiv").innerHTML = 
+                `            
+                <label for="PeriodicTrigger"> Initial Time</label>
+                <div class="input-group date" id="PeriodicTrigger" data-target-input="nearest">
+                    <input type="text" value="`+moment().format('LT')+`" name="PeriodicTrigger" class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#PeriodicTrigger" required/>
+                </div>
+                `;
+                $(function () {
+                  $('#PeriodicTrigger').datetimepicker({
+                    format: 'LT'
+                  });
+                });
+              } else {
+                document.getElementById("PeriodicTimeDiv").innerHTML = 
+                `
+                <label for="PeriodicTrigger"> Initial Time</label>
+                <input type="time" value="`+moment().format('LT')+`" id="PeriodicTrigger" name="PeriodicTrigger" class="form-control formStyle" required>
+                `;
+              }
+
+
+
+    div.form-group   
+      div.form-row
+        div.col-5
+          label(for="username") Username
+          input(type="text" name="username" required).form-control.formStyle
+        div.col
+          label(for="password") Password
+          input(type="password" name="password" required).form-control.formStyle
+    div.form-group
+      div.form-row
+        div.col
+          button(id="PeriodicSubmitButton" type="submit").btn.float-right.submitButton Submit
