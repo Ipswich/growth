@@ -4,8 +4,10 @@ div
     input(type="hidden" id="UpdateMode" name="UpdateMode" value='')
     if schedule.scheduleType == 'Time'    
       include ./updateEventMetaTime.pug
-    else
+    else if schedule.scheduleType == 'Sensor'
       include ./updateEventMetaSensor.pug
+    else if schedule.scheduleType == 'Periodic'
+      include ./updateEventMetaPeriodic.pug
                     
     div.form-group   
       div.form-row

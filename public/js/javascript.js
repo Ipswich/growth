@@ -15,7 +15,7 @@ $(document).ready(function() {
 $(document).ready(function() {
   $('#SensorForm').submit(function(e) {
     e.preventDefault();
-    $('#EventSubmitButton').attr("disabled", true);
+    $('#SensorSubmitButton').attr("disabled", true);
 
     var form = $(this);
     var data = form.serializeArray();
@@ -26,13 +26,13 @@ $(document).ready(function() {
       cache: false,
       success: function(res) {
         $('#schedule').html(res.schedules);
-        $('#EventSubmitButton').attr("disabled", false);
+        $('#SensorSubmitButton').attr("disabled", false);
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
         $('#SensorForm').trigger("reset");
       },
       error: function(res) {
-        $('#EventSubmitButton').attr("disabled", false);
+        $('#SensorSubmitButton').attr("disabled", false);
         alert(res.responseText);
       }
     });
@@ -43,7 +43,7 @@ $(document).ready(function() {
 $(document).ready(function() {
   $('#TimeForm').submit(function(e) {
     e.preventDefault();
-    $('#submitButton').attr("disabled", true);
+    $('#TimeSubmitButton').attr("disabled", true);
 
     var form = $(this);
     var data = form.serializeArray();
@@ -61,6 +61,34 @@ $(document).ready(function() {
       },
       error: function(res) {
         $('#TimeSubmitButton').attr("disabled", false);
+        alert(res.responseText);
+      }
+    });
+  });
+});
+
+//AJAX for periodicForm (addPeriodicEvent)
+$(document).ready(function() {
+  $('#PeriodicForm').submit(function(e) {
+    e.preventDefault();
+    $('#PeriodicSubmitButton').attr("disabled", true);
+
+    var form = $(this);
+    var data = form.serializeArray();
+    $.ajax({
+      type: 'POST',
+      url: '/addPeriodicEvent',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#schedule').html(res.schedules);
+        $('#PeriodicSubmitButton').attr("disabled", false);
+        alert(res.msg);
+        $('#newScheduleModal').modal('hide');
+        $('#PeriodicForm').trigger("reset");
+      },
+      error: function(res) {
+        $('#PeriodicSubmitButton').attr("disabled", false);
         alert(res.responseText);
       }
     });
@@ -220,11 +248,11 @@ function generateChartConfig(sensorUnits, data, sensorType){
   switch (sensorType) {
     case 'Temperature':
       if (sensorUnits == "°C" || sensorUnits == "C") {
-        config.options.scales.yAxes[0].ticks.suggestedMin = 15     
-        config.options.scales.yAxes[0].ticks.suggestedMax = 30
+        config.options.scales.yAxes[0].ticks.suggestedMin = 10     
+        config.options.scales.yAxes[0].ticks.suggestedMax = 27
       } else if (sensorUnits == "°F" || sensorUnits == "F") {
-        config.options.scales.yAxes[0].ticks.suggestedMin = 60     
-        config.options.scales.yAxes[0].ticks.suggestedMax = 85
+        config.options.scales.yAxes[0].ticks.suggestedMin = 50     
+        config.options.scales.yAxes[0].ticks.suggestedMax = 80
       }
       break;
     case 'Humidity':      

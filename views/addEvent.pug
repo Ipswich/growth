@@ -12,9 +12,14 @@ div(id="newScheduleModal" tabindex="-1" role="dialog" aria-labelledby="modalLabe
                 a(id="nav-time" data-toggle="pill" href="#time" role="tab" aria-controls="time" aria-selected="true").nav-pill.nav-link.active Time
             li.nav-item
                 a(id="nav-sensor" data-toggle="pill" href="#sensor" role="tab" aria-controls="sensor" aria-selected="false").nav-pill.nav-link Sensor
+            li.nav-item
+                a(id="nav-periodic" data-toggle="pill" href="#periodic" role="tab" aria-controls="periodic" aria-selected="false").nav-pill.nav-link Periodic
         br
         div(id="pills-tabContent-event").tab-content
           div(id="time" role="tabpanel" arealabelledby="nav-time").tab-pane.fade.active.show
             include ./addTimeEvent.pug
           div(id="sensor" role="tabpanel" arealabelledby="nav-sensor").tab-pane.fade
             include ./addSensorEvent.pug
+          div(id="periodic" role="tabpanel" arealabelledby="nav-periodic").tab-pane.fade
+            include ./addPeriodicEvent.pug
+            

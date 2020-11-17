@@ -1,0 +1,111 @@
+div
+  div.form-group
+    div.form-row
+      div.col
+        label(for="UpdateOutput") Output
+        select(id="UpdateOutput" name="UpdateOutput" required).form-control.formStyle.custom-select
+          each output, index in outputs
+            if output.outputID == schedule.outputID
+              option(value=output.outputID selected) #{output.outputName}
+          else 
+            option(value=output.outputID) #{output.outputName}
+      div.col-4
+        label(for="UpdateOutputValue") Output Value
+        select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
+          - for(var i = 100; i>= 1; i--)
+            if i == defaults.outputValue
+              option(selected)= i
+            else 
+              option= i  
+  div.form-group
+    h6 Duration
+    div.form-row.justify-content-around
+      div.col-3
+        label(for="UpdateDurationDays") Days
+        select(id="UpdateDurationDays" name="UpdateDurationDays" required).form-control.formStyle.custom-select
+          - for(var i = 0; i <= 90; i++)
+            if i == defaults.eventDurationDays
+              option(selected)= i
+            else 
+              option= i    
+      div.col-3
+        label(for="UpdateDurationHours") Hours
+        select(id="UpdateDurationHours" name="UpdateDurationHours" required).form-control.formStyle.custom-select
+          - for(var i = 0; i <= 24; i++)
+            if i == defaults.eventDurationHours
+              option(selected)= i
+            else 
+              option= i   
+      div.col-3
+        label(for="UpdateDurationMinutes") Minutes
+        select(id="UpdateDurationMinutes" name="UpdateDurationMinutes" required).form-control.formStyle.custom-select
+          - for(var i = 0; i <= 60; i++)
+            if i == defaults.eventDurationMinutes
+              option(selected)= i
+            else 
+              option= i  
+  div.form-group
+    h6 Repeat Timeout
+    div.form-row.justify-content-around
+      div.col-3
+        label(for="UpdateIntervalDays") Days
+        select(id="UpdateIntervalDays" name="UpdateIntervalDays" required).form-control.formStyle.custom-select
+          - for(var i = 0; i <= 90; i++)
+            if i == defaults.eventIntervalDays
+              option(selected)= i
+            else 
+              option= i    
+      div.col-3
+        label(for="UpdateIntervalHours") Hours
+        select(id="UpdateIntervalHours" name="UpdateIntervalHours" required).form-control.formStyle.custom-select
+          - for(var i = 0; i < 24; i++)
+            if i == defaults.eventIntervalHours
+              option(selected)= i
+            else 
+              option= i   
+      div.col-3
+        label(for="UpdateIntervalMinutes") Minutes
+        select(id="UpdateIntervalMinutes" name="UpdateIntervalMinutes" required).form-control.formStyle.custom-select
+          - for(var i = 0; i < 60; i++)
+            if i == defaults.eventIntervalMinutes
+              option(selected)= i
+            else 
+              option= i       
+  div.form-group   
+    div.form-row
+
+      div(id="UpdatePeriodicTimeDiv" data-defaultTime=defaults.eventTriggerTime).col-4
+        script.
+          var defaultTime = $("#UpdatePeriodicTimeDiv").data('defaulttime');
+          if (!Modernizr.inputtypes.time) {
+            $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+            icons: {
+                time: 'fas fa-clock',
+                date: 'fas fa-calendar',
+                up: 'fas fa-arrow-up',
+                down: 'fas fa-arrow-down',
+                previous: 'fas fa-chevron-left',
+                next: 'fas fa-chevron-right',
+                today: 'fas fa-calendar-check-o',
+                clear: 'fas fa-trash',
+                close: 'fas fa-times'
+            } });
+            document.getElementById("UpdatePeriodicTimeDiv").innerHTML = 
+            `            
+            <label for="UpdatePeriodicTrigger"> Initial Time</label>
+            <div class="input-group date" id="UpdatePeriodicTrigger" data-target-input="nearest">
+                <input type="text" name="UpdatePeriodicTrigger" value="`+ defaultTime + `" class="form-control datetimepicker-input formStyle" data-toggle="datetimepicker" data-target="#UpdatePeriodicTrigger" required/>
+            </div>
+            `;
+            $(function () {
+              $('#UpdatePeriodicTrigger').datetimepicker({
+                format: 'LT'
+              });
+            });
+          } else {
+            document.getElementById("UpdatePeriodicTimeDiv").innerHTML = 
+            `
+            <label for="UpdateTrigger"> Initial Time</label>
+            <input type="time" id="UpdatePeriodicTrigger" name="UpdatePeriodicTrigger" value="` + defaultTime + `" class="form-control formStyle" required>
+            `;
+          }      

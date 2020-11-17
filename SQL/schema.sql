@@ -72,13 +72,15 @@ CREATE TABLE ScheduleTypes(
 CREATE TABLE Schedules (
   scheduleID INT NOT NULL AUTO_INCREMENT,
   scheduleType VARCHAR(32) NOT NULL,
-  eventID INT NOT NULL,
+  eventID INT DEFAULT NULL,
   sensorID INT DEFAULT NULL,
   sensorValue INT DEFAULT NULL,
-  outputID INT NOT NULL,
+  outputID INT DEFAULT NULL,
   outputValue INT DEFAULT NULL,
   scheduleComparator VARCHAR(1) DEFAULT NULL,
   eventTriggerTime TIME DEFAULT NULL,
+  eventDuration INT DEFAULT NULL,
+  eventInterval INT DEFAULT NULL,
   scheduleStartDate DATE DEFAULT NULL,
   scheduleStopDate DATE DEFAULT NULL,
   Senabled BOOLEAN NOT NULL DEFAULT 1,
@@ -317,7 +319,7 @@ DELIMITER $$
 CREATE PROCEDURE `getAllScheduleTypes` ()
 READS SQL DATA
   SELECT * FROM ScheduleTypes
-  ORDER BY scheduleTypes DESC
+  ORDER BY scheduleType DESC
 $$
 DELIMITER ;
 
@@ -326,7 +328,7 @@ DELIMITER $$
 CREATE PROCEDURE `getEnabledScheduleTypes` ()
 READS SQL DATA
   SELECT * FROM ScheduleTypes WHERE STenabled = 1
-  ORDER BY scheduleTypes DESC
+  ORDER BY scheduleType DESC
   $$
 DELIMITER ;
 
@@ -341,6 +343,8 @@ CREATE PROCEDURE `addNewSchedule` (
   IN `p_outputValue` INT,
   IN `p_scheduleComparator` VARCHAR(1),
   IN `p_eventTriggerTime` TIME,
+  IN `p_eventDuration` INT,
+  IN `p_eventInterval` INT,
   IN `p_scheduleStartDate` DATE,
   IN `p_scheduleStopDate` DATE,
   IN `p_enabled` BOOLEAN,
@@ -356,6 +360,8 @@ INSERT INTO Schedules (
   outputValue,
   scheduleComparator,
   eventTriggerTime,
+  eventDuration,
+  eventInterval,
   scheduleStartDate,
   scheduleStopDate,
   Senabled,
@@ -370,6 +376,8 @@ INSERT INTO Schedules (
    p_outputValue,
    p_scheduleComparator,
    p_eventTriggerTime,
+   p_eventDuration,
+   p_eventInterval,
    p_scheduleStartDate,
    p_scheduleStopDate,
    p_enabled,

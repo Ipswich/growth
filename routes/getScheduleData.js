@@ -61,6 +61,23 @@ async function formatDefaults(schedule, outputs, events, sensors){
     var triggerTime = moment(schedule.schedule.eventTriggerTime, "HH:mm:ss");
     defaults.eventTriggerTime = triggerTime.format('HH:mm');
   }
+  //If there are duration/intervals, parse.
+  if(schedule.schedule.eventDuration) {
+    let duration = schedule.schedule.eventDuration
+    defaults.eventDurationDays = Math.floor(duration / 1440)
+    duration = duration % 1440
+    defaults.eventDurationHours = Math.floor(duration / 60)
+    duration = duration % 60
+    defaults.eventDurationMinutes = duration
+  }
+  if(schedule.schedule.eventInterval) {
+    let interval = schedule.schedule.eventInterval
+    defaults.eventIntervalDays = Math.floor(interval / 1440)
+    interval = interval % 1440
+    defaults.eventIntervalHours = Math.floor(interval / 60)
+    interval = interval % 60
+    defaults.eventIntervalMinutes = interval
+  }
   //If there is a schedule start date, parse.
   if (schedule.schedule.scheduleStartDate) {
     defaults.scheduleStartDate = moment(schedule.schedule.scheduleStartDate).format("MM/DD/YYYY");

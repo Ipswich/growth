@@ -40,6 +40,28 @@ div.card.schedule-card
                 td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
             else  
               td.align-middle.schedule-data #{schedule.outputName}<br> #[span.blue #{schedule.eventDescription}]
+br                
+div.card.schedule-card
+  div.scheduleContainer.table-responsive-sm.rounded
+    table.table.table-sm.table-borderless.scheduleTable.rounded
+      thead.scheduleTableHeader 
+        tr
+          th(scope="col") Duration
+          th(scope="col") Repeat Interval
+          th(scope="col") Output
+      tbody.scheduleTableBody
+      each schedule, index in scheduleData
+        if schedule.scheduleType == 'Periodic'
+          tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
+            td.align-middle #{schedule.eventDuration} minute(s)
+            td.align-middle #{schedule.eventInterval} minute(s)
+            if(schedule.outputType == 'Light')
+              if(schedule.eventID == 2)
+                td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}]
+              else
+                td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
+            else  
+              td.align-middle.schedule-data #{schedule.outputName}<br> #[span.blue #{schedule.eventDescription}]
 br
 div
   button(id="addEventButton" type="button" data-toggle="modal" data-target="#newScheduleModal").btn Add Event
