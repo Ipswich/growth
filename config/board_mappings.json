@@ -1,0 +1,19 @@
+{
+	"mega": 
+	{
+		"START_OUTPUT_PIN": 22,
+		"END_OUTPUT_PIN": 37,
+
+		"START_PWM_PIN": 2,
+		"END_PWM_PIN": 13,
+
+		"SDAPIN": 20,
+		"SCLPIN": 21,
+
+		"START_SENSOR_PIN": 38,
+		"END_SENSOR_PIN": 53,
+
+		"START_ANALOG_PIN": 54,
+		"END_ANALOG_PIN": 69
+	}
+}

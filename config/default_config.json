@@ -1,4 +1,5 @@
 {
+  "board": "mega",
   "web_data": "../config/web-data-config-default.json",
   "database": {
     "host": "localhost",
@@ -10,5 +11,6 @@
   },
   "node_port": 26420,
   "salt_rounds": 10,
-  "log_interval": 60000
+  "log_interval": 60000,
+  "relay_toggle_prevention": true
 }
