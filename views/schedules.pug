@@ -11,8 +11,8 @@ div.card.schedule-card
           if schedule.scheduleType == 'Time'
             tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
               td.align-middle #{schedule.eventTriggerTime}
-              if(schedule.outputType == 'Light')
-                if(schedule.eventID == 2)
+              if(schedule.outputPWM == 1)
+                if(schedule.eventName == 'Output Off')
                   td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}]
                 else
                   td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
@@ -33,8 +33,8 @@ div.card.schedule-card
           tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
             td.align-middle #{schedule.sensorType} @<br> #{schedule.sensorLocation}
             td.align-middle.green #{schedule.scheduleComparator} #{schedule.sensorValue}#{schedule.sensorUnits}            
-            if(schedule.outputType == 'Light')
-              if(schedule.eventID == 2)
+            if(schedule.outputPWM == 1)
+              if(schedule.eventName == 'Output Off')
                 td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}]
               else
                 td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
@@ -48,15 +48,15 @@ div.card.schedule-card
         tr
           th(scope="col") Duration
           th(scope="col") Repeat Interval
-          th(scope="col") Output
+          th(scope="col") Event
       tbody.scheduleTableBody
       each schedule, index in scheduleData
         if schedule.scheduleType == 'Periodic'
           tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
             td.align-middle #{schedule.eventDuration} minute(s)
             td.align-middle #{schedule.eventInterval} minute(s)
-            if(schedule.outputType == 'Light')
-              if(schedule.eventID == 2)
+            if(schedule.outputPWM == 1)
+              if(schedule.eventName == 'Output Off')
                 td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}]
               else
                 td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
