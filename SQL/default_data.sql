@@ -1,9 +1,11 @@
 -- DEFAULT VALUES --
+
 CALL addNewOutputType('Light', 1);
 CALL addNewOutputType('Circulation', 1);
 CALL addNewOutputType('Exhaust', 1);
 CALL addNewOutputType('Intake', 1);
 CALL addNewOutputType('Heat', 1);
+CALL addNewOutputType('Water', 1);
 
 CALL addNewScheduleType ('Time', 1);
 CALL addNewScheduleType ('Sensor', 1);
