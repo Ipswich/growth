@@ -21,6 +21,8 @@ CREATE TABLE Outputs (
   outputType VARCHAR(32) NOT NULL,
   outputName VARCHAR(64) NOT NULL,
   outputDescription VARCHAR(128),
+  outputPWM BOOLEAN NOT NULL DEFAULT 0,
+  outputPWMInversion BOOLEAN NOT NULL DEFAULT 0,
   OEnabled BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (outputID),
   FOREIGN KEY (outputType) REFERENCES OutputTypes(outputType)
@@ -87,6 +89,7 @@ CREATE TABLE Schedules (
   addedBy VARCHAR(32) DEFAULT NULL,
   disabledBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (scheduleID),
+  FOREIGN KEY (outputID) REFERENCES Outputs(outputID),
   FOREIGN KEY (sensorID) REFERENCES Sensors(sensorID),
   FOREIGN KEY (eventID) REFERENCES Events(eventID),
   FOREIGN KEY (scheduleType) REFERENCES ScheduleTypes(scheduleType),
@@ -134,9 +137,9 @@ DELIMITER ;
 
 ##Insert new Output
 DELIMITER $$
-CREATE PROCEDURE `addNewOutput` (IN `p_type` VARCHAR(32), IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128))
+CREATE PROCEDURE `addNewOutput` (IN `p_type` VARCHAR(32), IN `p_name` VARCHAR(64), IN `p_PWM` BOOLEAN, IN `p_PWMInversion` BOOLEAN, IN `p_description` VARCHAR(128) )
 MODIFIES SQL DATA
-	INSERT INTO Outputs (outputType, outputName, outputDescription) VALUES (p_type, p_name, p_description);
+	INSERT INTO Outputs (outputType, outputName, outputPWM, outputPWMInversion, outputDescription) VALUES (p_type, p_name, p_PWM, p_PWMInversion, p_description);
 $$
 DELIMITER ;
 
