@@ -23,8 +23,8 @@ module.exports = async function(req, res, next) {
           return res.status(400).send("Invalid credentials!");
         } else {
           let token = jwt.sign({username: username}, config.jwt_secret, {expiresIn: config.jwt_expiration_time})
-          res.locals.token = token
-          res.locals.username = username
+          res.clearCookie("token")
+          res.cookie("token", token, {maxAge: config.jwt_expiration_time * 1000, httpOnly: true})
           next()
         }
       })
@@ -37,7 +37,8 @@ module.exports = async function(req, res, next) {
         return res.status(400).send("Invalid JSON Web Token!");
       } else {
         let token = jwt.sign({username: username}, config.jwt_secret, {expiresIn: config.jwt_expiration_time})
-        res.locals.token = token
+        res.clearCookie("token")
+        res.cookie("token", token, {maxAge: config.jwt_expiration_time * 1000, httpOnly: true})
         next()
       }
     })

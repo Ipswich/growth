@@ -46,9 +46,7 @@ script.
           $('#schedule').html(res.schedules);
           $('#current-conditions').html(res.currentConditions);
           $('#UpdateDeleteButton').attr("disabled", false);
-          $('#UpdateUpdateButton').attr("disabled", false);
-          localStorage.removeItem("token")                
-          localStorage.setItem("token", res.token)                
+          $('#UpdateUpdateButton').attr("disabled", false);           
           alert(res.msg);
           $('#updateScheduleModal').modal('hide');
           $('#UpdateForm').trigger("reset");

@@ -30,10 +30,6 @@ $(document).ready(function() {
       success: function(res) {
         $('#schedule').html(res.schedules);
         $('#SensorSubmitButton').attr("disabled", false);
-
-        localStorage.removeItem("token")                
-        localStorage.setItem("token", res.token)
-
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
         $('#SensorForm').trigger("reset");
@@ -64,11 +60,7 @@ $(document).ready(function() {
       headers: header,
       success: function(res) {
         $('#schedule').html(res.schedules);
-        $('#TimeSubmitButton').attr("disabled", false);
-
-        localStorage.removeItem("token")                
-        localStorage.setItem("token", res.token)
-                
+        $('#TimeSubmitButton').attr("disabled", false);            
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
         $('#TimeForm').trigger("reset");
@@ -99,11 +91,7 @@ $(document).ready(function() {
       headers: header,
       success: function(res) {
         $('#schedule').html(res.schedules);
-        $('#PeriodicSubmitButton').attr("disabled", false);
-
-        localStorage.removeItem("token")                
-        localStorage.setItem("token", res.token)
-                
+        $('#PeriodicSubmitButton').attr("disabled", false);             
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
         $('#PeriodicForm').trigger("reset");
