@@ -33,16 +33,22 @@ script.
       $('#UpdateUpdateButton').attr("disabled", true);
       var form = $(this);
       var data = form.serializeArray();
+      let header = {
+        'Authorization':`Bearer ${localStorage.getItem("token")}`,
+      }
       $.ajax({
         type: 'POST',
         url: '/updateSchedule',
         data: data,
         cache: false,
+      headers: header,
         success: function(res) {
           $('#schedule').html(res.schedules);
           $('#current-conditions').html(res.currentConditions);
           $('#UpdateDeleteButton').attr("disabled", false);
           $('#UpdateUpdateButton').attr("disabled", false);
+          localStorage.removeItem("token")                
+          localStorage.setItem("token", res.token)                
           alert(res.msg);
           $('#updateScheduleModal').modal('hide');
           $('#UpdateForm').trigger("reset");

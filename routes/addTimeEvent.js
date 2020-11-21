@@ -25,6 +25,7 @@ router.post('/', auth, async function(req, res, next) {
     res.status(500).send("Database error! Could not fetch index.");                              
   })
   let returnData = {}
+  returnData.token = res.locals.token
   returnData.msg = "Time event successfully added!"
   returnData.schedules = indexData.schedules
   res.status(200).send(returnData);                     

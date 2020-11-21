@@ -16,17 +16,24 @@ $(document).ready(function() {
   $('#SensorForm').submit(function(e) {
     e.preventDefault();
     $('#SensorSubmitButton').attr("disabled", true);
-
     var form = $(this);
     var data = form.serializeArray();
+    let header = {
+      'Authorization':`Bearer ${localStorage.getItem("token")}`,
+   }
     $.ajax({
       type: 'POST',
       url: '/addSensorEvent',
       data: data,
       cache: false,
+      headers: header,
       success: function(res) {
         $('#schedule').html(res.schedules);
         $('#SensorSubmitButton').attr("disabled", false);
+
+        localStorage.removeItem("token")                
+        localStorage.setItem("token", res.token)
+
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
         $('#SensorForm').trigger("reset");
@@ -44,17 +51,24 @@ $(document).ready(function() {
   $('#TimeForm').submit(function(e) {
     e.preventDefault();
     $('#TimeSubmitButton').attr("disabled", true);
-
     var form = $(this);
     var data = form.serializeArray();
+    let header = {
+      'Authorization':`Bearer ${localStorage.getItem("token")}`,
+   }
     $.ajax({
       type: 'POST',
       url: '/addTimeEvent',
       data: data,
       cache: false,
+      headers: header,
       success: function(res) {
         $('#schedule').html(res.schedules);
         $('#TimeSubmitButton').attr("disabled", false);
+
+        localStorage.removeItem("token")                
+        localStorage.setItem("token", res.token)
+                
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
         $('#TimeForm').trigger("reset");
@@ -72,17 +86,24 @@ $(document).ready(function() {
   $('#PeriodicForm').submit(function(e) {
     e.preventDefault();
     $('#PeriodicSubmitButton').attr("disabled", true);
-
     var form = $(this);
     var data = form.serializeArray();
+    let header = {
+      'Authorization':`Bearer ${localStorage.getItem("token")}`,
+   }
     $.ajax({
       type: 'POST',
       url: '/addPeriodicEvent',
       data: data,
       cache: false,
+      headers: header,
       success: function(res) {
         $('#schedule').html(res.schedules);
         $('#PeriodicSubmitButton').attr("disabled", false);
+
+        localStorage.removeItem("token")                
+        localStorage.setItem("token", res.token)
+                
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
         $('#PeriodicForm').trigger("reset");
