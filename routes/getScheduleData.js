@@ -3,9 +3,9 @@ var router = express.Router();
 var mysql = require('mysql');
 var pug = require('pug');
 const path = require('path');
-const moment = require('moment')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
-
+const moment = require('moment')
+const utils = require('../custom_node_modules/utility_modules/Utils.js')
 
 router.post('/', async function(req, res, next) {
   //Set variables for pug rendering (get file location, prep function)
@@ -38,11 +38,12 @@ router.post('/', async function(req, res, next) {
     var sensors = {sensors: await dbcalls.getEnabledSensors().catch(() => {
       res.status(500).send("Database error! Could not fetch schedule data.")
     })}
-    
+    //Check if authenticated
+    var authenticated = {authenticated: utils.cookieDetector(req)}
     //Create data object for rendering html
     defaultData = {}
     defaultData.defaults = await formatDefaults(schedule, outputs, events, sensors)
-    var data = Object.assign({}, defaultData, schedule, sensorTypes, outputs, events, sensors);
+    var data = Object.assign({}, defaultData, schedule, sensorTypes, outputs, events, sensors, authenticated);
     //Render html, send to server!        
     var html = fn(data);
     res.status(200).send(html);                     

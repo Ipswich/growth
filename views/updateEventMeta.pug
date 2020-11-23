@@ -8,15 +8,18 @@ div
       include ./updateEventMetaSensor.pug
     else if schedule.scheduleType == 'Periodic'
       include ./updateEventMetaPeriodic.pug
-                    
-    div.form-group   
-      div.form-row
-        div.col-5
-          label(for="username") Username
-          input(type="text" name="username" required).form-control.formStyle
-        div.col
-          label(for="password") Password
-          input(type="password" name="password" required).form-control.formStyle
+
+      
+    unless authenticated              
+      div.form-group   
+        div.form-row
+          div.col-5
+            label(for="username") Username
+            input(type="text" name="username" required).form-control.formStyle
+          div.col
+            label(for="password") Password
+            input(type="password" name="password" required).form-control.formStyle
+  
     div.form-group
       div.form-row
         div.col          
@@ -25,46 +28,9 @@ div
 
 
 script.
-  $(document).ready(function() {
-    $('#UpdateForm').off().submit(function(e) {
 
-      e.preventDefault();
-      $('#UpdateDeleteButton').attr("disabled", true);
-      $('#UpdateUpdateButton').attr("disabled", true);
-      var form = $(this);
-      var data = form.serializeArray();
-      let header = {
-        'Authorization':`Bearer ${localStorage.getItem("token")}`,
-      }
-      $.ajax({
-        type: 'POST',
-        url: '/updateSchedule',
-        data: data,
-        cache: false,
-      headers: header,
-        success: function(res) {
-          $('#schedule').html(res.schedules);
-          $('#current-conditions').html(res.currentConditions);
-          $('#UpdateDeleteButton').attr("disabled", false);
-          $('#UpdateUpdateButton').attr("disabled", false);           
-          alert(res.msg);
-          $('#updateScheduleModal').modal('hide');
-          $('#UpdateForm').trigger("reset");
-        },
-        error: function(res) {
-          $('#UpdateDeleteButton').attr("disabled", false);
-          $('#UpdateUpdateButton').attr("disabled", false);
-          alert(res);
-        }
-      });
-    });
-  });
+  $().ready(function(){
+    updateForm()
+  })
   
-  function setDelete(){
-    $('#UpdateMode').val('Delete');
-  }
-  
-  function setUpdate(){
-    $('#UpdateMode').val('Update');
-  }
   

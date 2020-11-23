@@ -1,65 +1,25 @@
 const REFRESH_INTERVAL = 60 * 1000 // 1 minute
 
-//Prevent accidental form entries
-$(document).ready(function() {
-  $(window).keydown(function(event){
-    if(event.keyCode == 13) {
-      event.preventDefault();
-      return false;
-    }
-  });
-});
 
-
-//AJAX for sensorForm (addSensorEvent)
-$(document).ready(function() {
-  $('#SensorForm').submit(function(e) {
-    e.preventDefault();
-    $('#SensorSubmitButton').attr("disabled", true);
-    var form = $(this);
-    var data = form.serializeArray();
-    let header = {
-      'Authorization':`Bearer ${localStorage.getItem("token")}`,
-   }
-    $.ajax({
-      type: 'POST',
-      url: '/addSensorEvent',
-      data: data,
-      cache: false,
-      headers: header,
-      success: function(res) {
-        $('#schedule').html(res.schedules);
-        $('#SensorSubmitButton').attr("disabled", false);
-        alert(res.msg);
-        $('#newScheduleModal').modal('hide');
-        $('#SensorForm').trigger("reset");
-      },
-      error: function(res) {
-        $('#SensorSubmitButton').attr("disabled", false);
-        alert(res.responseText);
-      }
-    });
-  });
-});
 
 //AJAX for timeForm (addTimeEvent)
-$(document).ready(function() {
+function timeForm() {
   $('#TimeForm').submit(function(e) {
     e.preventDefault();
     $('#TimeSubmitButton').attr("disabled", true);
     var form = $(this);
     var data = form.serializeArray();
-    let header = {
-      'Authorization':`Bearer ${localStorage.getItem("token")}`,
-   }
     $.ajax({
       type: 'POST',
       url: '/addTimeEvent',
       data: data,
       cache: false,
-      headers: header,
       success: function(res) {
         $('#schedule').html(res.schedules);
+        $('#newScheduleModal').html(res.addEvent)
+        timeForm();
+        sensorForm();
+        periodicForm();
         $('#TimeSubmitButton').attr("disabled", false);            
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
@@ -71,26 +31,57 @@ $(document).ready(function() {
       }
     });
   });
-});
+}
+
+//AJAX for sensorForm (addSensorEvent)
+function sensorForm() {
+  $('#SensorForm').submit(function(e) {
+    e.preventDefault();
+    $('#SensorSubmitButton').attr("disabled", true);
+    var form = $(this);
+    var data = form.serializeArray();
+    $.ajax({
+      type: 'POST',
+      url: '/addSensorEvent',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#schedule').html(res.schedules);
+        $('#newScheduleModal').html(res.addEvent)
+        timeForm();
+        sensorForm();
+        periodicForm();
+        $('#SensorSubmitButton').attr("disabled", false);
+        alert(res.msg);
+        $('#newScheduleModal').modal('hide');
+        $('#SensorForm').trigger("reset");
+      },
+      error: function(res) {
+        $('#SensorSubmitButton').attr("disabled", false);
+        alert(res.responseText);
+      }
+    });
+  });
+}
 
 //AJAX for periodicForm (addPeriodicEvent)
-$(document).ready(function() {
+function periodicForm() {
   $('#PeriodicForm').submit(function(e) {
     e.preventDefault();
     $('#PeriodicSubmitButton').attr("disabled", true);
     var form = $(this);
     var data = form.serializeArray();
-    let header = {
-      'Authorization':`Bearer ${localStorage.getItem("token")}`,
-   }
     $.ajax({
       type: 'POST',
       url: '/addPeriodicEvent',
       data: data,
       cache: false,
-      headers: header,
       success: function(res) {
         $('#schedule').html(res.schedules);
+        $('#newScheduleModal').html(res.addEvent)
+        timeForm();
+        sensorForm();
+        periodicForm();
         $('#PeriodicSubmitButton').attr("disabled", false);             
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
@@ -102,76 +93,77 @@ $(document).ready(function() {
       }
     });
   });
-});
+}
 
-//AJAX for generating schedule update modal
-$(document).ready(function() {
-  $(function(){
-    $('#updateScheduleModal').modal({
-      keyboard: true,
-      show: false
-    }).on('show.bs.modal', function(){
-      var data = $(event.target).closest('tr').data('scheduleid');
-      var datagram = {};
-      datagram.data = data;
-      $.ajax({
-        type: 'POST',
-        url: '/getScheduleData',
-        data: datagram,
-        cache: false,
-        success: function(res) {
-          $('#updateScheduleContent').html(res);
-          $('#updateScheduleContent').collapse('show');
-        },
-        error: function(res) {
-          alert("Server could not be reached.");
-        }
-      });
-    }).on('hidden.bs.modal', function(){
-        $('#updateScheduleContent').html("Loading. . .");
-        $('#updateScheduleContent').collapse('hide');
+//AJAX for updateForm (updateSchedule)
+//This function is called in updateEventMeta.pug due to some weirdness
+//in element generation. As this form is generated and not present otherwise,
+//this function is best called when the form is actually created.
+function updateForm() {
+  $('#UpdateForm').submit(function(e) {
+    e.preventDefault();
+    $('#UpdateDeleteButton').attr("disabled", true);
+    $('#UpdateUpdateButton').attr("disabled", true);
+    var form = $(this);
+    var data = form.serializeArray();
+    $.ajax({
+      type: 'POST',
+      url: '/updateSchedule',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#schedule').html(res.schedules);
+        $('#current-conditions').html(res.currentConditions);
+        $('#newScheduleModal').html(res.addEvent)
+        timeForm();
+        sensorForm();
+        periodicForm();
+        $('#UpdateDeleteButton').attr("disabled", false);
+        $('#UpdateUpdateButton').attr("disabled", false);           
+        alert(res.msg);
+        $('#updateScheduleModal').modal('hide');
+        $('#UpdateForm').trigger("reset");
+      },
+      error: function(res) {
+        $('#UpdateDeleteButton').attr("disabled", false);
+        $('#UpdateUpdateButton').attr("disabled", false);
+        alert(res);
+      }
     });
   });
-});
+}
 
-//AJAX for updating schedule (updateSchedule.js)
-//Weirdly doesn't seem to work when placed here, so it's commented out but located
-//in the PUG (updateEventMeta.pug) file under a script element.
+//AJAX for generating schedule update modal
+function updateScheduleModal() {
+  $('#updateScheduleModal').modal({
+    keyboard: true,
+    show: false
+  }).on('show.bs.modal', function(){
+    var data = $(event.target).closest('tr').data('scheduleid');
+    var datagram = {};
+    datagram.data = data;
+    $.ajax({
+      type: 'POST',
+      url: '/getScheduleData',
+      data: datagram,
+      cache: false,
+      success: function(res) {
+        $('#updateScheduleContent').html(res);
+        $('#updateScheduleContent').collapse('show');
+      },
+      error: function(res) {
+        alert("Server could not be reached.");
+      }
+    });
+  }).on('hidden.bs.modal', function(){
+      $('#updateScheduleContent').html("Loading. . .");
+      $('#updateScheduleContent').collapse('hide');
+  });
+};
 
-// $(document).ready(function() {
-//   $('#UpdateForm').off().submit(function(e) {
-//
-//     e.preventDefault();
-//     $('#UpdateDeleteButton').attr("disabled", true);
-//     $('#UpdateUpdateButton').attr("disabled", true);
-//     var form = $(this);
-//     var data = form.serializeArray();
-//     $.ajax({
-//       type: 'POST',
-//       url: '/updateSchedule',
-//       data: data,
-//       cache: false,
-//       success: function(res) {
-//         $('#schedule').html(res.schedules);
-//         $('#current-conditions').html(res.currentConditions);
-//         $('#UpdateDeleteButton').attr("disabled", false);
-//         $('#UpdateUpdateButton').attr("disabled", false);
-//         alert(res.msg);
-//         $('#updateScheduleModal').modal('hide');
-//         $('#UpdateForm').trigger("reset");
-//       },
-//       error: function(res) {
-//         $('#UpdateDeleteButton').attr("disabled", false);
-//         $('#UpdateUpdateButton').attr("disabled", false);
-//         console.log(res);
-//         alert(res);
-//       }
-//     });
-//   });
-// });
 
 //Conditions and schedule refresh
-$(document).ready(function() {
+function dataRefresh() {
   setInterval(function() {
     let select = document.getElementById("chart_interval")
     let datagram = {interval: select.value}
@@ -183,13 +175,72 @@ $(document).ready(function() {
       success: function(res) {
         $('#schedule').html(res.schedules);
         $('#current-conditions').html(res.currentConditions);
+        $('#newScheduleModal').html(res.addEvent)
+        timeForm();
+        sensorForm();
+        periodicForm();
       },
       error: function(res) {
         console.error("Could not contact server to update charts!")
       }
     });
   }, REFRESH_INTERVAL)
-});
+};
+
+// Ajax for on change of chart interval
+function chartIntervalChange() {
+  $('#chart_interval').on('change', function() {
+    let select = document.getElementById("chart_interval")
+    $('#chart_interval').attr("disabled", true);
+    let datagram = {interval: select.value}
+    $.ajax({
+      type: 'POST',
+      url: '/api/getEnvironment',
+      data: datagram,
+      cache: false,
+      success: function(res) {
+        $('#chart_interval').attr("disabled", false);
+        $('#schedule').html(res.schedules);
+        $('#current-conditions').html(res.currentConditions);
+        $('#newScheduleModal').html(res.addEvent)
+        timeForm();
+        sensorForm();
+        periodicForm();
+      },
+      error: function(res) {
+        $('#chart_interval').attr("disabled", false);
+        alert("Could not update charts.");
+      }
+    });
+  })
+}
+
+function docuReady() {
+  dataRefresh()
+  sensorForm()
+  timeForm()
+  periodicForm()
+  // updateForm()
+  updateScheduleModal()
+  chartIntervalChange()
+  //Prevent accidental form entries
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+}
+
+$(document).ready(docuReady);
+
+function setDelete(){
+  $('#UpdateMode').val('Delete');
+}
+
+function setUpdate(){    
+  $('#UpdateMode').val('Update');
+}
 
 function generateChart(sensorID, sensorUnits, data, sensorType){    
   let config = generateChartConfig(sensorUnits, data, sensorType)
@@ -280,27 +331,3 @@ function generateChartConfig(sensorUnits, data, sensorType){
   }
   return config
 }
-
-// Ajax for on change of chart interval
-$(document).ready(function() {
-  $('#chart_interval').on('change', function() {
-    let select = document.getElementById("chart_interval")
-    $('#chart_interval').attr("disabled", true);
-    let datagram = {interval: select.value}
-    $.ajax({
-      type: 'POST',
-      url: '/api/getEnvironment',
-      data: datagram,
-      cache: false,
-      success: function(res) {
-        $('#chart_interval').attr("disabled", false);
-        $('#schedule').html(res.schedules);
-        $('#current-conditions').html(res.currentConditions);
-      },
-      error: function(res) {
-        $('#chart_interval').attr("disabled", false);
-        alert("Could not update charts.");
-      }
-    });
-  })
-})

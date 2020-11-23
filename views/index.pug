@@ -24,7 +24,8 @@ block content
           div.col-4
     div(id="schedule" role="tabpanel" arealabelledby="nav-schedule").tab-pane.fade
       include ./schedules.pug
-      
-  include ./addEvent.pug                  
+
+  div(id="newScheduleModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true").modal.fade   
+    include ./addEvent.pug                  
   include ./updateEvent.pug  
     

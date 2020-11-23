@@ -89,14 +89,15 @@ div
 
 
 
-    div.form-group   
-      div.form-row
-        div.col-5
-          label(for="username") Username
-          input(type="text" name="username" required).form-control.formStyle
-        div.col
-          label(for="password") Password
-          input(type="password" name="password" required).form-control.formStyle
+    unless authenticated  
+      div.form-group   
+        div.form-row
+          div.col-5
+            label(for="username") Username
+            input(type="text" name="username" required).form-control.formStyle
+          div.col
+            label(for="password") Password
+            input(type="password" name="password" required).form-control.formStyle
     div.form-group
       div.form-row
         div.col

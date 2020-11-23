@@ -22,25 +22,33 @@ module.exports = async function(req, res, next) {
         if (result != true){
           return res.status(400).send("Invalid credentials!");
         } else {
-          let token = jwt.sign({username: username}, config.jwt_secret, {expiresIn: config.jwt_expiration_time})
+          let token = jwt.sign({username: username.slice(1, -1)}, config.jwt_secret, {expiresIn: config.jwt_expiration_time})          
           res.clearCookie("token")
           res.cookie("token", token, {maxAge: config.jwt_expiration_time * 1000, httpOnly: true})
+          res.locals.username = username.slice(1, -1)
+          res.locals.authenticated = true
           next()
         }
       })
     }
-  } else {
-    let tokenArray = req.headers.authorization.split(" ")
-    let username = jwt.decode(tokenArray[1]).username.slice(1, -1)
-    jwt.verify(tokenArray[1], config.jwt_secret, (err, value) => {
-      if (err) {      
-        return res.status(400).send("Invalid JSON Web Token!");
+  } else if (req.cookies.token){
+    let decode = jwt.decode(req.cookies.token)
+    let username = decode.username
+    jwt.verify(req.cookies.token, config.jwt_secret, (err, value) => {
+      if (err) {    
+        res.clearCookie("token")
+        return res.status(400).send("Invalid JSON Web Token! Please login again.");
       } else {
-        let token = jwt.sign({username: username}, config.jwt_secret, {expiresIn: config.jwt_expiration_time})
+        let token = jwt.sign({username: username}, config.jwt_secret, {expiresIn: config.jwt_expiration_time})        
         res.clearCookie("token")
         res.cookie("token", token, {maxAge: config.jwt_expiration_time * 1000, httpOnly: true})
+        res.locals.username = username
+        res.locals.authenticated = true
         next()
       }
     })
+  } else {
+    res.clearCookie("token")
+    res.status(400).send("Login expired, please refresh page.")
   }
 }
