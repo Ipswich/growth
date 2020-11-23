@@ -4,6 +4,7 @@ const app = require("../app");
 setTimeout(function() {
   describe("GET /", function() {
     it("it should have status code 200", function(done) {
+      this.timeout(10000)
       request(app)
         .get("/")
         .expect(200, done);
