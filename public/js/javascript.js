@@ -16,10 +16,7 @@ function timeForm() {
       cache: false,
       success: function(res) {
         $('#schedule').html(res.schedules);
-        $('#newScheduleModal').html(res.addEvent)
-        timeForm();
-        sensorForm();
-        periodicForm();
+        $('#newScheduleModal').html(res.addEvent)      
         $('#TimeSubmitButton').attr("disabled", false);            
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
@@ -48,9 +45,6 @@ function sensorForm() {
       success: function(res) {
         $('#schedule').html(res.schedules);
         $('#newScheduleModal').html(res.addEvent)
-        timeForm();
-        sensorForm();
-        periodicForm();
         $('#SensorSubmitButton').attr("disabled", false);
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
@@ -79,9 +73,6 @@ function periodicForm() {
       success: function(res) {
         $('#schedule').html(res.schedules);
         $('#newScheduleModal').html(res.addEvent)
-        timeForm();
-        sensorForm();
-        periodicForm();
         $('#PeriodicSubmitButton').attr("disabled", false);             
         alert(res.msg);
         $('#newScheduleModal').modal('hide');
@@ -115,9 +106,6 @@ function updateForm() {
         $('#schedule').html(res.schedules);
         $('#current-conditions').html(res.currentConditions);
         $('#newScheduleModal').html(res.addEvent)
-        timeForm();
-        sensorForm();
-        periodicForm();
         $('#UpdateDeleteButton').attr("disabled", false);
         $('#UpdateUpdateButton').attr("disabled", false);           
         alert(res.msg);
@@ -176,9 +164,6 @@ function dataRefresh() {
         $('#schedule').html(res.schedules);
         $('#current-conditions').html(res.currentConditions);
         $('#newScheduleModal').html(res.addEvent)
-        timeForm();
-        sensorForm();
-        periodicForm();
       },
       error: function(res) {
         console.error("Could not contact server to update charts!")
@@ -203,9 +188,6 @@ function chartIntervalChange() {
         $('#schedule').html(res.schedules);
         $('#current-conditions').html(res.currentConditions);
         $('#newScheduleModal').html(res.addEvent)
-        timeForm();
-        sensorForm();
-        periodicForm();
       },
       error: function(res) {
         $('#chart_interval').attr("disabled", false);
@@ -217,10 +199,6 @@ function chartIntervalChange() {
 
 function docuReady() {
   dataRefresh()
-  sensorForm()
-  timeForm()
-  periodicForm()
-  // updateForm()
   updateScheduleModal()
   chartIntervalChange()
   //Prevent accidental form entries

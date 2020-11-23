@@ -100,6 +100,8 @@ new Promise(async (resolve) => {
 }).then(async (state) => {
   //Initialize the system based on those states
   await systemInitializer.initialize(state, app);
+}).then(() => {
+  app.emit('gh')
 });
 
 module.exports = app;
