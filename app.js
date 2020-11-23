@@ -42,8 +42,7 @@ app.set('config', config);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// QUIET YE PRINTOUTS
-app.use(logger('dev')); 
+// app.use(logger('dev')); 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
