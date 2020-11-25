@@ -7,8 +7,8 @@ div
           each output, index in outputs
             if output.outputID == schedule.outputID
               option(value=output.outputID selected) #{output.outputName}
-          else 
-            option(value=output.outputID) #{output.outputName}
+            else 
+              option(value=output.outputID) #{output.outputName}
       div.col-4
         label(for="UpdateOutputValue") Output Value
         select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
