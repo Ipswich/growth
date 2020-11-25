@@ -1,19 +1,5 @@
 div
-  form(id="PeriodicForm" method="POST")      
-    div.form-group
-      div.form-row
-        div.col
-          label(for="PeriodicOutput") Output
-          select(id="PeriodicOutput" name="PeriodicOutput" required).form-control.formStyle.custom-select
-            each output, index in outputs
-              option(value=output.outputID) #{output.outputName}
-        div.col-4
-          label(for="PeriodicOutputValue") Output Value
-          select(id="PeriodicOutputValue" name="PeriodicOutputValue" required).form-control.formStyle.custom-select
-            - for(var i = 100; i>= 1; i--)
-              option= i 
-
-
+  form(id="PeriodicForm" method="POST")   
     div.form-group
       h6 Duration
       div.form-row.justify-content-around
@@ -86,6 +72,20 @@ div
                 <input type="time" value="`+moment().format('LT')+`" id="PeriodicTrigger" name="PeriodicTrigger" class="form-control formStyle" required>
                 `;
               }
+       
+    div.form-group
+      div.form-row
+        div.col-8
+          label(for="PeriodicOutput") Output
+          select(id="PeriodicOutput" name="PeriodicOutput" required).form-control.formStyle.custom-select
+            each output, index in outputs
+              option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+        div(id="PeriodicOutputValueDiv").col-4
+          label(for="PeriodicOutputValue") Output Value
+          select(id="PeriodicOutputValue" name="PeriodicOutputValue" required).form-control.formStyle.custom-select
+            - for(var i = 100; i>= 1; i--)
+              option= i 
+
 
 
 
@@ -106,4 +106,5 @@ script.
 
   $().ready(function(){
     periodicForm()
+    outputValueHider('#PeriodicOutput', '#PeriodicOutputValueDiv')
   })

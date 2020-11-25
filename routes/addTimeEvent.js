@@ -13,9 +13,10 @@ router.post('/', auth, async function(req, res, next) {
       sanitizedData[key] = null
     }
     sanitizedData[key] = mysql.escape(sanitizedData[key])
-  }  
+  }
+  let output = sanitizedData.TimeOutput.slice(1, -1).split("|")[0]
   //DO STUFF WITH ESCAPED DATA
-  await dbcalls.addNewSchedule("'Time'", sanitizedData.TimeEvent, null, null, sanitizedData.TimeOutput, sanitizedData.TimeOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.TimeTrigger) + "'", null, null, utils.formatDateString(sanitizedData.TimeStartDate), utils.formatDateString(sanitizedData.TimeEndDate), '1', "'"+res.locals.username+"'", null)
+  await dbcalls.addNewSchedule("'Time'", sanitizedData.TimeEvent, null, null, output, sanitizedData.TimeOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.TimeTrigger) + "'", null, null, utils.formatDateString(sanitizedData.TimeStartDate), utils.formatDateString(sanitizedData.TimeEndDate), '1', "'"+res.locals.username+"'", null)
   .catch(() => {
     console.log(res.locals)
     return res.status(500).send("Database error! Event not added.");

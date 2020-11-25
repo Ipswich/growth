@@ -1,6 +1,15 @@
 const REFRESH_INTERVAL = 60 * 1000 // 1 minute
 
-
+function outputValueHider(output_element_ID, output_PWM_ID){
+ $(output_element_ID).on('change', function() {
+   let PWM = $(this).val().split("|")[1]
+   if (PWM == 0){
+     $(output_PWM_ID).fadeOut()
+   } else {
+     $(output_PWM_ID).fadeIn()
+   }
+ })
+}
 
 //AJAX for timeForm (addTimeEvent)
 function timeForm() {

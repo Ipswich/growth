@@ -43,12 +43,12 @@ div
             }  
     div.form-group
       div.form-row
-        div.col
+        div.col-8
           label(for="TimeOutput") Output
           select(id="TimeOutput" name="TimeOutput" required).form-control.formStyle.custom-select
-            each output, index in outputs
-              option(value=output.outputID) #{output.outputName}
-        div.col-4
+            each output, index in outputs              
+              option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+        div(id="TimeOutputValueDiv").col-4
           label(for="TimeOutputValue") Output Value
           select(id="TimeOutputValue" name="TimeOutputValue" required).form-control.formStyle.custom-select
             - for(var i = 100; i>= 1; i--)
@@ -113,4 +113,5 @@ script.
 
   $().ready(function(){
     timeForm()
+    outputValueHider('#TimeOutput', '#TimeOutputValueDiv')
   })
