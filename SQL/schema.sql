@@ -7,6 +7,7 @@ USE `growth`;
 CREATE TABLE Users (
   username VARCHAR(32) NOT NULL,
   passhash CHAR(60) NOT NULL,
+  email, VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (username)
 );
 
@@ -303,7 +304,6 @@ DELIMITER $$
 CREATE PROCEDURE `getEnabledEvents` ()
 READS SQL DATA
   SELECT * FROM Events WHERE Eenabled = 1
-  ORDER BY eventName DESC
   $$
 DELIMITER ;
 
@@ -422,6 +422,7 @@ SELECT * FROM Schedules s
 JOIN Events AS e ON s.eventID=e.eventID
 LEFT JOIN Sensors AS n on s.sensorID=n.sensorID
 JOIN Outputs AS o on s.outputID=o.outputID
+JOIN (SELECT username, email FROM Users) as u on s.addedBy=u.username
 WHERE s.Senabled = 1
   AND ((LOCALTIMESTAMP <= s.scheduleStopDate OR s.scheduleStopDate IS NULL) AND (LOCALTIMESTAMP >= s.scheduleStartDate OR s.scheduleStartDate IS NULL))
 ORDER BY -eventTriggerTime DESC, outputName DESC
@@ -451,9 +452,9 @@ DELIMITER ;
 
 ##Add New User
 DELIMITER $$
-CREATE PROCEDURE `addNewUser` (IN `p_username` VARCHAR(32), IN `p_hash` VARCHAR(60))
+CREATE PROCEDURE `addNewUser` (IN `p_username` VARCHAR(32), IN `p_hash` VARCHAR(60), in `p_email` VARCHAR(255))
 MODIFIES SQL DATA
-  INSERT INTO Users (username, passhash) VALUES (p_username, p_hash)
+  INSERT INTO Users (username, passhash, email) VALUES (p_username, p_hash, p_email)
 $$
 DELIMITER ;
 

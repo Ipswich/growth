@@ -1,13 +1,13 @@
 div.form-group
   div.form-row
     div.col-5
-      label(for="eventUpdateEvent") Event
-      select(id="eventUpdateEvent" name="UpdateEvent").form-control.custom-select.formStyle
+      label(for="UpdateEvent") Event
+      select(id="UpdateEvent" name="UpdateEvent").form-control.custom-select.formStyle
         each event, index in events
           if event.eventName == defaults.eventName
-            option(value=event.eventID selected) #{event.eventName}
+            option(value=(event.eventID + "|" + event.eventName) selected) #{event.eventName}
           else 
-            option(value=event.eventID) #{event.eventName}
+            option(value=(event.eventID + "|" + event.eventName)) #{event.eventName}
     div(id="UpdateTimeDiv" data-defaultTime=defaults.eventTriggerTime).col-4
       script.
         var defaultTime = $("#UpdateTimeDiv").data('defaulttime');
@@ -43,24 +43,37 @@ div.form-group
           <input type="time" id="UpdateTrigger" name="UpdateTrigger" value="` + defaultTime + `" class="form-control formStyle" required>
           `;
         }        
-div.form-group      
+div(id='UpdateOutputDiv').form-group      
   div.form-row
-    div.col
+    div.col-8
       label(for="UpdateOutput") Output
       select(id="UpdateOutput" name="UpdateOutput" required).form-control.formStyle.custom-select
         each output, index in outputs
           if output.outputID == schedule.outputID
-            option(value=output.outputID selected) #{output.outputName}
+            option(value=(output.outputID + '|' + output.outputPWM) selected) #{output.outputName}
           else 
-            option(value=output.outputID) #{output.outputName}
-    div.col-4
+            option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+    div(id="UpdateOutputValueDiv").col-4
       label(for="UpdateOutputValue") Output Value
       select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
         - for(var i = 100; i>= 1; i--)
           if i == defaults.outputValue
             option(selected)= i
           else 
-            option= i        
+            option= i    
+
+div(id="UpdateWarnDiv").form-group
+  div.form-row
+    div.col-4
+      label(for="SensorWarnInterval") Warning Timeout
+      select(id="SensorWarnInterval" name="SensorWarnInterval").form-control.formStyle.custom-select
+        option(value=60) 1 Hour
+        option(value=120 selected) 2 Hours
+        option(value=240) 4 Hours
+        option(value=480) 8 Hours
+        option(value=720) 12 Hours
+        option(value=960) 16 Hours
+        option(value=1440) 24 Hours 
 div.form-group
   div.form-row
     div.col

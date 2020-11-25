@@ -14,6 +14,8 @@ div.card.schedule-card
               if(schedule.outputPWM == 1)
                 if(schedule.eventName == 'Output Off')
                   td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}]
+                else if (schedule.eventName == 'Warn')
+                  td.align-middle.schedule-data #{schedule.email}<br>  #[spawn.blue #{schedule.eventDescription}]
                 else
                   td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
               else  
@@ -36,6 +38,8 @@ div.card.schedule-card
             if(schedule.outputPWM == 1)
               if(schedule.eventName == 'Output Off')
                 td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}]
+              else if (schedule.eventName == 'Warn')
+                td.align-middle.schedule-data #{schedule.email}<br>  #[spawn.blue #{schedule.eventDescription}]
               else
                 td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
             else  

@@ -46,7 +46,8 @@ router.post('/', async function(req, res, next) {
     var data = Object.assign({}, defaultData, schedule, sensorTypes, outputs, events, sensors, authenticated);
     //Render html, send to server!        
     var html = fn(data);
-    res.status(200).send(html);                     
+    let result = Object.assign({}, {html: html}, defaultData);
+    res.status(200).send(result);                     
   };
 })
 

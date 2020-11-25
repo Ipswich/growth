@@ -6,7 +6,7 @@ div
           label(for="TimeEvent") Event
           select(id="TimeEvent" name="TimeEvent").form-control.custom-select.formStyle
             each event, index in events
-              option(value=event.eventID) #{event.eventName}
+              option(value=(event.eventID + "|" + event.eventName)) #{event.eventName}
         div.col-4(id="TimeTimeDiv")
           script.
             if (!Modernizr.inputtypes.time) {
@@ -41,7 +41,9 @@ div
               <input type="time" id="TimeTrigger" name="TimeTrigger" class="form-control formStyle" required>
               `;
             }  
-    div.form-group
+
+
+    div(id="TimeOutputDiv").form-group
       div.form-row
         div.col-8
           label(for="TimeOutput") Output
@@ -52,7 +54,20 @@ div
           label(for="TimeOutputValue") Output Value
           select(id="TimeOutputValue" name="TimeOutputValue" required).form-control.formStyle.custom-select
             - for(var i = 100; i>= 1; i--)
-              option= i   
+              option= i
+
+    div(id="TimeWarnDiv").form-group
+      div.form-row
+        div.col-4
+          label(for="TimeWarnInterval") Warning Timeout
+          select(id="TimeWarnInterval" name="TimeWarnInterval").form-control.formStyle.custom-select
+            option(value=60) 1 Hour
+            option(value=120 selected) 2 Hours
+            option(value=240) 4 Hours
+            option(value=480) 8 Hours
+            option(value=720) 12 Hours
+            option(value=960) 16 Hours
+            option(value=1440) 24 Hours   
     div.form-group           
       label(for="TimeDateDiv") #[a(href="#TimeDateDiv" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseStart").website-link Optional]
       div(id="TimeDateDiv").form-row.collapse
@@ -114,4 +129,5 @@ script.
   $().ready(function(){
     timeForm()
     outputValueHider('#TimeOutput', '#TimeOutputValueDiv')
+    outputHider('#TimeEvent', '#TimeOutputDiv', '#TimeWarnDiv', true)
   })
