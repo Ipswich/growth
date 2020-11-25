@@ -27,12 +27,12 @@ div
           input(type="number" name="SensorSensorValue" min="0" step="1" maxlength="4" required).form-control.formStyle
     div.form-group
       div.form-row
-        div.col
+        div.col-8
           label(for="SensorOutput") Output
           select(id="SensorOutput" name="SensorOutput" required).form-control.formStyle.custom-select
             each output, index in outputs
-              option(value=output.outputID) #{output.outputName}
-        div.col-4
+              option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+        div(id="SensorOutputValueDiv").col-4
           label(for="SensorOutputValue") Output Value
           select(id="SensorOutputValue" name="SensorOutputValue" required).form-control.formStyle.custom-select
             - for(var i = 100; i>= 1; i--)
@@ -97,4 +97,5 @@ script.
 
   $().ready(function(){
     sensorForm()
+    outputValueHider('#SensorOutput', '#SensorOutputValueDiv')
   })
