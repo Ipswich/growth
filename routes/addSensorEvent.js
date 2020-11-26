@@ -17,7 +17,7 @@ router.post('/', auth, async function(req, res, next) {
   let output = sanitizedData.SensorOutput.slice(1, -1).split("|")[0]
   let event = sanitizedData.SensorEvent.slice(1, -1).split("|")[0]
   //DO STUFF WITH ESCAPED DATA
-  await dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.SensorSensorName, sanitizedData.SensorSensorValue, output, sanitizedData.SensorOutputValue, sanitizedData.SensorComparator, null, null, null, utils.formatDateString(sanitizedData.SensorStartDate), utils.formatDateString(sanitizedData.SensorEndDate), '1', "'"+res.locals.username+"'", null)
+  await dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.SensorSensorName, sanitizedData.SensorSensorValue, output, sanitizedData.SensorOutputValue, sanitizedData.SensorComparator, null, null, sanitizedData.SensorWarnInterval, utils.formatDateString(sanitizedData.SensorStartDate), utils.formatDateString(sanitizedData.SensorEndDate), '1', "'"+res.locals.username+"'", null)
   .catch(() => {
     res.status(500).send("Database error! Event not added.");
   });

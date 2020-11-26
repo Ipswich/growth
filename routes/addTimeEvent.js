@@ -16,11 +16,10 @@ router.post('/', auth, async function(req, res, next) {
   }
   let output = sanitizedData.TimeOutput.slice(1, -1).split("|")[0]
   let event = sanitizedData.TimeEvent.slice(1, -1).split("|")[0]
-  //DO STUFF WITH ESCAPED DATA
   console.log(sanitizedData)
-  await dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.TimeOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.TimeTrigger) + "'", null, null, utils.formatDateString(sanitizedData.TimeStartDate), utils.formatDateString(sanitizedData.TimeEndDate), '1', "'"+res.locals.username+"'", null)
+  //DO STUFF WITH ESCAPED DATA
+  await dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.TimeOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.TimeTrigger) + "'", null, sanitizedData.TimeWarnInterval, utils.formatDateString(sanitizedData.TimeStartDate), utils.formatDateString(sanitizedData.TimeEndDate), '1', "'"+res.locals.username+"'", null)
   .catch(() => {
-    console.log(res.locals)
     return res.status(500).send("Database error! Event not added.");
   });
   //Get index data

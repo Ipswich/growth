@@ -46,13 +46,17 @@ router.post('/', auth, async function(req, res, next) {
     if (sanitizedData.UpdateMode == "'Update'"){
       // Update time schedule
       if (dbschedule.scheduleType == 'Time'){
-        dbcalls.addNewSchedule("'Time'", sanitizedData.UpdateEvent, null, null, sanitizedData.UpdateOutput, sanitizedData.UpdateOutputValue, null, "'"+utils.formatTimeStringForDB(sanitizedData.UpdateTrigger)+"'", null, null, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null)
+        let output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
+        let event = sanitizedData.UpdateEvent.slice(1, -1).split("|")[0]
+        dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.UpdateOutputValue, null, "'"+utils.formatTimeStringForDB(sanitizedData.UpdateTrigger)+"'", null, sanitizedData.UpdateWarnInterval, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null)
         .catch(() => {                    
           res.status(500).send("Database error! Event not changed. (failed at update)");
         })
       // Update Sensor schedule
       } else if (dbschedule.scheduleType == 'Sensor') {
-        dbcalls.addNewSchedule("'Sensor'", sanitizedData.UpdateEvent, sanitizedData.UpdateName, sanitizedData.UpdateSensorValue, sanitizedData.UpdateOutput, sanitizedData.UpdateOutputValue, sanitizedData.UpdateComparator, null, null, null, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null)
+        let output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
+        let event = sanitizedData.UpdateEvent.slice(1, -1).split("|")[0]
+        dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.UpdateName, sanitizedData.UpdateSensorValue, output, sanitizedData.UpdateOutputValue, sanitizedData.UpdateComparator, null, null, sanitizedData.UpdateWarnInterval, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null)
         .catch(()=> {
           res.status(500).send("Database error! Event not changed. (failed at update)");
         });

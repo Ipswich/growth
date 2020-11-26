@@ -9,6 +9,13 @@
     "multipleStatements": "true",
     "connectionLimit": 25
   },
+  "nodemailer": {
+    "service": "gmail",
+    "auth": {
+      "user": "null",
+      "pass": "null"
+    }
+  },
   "node_port": 26420,
   "salt_rounds": 10,
   "log_interval": 60000,
