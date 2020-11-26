@@ -8,8 +8,25 @@ function outputValueHider(output_element_ID, output_PWM_ID){
    } else {
      $(output_PWM_ID).fadeIn()
    }
- })
+ }).trigger("change")
 }
+
+function outputHider(output_element_ID, element_to_hide, element_to_show, trigger){
+  $(output_element_ID).on('change', function() {
+    let event = $(this).val().split("|")[1]
+    if (event == 'Warn'){
+      $(element_to_hide).fadeOut({done: () => {
+        $(element_to_show).fadeIn()
+      }})
+    } else {$(element_to_show).fadeOut({done: () => {
+      $(element_to_hide).fadeIn()
+    }})
+    }
+  })
+  if (trigger) {
+    $(output_element_ID).trigger("change")
+  }
+ }
 
 //AJAX for timeForm (addTimeEvent)
 function timeForm() {
@@ -112,9 +129,9 @@ function updateForm() {
       data: data,
       cache: false,
       success: function(res) {
+        $('#newScheduleModal').html(res.addEvent)
         $('#schedule').html(res.schedules);
         $('#current-conditions').html(res.currentConditions);
-        $('#newScheduleModal').html(res.addEvent)
         $('#UpdateDeleteButton').attr("disabled", false);
         $('#UpdateUpdateButton').attr("disabled", false);           
         alert(res.msg);
@@ -145,7 +162,14 @@ function updateScheduleModal() {
       data: datagram,
       cache: false,
       success: function(res) {
-        $('#updateScheduleContent').html(res);
+        $('#updateScheduleContent').html(res.html);
+        $('#UpdateOutputDiv').hide()
+        $('#UpdateWarnDiv').hide()
+        if(res.defaults.eventName == "Warn"){
+          $('#UpdateWarnDiv').show()
+        } else {
+          $('#UpdateOutputDiv').show()
+        }
         $('#updateScheduleContent').collapse('show');
       },
       error: function(res) {

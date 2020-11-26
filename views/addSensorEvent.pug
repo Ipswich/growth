@@ -6,7 +6,7 @@ div
           label(for="SensorEvent") Event
           select(id="SensorEvent" name="SensorEvent").form-control.custom-select.formStyle
             each event, index in events
-              option(value=event.eventID) #{event.eventName}
+              option(value=(event.eventID + "|" + event.eventName)) #{event.eventName}
     div.form-group
       div.form-row
         div.col-11
@@ -16,16 +16,15 @@ div
               option(value=sensor.sensorID) #{sensor.sensorType} @ #{sensor.sensorLocation}
     div.form-group
       div.form-row
-        div.col-3
+        div.col-4
           label(for="SensorComparator") Comparator
           select(id="SensorComparator" name="SensorComparator").form-control.custom-select.formStyle
             option <
-            option >
-    
+            option >    
         div.col-4
           label(for="SensorSensorValue") Sensor Value
           input(type="number" name="SensorSensorValue" min="0" step="1" maxlength="4" required).form-control.formStyle
-    div.form-group
+    div(id='SensorOutputDiv').form-group
       div.form-row
         div.col-8
           label(for="SensorOutput") Output
@@ -36,8 +35,20 @@ div
           label(for="SensorOutputValue") Output Value
           select(id="SensorOutputValue" name="SensorOutputValue" required).form-control.formStyle.custom-select
             - for(var i = 100; i>= 1; i--)
-              option= i   
-              
+              option= i 
+
+    div(id="SensorWarnDiv").form-group
+      div.form-row
+        div.col-6
+          label(for="SensorWarnInterval") Warning Timeout
+          select(id="SensorWarnInterval" name="SensorWarnInterval").form-control.formStyle.custom-select
+            option(value=60) 1 Hour
+            option(value=120 selected) 2 Hours
+            option(value=240) 4 Hours
+            option(value=480) 8 Hours
+            option(value=720) 12 Hours
+            option(value=960) 16 Hours
+            option(value=1440) 24 Hours              
     div.form-group           
       label(for="SensorDateDiv") #[a(href="#SensorDateDiv" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseStart").website-link Optional]
       div(id="SensorDateDiv").form-row.collapse
@@ -98,4 +109,5 @@ script.
   $().ready(function(){
     sensorForm()
     outputValueHider('#SensorOutput', '#SensorOutputValueDiv')
+    outputHider('#SensorEvent', '#SensorOutputDiv', '#SensorWarnDiv', true)
   })

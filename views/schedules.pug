@@ -11,13 +11,15 @@ div.card.schedule-card
           if schedule.scheduleType == 'Time'
             tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
               td.align-middle #{schedule.eventTriggerTime}
-              if(schedule.outputPWM == 1)
-                if(schedule.eventName == 'Output Off')
-                  td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}]
-                else
-                  td.align-middle.schedule-data #{schedule.outputName}  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
-              else  
-                td.align-middle.schedule-data #{schedule.outputName} #[span.blue #{schedule.eventDescription}]
+              if (schedule.eventName == 'Warn')
+                td.align-middle.schedule-data #{schedule.username}<br>  #[spawn.blue #{schedule.eventDescription}]
+              else if (schedule.eventName == 'Output Off')
+                td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}]
+              else if (schedule.eventName == 'Output On')
+                if (schedule.outputPWM == 1)
+                  td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
+                else  
+                  td.align-middle.schedule-data #{schedule.outputName}<br> #[span.blue #{schedule.eventDescription}]
 br                
 div.card.schedule-card
   div.scheduleContainer.table-responsive-sm.rounded
@@ -33,13 +35,15 @@ div.card.schedule-card
           tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
             td.align-middle #{schedule.sensorType} @<br> #{schedule.sensorLocation}
             td.align-middle.green #{schedule.scheduleComparator} #{schedule.sensorValue}#{schedule.sensorUnits}            
-            if(schedule.outputPWM == 1)
-              if(schedule.eventName == 'Output Off')
-                td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}]
-              else
+            if (schedule.eventName == 'Warn')
+              td.align-middle.schedule-data #{schedule.username}<br>  #[spawn.blue #{schedule.eventDescription}]
+            else if (schedule.eventName == 'Output Off')
+              td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}]
+            else if (schedule.eventName == 'Output On')
+              if (schedule.outputPWM == 1)
                 td.align-middle.schedule-data #{schedule.outputName}<br>  #[spawn.blue #{schedule.eventDescription}] - #[span.green #{schedule.outputValue}%]
-            else  
-              td.align-middle.schedule-data #{schedule.outputName}<br> #[span.blue #{schedule.eventDescription}]
+              else  
+                td.align-middle.schedule-data #{schedule.outputName}<br> #[span.blue #{schedule.eventDescription}]
 br                
 div.card.schedule-card
   div.scheduleContainer.table-responsive-sm.rounded
