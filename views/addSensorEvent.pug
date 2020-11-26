@@ -16,12 +16,11 @@ div
               option(value=sensor.sensorID) #{sensor.sensorType} @ #{sensor.sensorLocation}
     div.form-group
       div.form-row
-        div.col-3
+        div.col-4
           label(for="SensorComparator") Comparator
           select(id="SensorComparator" name="SensorComparator").form-control.custom-select.formStyle
             option <
-            option >
-    
+            option >    
         div.col-4
           label(for="SensorSensorValue") Sensor Value
           input(type="number" name="SensorSensorValue" min="0" step="1" maxlength="4" required).form-control.formStyle
@@ -40,7 +39,7 @@ div
 
     div(id="SensorWarnDiv").form-group
       div.form-row
-        div.col-4
+        div.col-6
           label(for="SensorWarnInterval") Warning Timeout
           select(id="SensorWarnInterval" name="SensorWarnInterval").form-control.formStyle.custom-select
             option(value=60) 1 Hour
