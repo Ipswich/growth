@@ -48,7 +48,7 @@ router.post('/', auth, async function(req, res, next) {
       if (dbschedule.scheduleType == 'Time'){
         let output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
         let event = sanitizedData.UpdateEvent.slice(1, -1).split("|")[0]
-        dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.UpdateOutputValue, null, "'"+utils.formatTimeStringForDB(sanitizedData.UpdateTrigger)+"'", null, sanitizedData.UpdateWarnInterval, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null)
+        dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.UpdateOutputValue, null, "'"+utils.formatTimeStringForDB(sanitizedData.UpdateTrigger)+"'", null, null, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null)
         .catch(() => {                    
           res.status(500).send("Database error! Event not changed. (failed at update)");
         })
