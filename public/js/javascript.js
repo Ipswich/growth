@@ -44,7 +44,7 @@ function timeForm() {
         $('#schedule').html(res.schedules);
         $('#newScheduleModal').html(res.addEvent)      
         $('#TimeSubmitButton').attr("disabled", false);            
-        alert(res.msg);
+        // alert(res.msg);
         $('#newScheduleModal').modal('hide');
         $('#TimeForm').trigger("reset");
       },
@@ -72,7 +72,7 @@ function sensorForm() {
         $('#schedule').html(res.schedules);
         $('#newScheduleModal').html(res.addEvent)
         $('#SensorSubmitButton').attr("disabled", false);
-        alert(res.msg);
+        // alert(res.msg);
         $('#newScheduleModal').modal('hide');
         $('#SensorForm').trigger("reset");
       },
@@ -100,7 +100,7 @@ function periodicForm() {
         $('#schedule').html(res.schedules);
         $('#newScheduleModal').html(res.addEvent)
         $('#PeriodicSubmitButton').attr("disabled", false);             
-        alert(res.msg);
+        // alert(res.msg);
         $('#newScheduleModal').modal('hide');
         $('#PeriodicForm').trigger("reset");
       },
@@ -134,7 +134,7 @@ function updateForm() {
         $('#current-conditions').html(res.currentConditions);
         $('#UpdateDeleteButton').attr("disabled", false);
         $('#UpdateUpdateButton').attr("disabled", false);           
-        alert(res.msg);
+        // alert(res.msg);
         $('#updateScheduleModal').modal('hide');
         $('#UpdateForm').trigger("reset");
       },
@@ -342,3 +342,11 @@ function generateChartConfig(sensorUnits, data, sensorType){
   }
   return config
 }
+
+$(document).on('click', 'a[href^="#"]', function (event) {
+  event.preventDefault();
+
+  $('html, body').animate({
+      scrollTop: $($.attr(this, 'href')).offset().top
+  }, 500);
+});

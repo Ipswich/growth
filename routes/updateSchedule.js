@@ -71,12 +71,13 @@ router.post('/', auth, async function(req, res, next) {
       msg = "Event successfully modified!";
     }
     //Get index data
-    let indexData = await utils.getIndexData(res, req);
+    let addEvent = await utils.getAddEventHTML(res, req)
+    let schedules = await utils.getSchedulesHTML(res, req)
     let returnData = {}
     returnData.token = res.locals.token
     returnData.msg = msg
-    returnData.schedules = indexData.schedules
-    returnData.addEvent = indexData.addEvent
+    returnData.schedules = schedules.schedules
+    returnData.addEvent = addEvent.addEvent
     res.status(200).send(returnData);                   
   }
 });
