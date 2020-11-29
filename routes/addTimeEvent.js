@@ -22,16 +22,17 @@ router.post('/', auth, async function(req, res, next) {
     return res.status(500).send("Database error! Event not added.");
   });
   //Get index data
-  let indexData = await utils.getIndexData(res, req)
+  let addEvent = await utils.getAddEventHTML(res, req)
+  let schedules = await utils.getSchedulesHTML(res, req)
   .catch(() => {
-    return res.status(500).send("Database error! Could not fetch index.");                              
+    res.status(500).send("Database error! Could not fetch index.");                              
   })
   let returnData = {}
   returnData.token = res.locals.token
   returnData.msg = "Time event successfully added!"
-  returnData.schedules = indexData.schedules
-  returnData.addEvent = indexData.addEvent
-  return res.status(200).send(returnData);                     
+  returnData.schedules = schedules.schedules
+  returnData.addEvent = addEvent.addEvent
+  res.status(200).send(returnData);                    
 });
 
 module.exports = router;

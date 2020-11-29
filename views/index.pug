@@ -15,13 +15,11 @@ block content
       div(id="current-conditions") 
         include ./currentConditions.pug
       div(id="current-conditions-selector").container
-        div.row
-          div.col-4
-          div.col-4
+        div.row.justify-content-around
+          div.col-5
             select(id='chart_interval' name='chart_interval').form-control.custom-select.formStyle
               each val in intervals
-                option(value=val.interval, selected=val.default) #{val.title}                    
-          div.col-4
+                option(value=val.interval, selected=val.default) #{val.title}
     div(id="schedule" role="tabpanel" arealabelledby="nav-schedule").tab-pane.fade
       include ./schedules.pug
 
