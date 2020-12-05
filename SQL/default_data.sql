@@ -10,6 +10,7 @@ CALL addNewOutputType('Water', 1);
 CALL addNewScheduleType ('Time', 1);
 CALL addNewScheduleType ('Sensor', 1);
 CALL addNewScheduleType ('Periodic', 1);
+CALL addNewScheduleType ('Manual', 1);
 
 CALL addNewEvent ('Output On', 'ON', 1);
 CALL addNewEvent ('Output Off', 'OFF', 1);

@@ -49,12 +49,31 @@
   border: none;
 }
 
+#manual-list {
+  color: var(--website-text-normal);
+}
+
+#manual-list-header {
+  color: var(--website-text-normal);
+  background-color:var(--website-bg-light);
+  text-align: center;
+  border: none;
+}
+
 .data-list-group.list-group-item {
   background-color:var(--website-bg-light);
   text-align: left;
   color: var(--website-text-normal);
   font-weight: bold;
   text-decoration: underline;
+  border: none;
+}
+
+.data-list-group.list-group-subitem {
+  background-color:var(--website-bg-light);
+  text-align: left;
+  color: var(--website-text-normal);
+  font-weight: bold;
   border: none;
 }
 
@@ -71,12 +90,27 @@
   border: none;
 }
 
+.manual-list-item.list-group-item {
+  background-color:var(--website-bg-light);
+  text-align: left;
+  padding-left: 30px;
+  padding-right: 30px;
+  color: var(--website-text-normal);
+  border: none;
+}
+
+.manual-list-item.list-group-item:hover {
+  /* background-color:var(--website-bg-normal); */
+  border: none;
+}
+
 .chart-div {
   padding-left: 12px;
   padding-right: 20px;
   color: var(--website-text-normal);
   background-color:var(--website-bg-light);
 }
+
 
 #chart_interval {
   border: none;
@@ -163,7 +197,20 @@
   box-shadow: none;
 }
 
+#ManualSubmitButton {
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+
 .modal-body.modalStyle .formStyle {
+  border: none;
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+
+.form-control.formStyle {
   border: none;
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);

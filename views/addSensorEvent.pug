@@ -34,7 +34,7 @@ div
         div(id="SensorOutputValueDiv").col-4
           label(for="SensorOutputValue") Output Value
           select(id="SensorOutputValue" name="SensorOutputValue" required).form-control.formStyle.custom-select
-            - for(var i = 100; i>= 1; i--)
+            - for(var i = 100; i>= 0; i--)
               option= i 
 
     div(id="SensorWarnDiv").form-group

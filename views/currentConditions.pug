@@ -10,7 +10,7 @@ div#data-list.list-group
 br
 div#chart-container
   each val, index in sensorData
-    div(id=val.sensorID + '-chart-div').chart-div
+    div(id=val.sensorID + '-chart-div').chart-div.rounded
       a#data-list-header.list-group-item.py-1 
       h5 #{val.sensorType} @ #{val.sensorLocation}
       canvas(id=val.sensorID + '-canvas')

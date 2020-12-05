@@ -42,7 +42,8 @@ function timeForm() {
       cache: false,
       success: function(res) {
         $('#schedule').html(res.schedules);
-        $('#newScheduleModal').html(res.addEvent)      
+        $('#newScheduleModal').html(res.addEvent)  
+        $('#manual').html(res.manual);    
         $('#TimeSubmitButton').attr("disabled", false);            
         // alert(res.msg);
         $('#newScheduleModal').modal('hide');
@@ -71,6 +72,7 @@ function sensorForm() {
       success: function(res) {
         $('#schedule').html(res.schedules);
         $('#newScheduleModal').html(res.addEvent)
+        $('#manual').html(res.manual);
         $('#SensorSubmitButton').attr("disabled", false);
         // alert(res.msg);
         $('#newScheduleModal').modal('hide');
@@ -99,6 +101,7 @@ function periodicForm() {
       success: function(res) {
         $('#schedule').html(res.schedules);
         $('#newScheduleModal').html(res.addEvent)
+        $('#manual').html(res.manual);
         $('#PeriodicSubmitButton').attr("disabled", false);             
         // alert(res.msg);
         $('#newScheduleModal').modal('hide');
@@ -131,7 +134,7 @@ function updateForm() {
       success: function(res) {
         $('#newScheduleModal').html(res.addEvent)
         $('#schedule').html(res.schedules);
-        $('#current-conditions').html(res.currentConditions);
+        $('#manual').html(res.manual);
         $('#UpdateDeleteButton').attr("disabled", false);
         $('#UpdateUpdateButton').attr("disabled", false);           
         // alert(res.msg);
@@ -141,7 +144,114 @@ function updateForm() {
       error: function(res) {
         $('#UpdateDeleteButton').attr("disabled", false);
         $('#UpdateUpdateButton').attr("disabled", false);
-        alert(res);
+        alert("Error on manual change.");
+      }
+    });
+  });
+}
+
+//AJAX and stuff for Manual Control
+function manualForm() {
+
+  $('.manualCheckbox').each(function()
+  {
+    let id = (this.id).split('|')[1]
+    let manualOutputDiv = '#manualOutputDiv' + id
+    let manualOutputSwitch = '#manualOutputSwitch' + id
+    let manualOutputValue = '#manualOutputValue_' + id
+    if(!$(this).is(':checked')) {              
+      $(manualOutputDiv + " *").hide()
+    }
+    $(this).on('change', function() {
+      if(this.checked) {
+        $(manualOutputDiv + " *").fadeIn()
+      } else {
+        $(manualOutputDiv + " *").fadeOut()
+      }
+    })
+    $(manualOutputValue).on('change', function() {    
+      if(!$(manualOutputSwitch).prop('checked')){
+        $(manualOutputSwitch).prop('checked', true).trigger('change')
+      }
+    })     
+  })  
+
+  $('#ManualForm').submit(function(e) {
+    e.preventDefault();
+    $('#ManualSubmitButton').attr("disabled", true);
+    var form = $(this);
+    var data = form.serializeArray();
+  
+    $.ajax({
+      type: 'POST',
+      url: '/addManualEvent',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#newScheduleModal').html(res.addEvent)
+        $('#schedule').html(res.schedules);
+        $('#manual').html(res.manual);
+        $('#ManualSubmitButton').attr("disabled", false);         
+        // alert(res.msg);
+      },
+      error: function(res) {
+        $('#ManualSubmitButton').attr("disabled", false);
+        alert("Error on manual change.");
+      }
+    });
+  });
+}
+
+function manualFormOnChange(){
+  $('#manual').find("select").on('change', function(e) {
+    let outputID = $(this).attr('id').split('_')[1]
+    let manualOutputSwitch = '#manualOutputSwitch' + outputID
+    e.preventDefault();
+    $('#ManualSubmitButton').attr("disabled", true);
+    var form = $('#ManualForm');
+    var data = form.serializeArray();
+    //If output is manually on, send POST
+    if($(manualOutputSwitch).prop('checked') == true){
+      $.ajax({
+        type: 'POST',
+        url: '/addManualEvent',
+        data: data,
+        cache: false,
+        success: function(res) {
+          $('#newScheduleModal').html(res.addEvent)
+          $('#schedule').html(res.schedules);
+          // $('#manual').html(res.manual);
+          $('#ManualSubmitButton').attr("disabled", false);         
+          // alert(res.msg);
+        },
+        error: function(res) {
+          $('#ManualSubmitButton').attr("disabled", false);
+          alert("Error on manual change.");
+        }
+      });
+    }
+  });
+
+  $('#manual').find(":checkbox").on('change', function(e) {
+    e.preventDefault();
+    $('#ManualSubmitButton').attr("disabled", true);
+    var form = $('#ManualForm');
+    var data = form.serializeArray();
+    $.ajax({
+      type: 'POST',
+      url: '/addManualEvent',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#newScheduleModal').html(res.addEvent)
+        $('#schedule').html(res.schedules);
+        // $('#manual').html(res.manual);
+        $('#ManualSubmitButton').attr("disabled", false);         
+        // alert(res.msg);
+      },
+      error: function(res) {
+        $('#ManualSubmitButton').attr("disabled", false);
+        alert("Error on manual change.");
       }
     });
   });

@@ -9,6 +9,8 @@ block content
           a(id="nav-current-conditions" data-toggle="pill" href="#current-conditions-div" role="tab" aria-controls="current-conditions-div" aria-selected="true").nav-pill.nav-link.active Current Conditions
       li.nav-item
           a(id="nav-schedule" data-toggle="pill" href="#schedule" role="tab" aria-controls="schedule" aria-selected="false").nav-pill.nav-link Schedule
+      li.nav-item
+          a(id="nav-manual" data-toggle="pill" href="#manual" role="tab" aria-controls="manual" aria-selected="false").nav-pill.nav-link Manual
   br
   div(id="pills-tabContent").tab-content
     div(id="current-conditions-div" role="tabpanel" arealabelledby="nav-current-conditions").tab-pane.fade.show.active
@@ -22,6 +24,8 @@ block content
                 option(value=val.interval, selected=val.default) #{val.title}
     div(id="schedule" role="tabpanel" arealabelledby="nav-schedule").tab-pane.fade
       include ./schedules.pug
+    div(id="manual" role="tabpanel" arealabelledby="nav-manual").tab-pane.fade
+      include ./manual.pug
 
   div(id="newScheduleModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true").modal.fade   
     include ./addEvent.pug                  

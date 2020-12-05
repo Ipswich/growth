@@ -1,0 +1,78 @@
+div#manual-list.list-group
+  a#manual-list-header.list-group-item.py-1 
+  a.data-list-group.list-group-item.list-group-item-action.py-1 Schedule/Manual Toggle
+  div.manual-list-item.list-group-item.manual-div
+    form(id="ManualForm" method="POST")
+      each output, index in state
+        div.form-group
+          div.form-row.align-items-center
+            div.custom-control.custom-switch.form-check
+              if output.outputController == 'Manual'
+                input(id="manualToggle|" + output.outputID type="checkbox" name="manualToggle_" + output.outputID checked).custom-control-input.manualCheckbox  
+                input(id="manualToggle|" + output.outputID type="hidden" name="manualToggle_" + output.outputID value='off')
+              else
+                input(id="manualToggle|" + output.outputID name="manualToggle_" + output.outputID type="checkbox").custom-control-input.manualCheckbox  
+                input(id="manualToggle|" + output.outputID name="manualToggle_" + output.outputID type="hidden" value='off')
+              label(for="manualToggle|" + output.outputID).custom-control-label #{output.outputName}
+        div(id="manualOutputDiv" + output.outputID).form-group
+          div.form-row.align-items-center
+            div.col-1
+            div.custom-control.custom-switch.form-check
+              if output.outputController == 'Manual'
+                if output.manualState == 'Output On'
+                  input(id="manualOutputSwitch" + output.outputID name="manualOutputSwitch_" + output.outputID type="checkbox" checked).custom-control-input  
+                  input(id="manualOutputSwitch" + output.outputID name="manualOutputSwitch_" + output.outputID type="hidden" value='off')
+                else
+                  input(id="manualOutputSwitch" + output.outputID name="manualOutputSwitch_" + output.outputID type="checkbox").custom-control-input      
+                  input(id="manualOutputSwitch" + output.outputID name="manualOutputSwitch_" + output.outputID type="hidden" value='off')                
+              else
+                if output.scheduleState == 'Output On'
+                  input(id="manualOutputSwitch" + output.outputID name="manualOutputSwitch_" + output.outputID type="checkbox" checked).custom-control-input  
+                  input(id="manualOutputSwitch" + output.outputID name="manualOutputSwitch_" + output.outputID type="hidden" value='off')
+                else
+                  input(id="manualOutputSwitch" + output.outputID name="manualOutputSwitch_" + output.outputID type="checkbox").custom-control-input      
+                  input(id="manualOutputSwitch" + output.outputID name="manualOutputSwitch_" + output.outputID type="hidden" value='off')
+              label(for="manualOutputSwitch" + output.outputID).custom-control-label Off/On
+            if output.outputPWMPin != null
+              div(style="text-align: center").col-1
+                a.data-list-group.list-group-subitem.list-group-item-action.py-1 @
+              div(id="manualOutputValueDiv" + output.outputID).col-6.custom-control
+                select(id="manualOutputValue_" + output.outputID name="manualOutputValue_" + output.outputID required).form-control.formStyle.custom-select
+                  //- option(disabled, selected) Output Value...
+                  if output.outputController == 'Manual'
+                    - for(var i = 100; i>= 0; i--)
+                        if i == output.manualOutputValue
+                          option(selected)= i      
+                        else
+                          option= i  
+                  else
+                    - for(var i = 100; i>= 0; i--)
+                        if i == output.scheduleOutputValue
+                          option(selected)= i      
+                        else
+                          option= i  
+      unless authenticated      
+        div.form-group   
+          div.form-row
+            div.col-5
+              label(for="username").float-left Username
+              input(type="text" name="username" required).form-control.formStyle
+            div.col
+              label(for="password").float-left Password
+              input(type="password" name="password" required).form-control.formStyle
+        div.form-group
+          div.form-row
+            div.col
+              button(id="ManualSubmitButton" type="submit").btn.float-right.submitButton Submit
+  a#data-list-header.list-group-item.py-1
+
+if authenticated
+  script.
+    $().ready(function(){
+      manualFormOnChange()
+    })
+
+script.
+  $().ready(function(){
+    manualForm()
+  })
