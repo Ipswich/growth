@@ -70,7 +70,7 @@ router.post('/', auth, async function(req, res, next) {
       if(outputState.getOutputController(element.outputID) != "Schedule"){
         outputState.setOutputController(element.outputID, "Schedule")
         console.log(currentTime + "  " + outputState.getOutputName(element.outputID) + ": switched to [Schedule]")
-        eventTriggers.resumeSchedule(outputState.getOutput(element.outputID))      
+        eventTriggers.resumeSchedule(outputState, element.outputID)      
       }
       // If manual toggle off, give control to Schedule
       return
