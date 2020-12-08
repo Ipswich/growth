@@ -16,6 +16,7 @@ var indexRouter = require('./routes/index');
 var addTimeEventRouter = require('./routes/addTimeEvent');
 var addSensorEventRouter = require('./routes/addSensorEvent');
 var addPeriodicEventRouter = require('./routes/addPeriodicEvent');
+var addManualEventRouter = require('./routes/addManualEvent');
 var getScheduleDataRouter = require('./routes/getScheduleData');
 var updateScheduleRouter = require('./routes/updateSchedule');
 
@@ -66,6 +67,7 @@ app.use('/', indexRouter);
 app.use('/addTimeEvent', addTimeEventRouter);
 app.use('/addSensorEvent', addSensorEventRouter);
 app.use('/addPeriodicEvent', addPeriodicEventRouter);
+app.use('/addManualEvent', addManualEventRouter);
 app.use('/getScheduleData', getScheduleDataRouter);
 app.use('/updateSchedule', updateScheduleRouter);
 

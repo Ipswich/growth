@@ -73,11 +73,13 @@ router.post('/', auth, async function(req, res, next) {
     //Get index data
     let addEvent = await utils.getAddEventHTML(res, req)
     let schedules = await utils.getSchedulesHTML(res, req)
+    let manual = await utils.getManualHTML(res, req)
     let returnData = {}
     returnData.token = res.locals.token
     returnData.msg = msg
     returnData.schedules = schedules.schedules
     returnData.addEvent = addEvent.addEvent
+    returnData.manual = manual.manual
     res.status(200).send(returnData);                   
   }
 });

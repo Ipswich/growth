@@ -12,7 +12,7 @@ div
       div.col-4
         label(for="UpdateOutputValue") Output Value
         select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
-          - for(var i = 100; i>= 1; i--)
+          - for(var i = 100; i>= 0; i--)
             if i == defaults.outputValue
               option(selected)= i
             else 

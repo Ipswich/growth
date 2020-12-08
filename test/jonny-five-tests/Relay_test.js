@@ -5,6 +5,9 @@ var board = new five.Board({
 });
 
 board.on("ready", function() {
-  var relay = new five.Relay({pin:24});
-  relay.open()
+  var relay = new five.Relay({pin:2});
+  setInterval(function() {
+    relay.toggle()
+    console.log("toggle")
+  }, 2000)
 });

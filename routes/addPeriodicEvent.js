@@ -27,6 +27,7 @@ router.post('/', auth, async function(req, res, next) {
   //Get index data
   let addEvent = await utils.getAddEventHTML(res, req)
   let schedules = await utils.getSchedulesHTML(res, req)
+  let manual = await utils.getManualHTML(res, req)
   .catch(() => {
     res.status(500).send("Database error! Could not fetch index.");                              
   })
@@ -35,6 +36,7 @@ router.post('/', auth, async function(req, res, next) {
   returnData.msg = "Periodic event successfully added!"
   returnData.schedules = schedules.schedules
   returnData.addEvent = addEvent.addEvent
+  returnData.manual = manual.manual
   res.status(200).send(returnData);                     
 });
 
