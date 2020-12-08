@@ -65,21 +65,26 @@ router.post('/', auth, async function(req, res, next) {
   //DO STUFF WITH ESCAPED DATA
   let currentTime = '[' + moment().format('HH:mm') + ']'
   await organizedData.forEach(async (element) => {
+    //Update last controller
     outputState.setLastOutputController(element.outputID, outputState.getOutputController(element.outputID))
+    // If the schedule/manual is set to schedule
     if(element.manualToggle == "'off'"){
+      //If current output controller is not Schedule
       if(outputState.getOutputController(element.outputID) != "Schedule"){
+        //Update output controller, log schedule change, and resume.
         outputState.setOutputController(element.outputID, "Schedule")
-        console.log(currentTime + "  " + outputState.getOutputName(element.outputID) + ": switched to [Schedule]")
+        console.log(currentTime + "  " + outputState.getOutputName(element.outputID) + ": controller set to [Schedule]")
         eventTriggers.resumeSchedule(outputState, element.outputID)      
       }
-      // If manual toggle off, give control to Schedule
+      // end if not controlled by schedule
       return
     } else {
+      //If not manual, update controller to manual, log manual change
       if(outputState.getOutputController(element.outputID) != "Manual"){
-        console.log(currentTime + "  " + outputState.getOutputName(element.outputID) + ": switched to [Manual]")
+        outputState.setOutputController(element.outputID, "Manual")
+        console.log(currentTime + "  " + outputState.getOutputName(element.outputID) + ": controller set to [Manual]")
       }
-      // Else, give control to Manual
-      outputState.setOutputController(element.outputID, "Manual")
+      //Update output value
       if(element.manualOutputValue == undefined) {
         element.manualOutputValue = 100
       }
