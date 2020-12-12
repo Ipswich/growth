@@ -63,7 +63,6 @@ router.post('/', auth, async function(req, res, next) {
     }    
   }
   //DO STUFF WITH ESCAPED DATA
-  let currentTime = '[' + moment().format('M/D/YYYY HH:mm') + ']'
   await organizedData.forEach(async (element) => {
     //Update last controller
     outputState.setLastOutputController(element.outputID, outputState.getOutputController(element.outputID))
