@@ -1,12 +1,14 @@
 -- DEFAULT VALUES --
 USE growth;
 
-CALL addNewOutputType('Light', 1);
-CALL addNewOutputType('Circulation', 1);
-CALL addNewOutputType('Exhaust', 1);
-CALL addNewOutputType('Intake', 1);
-CALL addNewOutputType('Heat', 1);
-CALL addNewOutputType('Water', 1);
+CALL addNewOutputType('PWM Light', 1, 1, 1);
+CALL addNewOutputType('Light', 0, 0, 1);
+CALL addNewOutputType('Circulation', 0, 0, 1);
+CALL addNewOutputType('Exhaust', 0, 0, 1);
+CALL addNewOutputType('PWM Exhaust', 1, 1, 1);
+CALL addNewOutputType('Intake', 0, 0, 1);
+CALL addNewOutputType('Heat', 0, 0, 1);
+CALL addNewOutputType('Water', 0, 0, 1);
 
 CALL addNewScheduleType ('Time', 1);
 CALL addNewScheduleType ('Sensor', 1);

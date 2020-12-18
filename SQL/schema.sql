@@ -13,6 +13,8 @@ CREATE TABLE Users (
 
 CREATE TABLE OutputTypes (
   outputType VARCHAR(32) NOT NULL,
+  outputPWM BOOLEAN NOT NULL DEFAULT 0,
+  outputPWMInversion BOOLEAN NOT NULL DEFAULT 0,
   OTenabled BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (outputType)
 );
@@ -22,8 +24,6 @@ CREATE TABLE Outputs (
   outputType VARCHAR(32) NOT NULL,
   outputName VARCHAR(64) NOT NULL,
   outputDescription VARCHAR(128),
-  outputPWM BOOLEAN NOT NULL DEFAULT 0,
-  outputPWMInversion BOOLEAN NOT NULL DEFAULT 0,
   OEnabled BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (outputID),
   FOREIGN KEY (outputType) REFERENCES OutputTypes(outputType)
@@ -114,9 +114,10 @@ CREATE TABLE ScheduledEventLog (
 
 ##Insert new outputType
 DELIMITER $$
-CREATE PROCEDURE `addNewOutputType` (IN `p_type` VARCHAR(32), IN `p_enabled` BOOLEAN)
+CREATE PROCEDURE `addNewOutputType` (IN `p_type` VARCHAR(32),IN `p_PWM` BOOLEAN, IN `p_PWMInversion` BOOLEAN, IN `p_enabled` BOOLEAN)
 MODIFIES SQL DATA
-  INSERT INTO OutputTypes (outputType, OTenabled) VALUES (p_type, p_enabled)$$
+  INSERT INTO OutputTypes (outputType, outputPWM, outputPWMInversion, OTenabled) VALUES (p_type, p_PWM, p_PWMInversion, p_enabled)
+  $$
 DELIMITER ;
 
 ##Get outputTypes
@@ -138,9 +139,9 @@ DELIMITER ;
 
 ##Insert new Output
 DELIMITER $$
-CREATE PROCEDURE `addNewOutput` (IN `p_type` VARCHAR(32), IN `p_name` VARCHAR(64), IN `p_PWM` BOOLEAN, IN `p_PWMInversion` BOOLEAN, IN `p_description` VARCHAR(128) )
+CREATE PROCEDURE `addNewOutput` (IN `p_type` VARCHAR(32), IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128))
 MODIFIES SQL DATA
-	INSERT INTO Outputs (outputType, outputName, outputPWM, outputPWMInversion, outputDescription) VALUES (p_type, p_name, p_PWM, p_PWMInversion, p_description);
+	INSERT INTO Outputs (outputType, outputName, outputDescription) VALUES (p_type, p_name, p_description);
 $$
 DELIMITER ;
 
@@ -155,7 +156,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getEnabledOutputs`()
 READS SQL DATA
-  SELECT * FROM Outputs WHERE Oenabled = 1
+  SELECT * FROM Outputs LEFT JOIN OutputTypes ON Outputs.outputType=OutputTypes.outputType WHERE Oenabled = 1
   $$
 DELIMITER ;
 #############SENSOR HARDWARE#############
