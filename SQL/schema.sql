@@ -7,7 +7,7 @@ USE `growth`;
 CREATE TABLE Users (
   username VARCHAR(32) NOT NULL,
   passhash CHAR(60) NOT NULL,
-  email, VARCHAR(255) DEFAULT NULL,
+  email VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (username)
 );
 

@@ -1,16 +1,16 @@
 {
-  "board": "mega",
-  "web_data": "../config/web-data-config-default.json",
+  "board": "null",
+  "web_data": "./web-data-config.json",
   "database": {
     "host": "localhost",
-    "user": "null",
+    "user": "growth_admin",
     "password": "null",
     "database": "growth",
     "multipleStatements": "true",
     "connectionLimit": 25
   },
   "nodemailer": {
-    "service": "gmail",
+    "service": "null",
     "auth": {
       "user": "null",
       "pass": "null"
@@ -20,6 +20,6 @@
   "salt_rounds": 10,
   "log_interval": 60000,
   "relay_toggle_prevention": true,
-  "jwt_secret": "null",
+  "jwt_secret": "pleaseChangeMe",
   "jwt_expiration_time": 1800
 }

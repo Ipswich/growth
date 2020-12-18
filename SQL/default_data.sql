@@ -1,4 +1,5 @@
 -- DEFAULT VALUES --
+USE growth;
 
 CALL addNewOutputType('Light', 1);
 CALL addNewOutputType('Circulation', 1);
@@ -21,4 +22,4 @@ CALL addNewSensorType('Pressure', 1);
 CALL addNewSensorType('Humidity', 1);
 CALL addNewSensorType('CarbonDioxide', 0);
 
-CALL addNewUser ('SYSTEM', 'SYSTEM');
+CALL addNewUser ('SYSTEM', 'SYSTEM', NULL);
