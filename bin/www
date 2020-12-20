@@ -3,21 +3,40 @@
 /**
  * Module dependencies.
  */
-var app = require('../app');
-var debug = require('debug')('growth:server');
-var http = require('http');
 //App setup - load config
+
+var fs = require('fs');
+var config;
+var warnState = true;
 try {
-  var config = require('./config/config.json');
+  config = require('../config/config.json');
 } catch (e) {
   console.log("ERROR: Could not locate config.json, using default_config.json instead.");
-  var config = require('./config/default_config.json');
   fs.copyFile('./config/default_config.json', './config/config.json', (err) => {
     if (err) {
       console.log("ERROR: Could not copy default_config.json to config.json.");
     }
+    config = require('../config/config.json');
   });
 }
+// Screen for invalid config values
+if(config.board == 'null'){
+  console.error("ERROR: No board specified in config.")
+  process.exit(-1)
+} else if (config.database.password == 'null'){
+  console.error("ERROR: No database password specified in config.")
+  process.exit(-1)
+} else if (config.jwt_secret == 'null'){
+  console.error("ERROR: jwt_secret has not been changed in config.")
+  process.exit(-1)
+} else if (config.nodemailer.service == 'null' || config.nodemailer.auth.user == 'null' || config.nodemailer.auth.pass == 'null'){
+  console.error("WARNING: nodemailer has not been setup in config, 'Warn' will not be sent.")
+  warnState = false;
+}
+var app = require('../app');
+app.set('warnState', warnState)
+var debug = require('debug')('growth:server');
+var http = require('http');
 
 /**
  * Get port from config or environment and store in Express.

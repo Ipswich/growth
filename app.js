@@ -4,7 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var app = express();
-var fs = require('fs');
 
 //Custom Modules for Events/Readings
 var outputState = require('./custom_node_modules/state_modules/OutputState.js');
@@ -24,17 +23,7 @@ var updateScheduleRouter = require('./routes/updateSchedule');
 var getEnvironmentRouter = require('./api/getEnvironment')
 
 //App setup - load config
-try {
-  var config = require('./config/config.json');
-} catch (e) {
-  console.log("ERROR: Could not locate config.json, using default_config.json instead.");
-  var config = require('./config/default_config.json');
-  fs.copyFile('./config/default_config.json', './config/config.json', (err) => {
-    if (err) {
-      console.log("ERROR: Could not copy default_config.json to config.json.");
-    }
-  });
-}
+var config = require('./config/config.json');
 
 var web_data = require('./config/web-data-config');
 app.set('web_data', web_data);
