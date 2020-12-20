@@ -6,7 +6,18 @@
 var app = require('../app');
 var debug = require('debug')('growth:server');
 var http = require('http');
-var config = require('../config/config.json');
+//App setup - load config
+try {
+  var config = require('./config/config.json');
+} catch (e) {
+  console.log("ERROR: Could not locate config.json, using default_config.json instead.");
+  var config = require('./config/default_config.json');
+  fs.copyFile('./config/default_config.json', './config/config.json', (err) => {
+    if (err) {
+      console.log("ERROR: Could not copy default_config.json to config.json.");
+    }
+  });
+}
 
 /**
  * Get port from config or environment and store in Express.
