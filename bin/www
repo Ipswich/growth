@@ -3,92 +3,203 @@
 /**
  * Module dependencies.
  */
-var app = require('../app');
-var debug = require('debug')('growth:server');
-var http = require('http');
-var config = require('../config/config.json');
+//App setup - load config
 
-/**
- * Get port from config or environment and store in Express.
- */
+var fs = require('fs');
+const { argv } = require('process');
+var readline = require('readline');
+var config;
+var warnState = true;
+config = initializeConfig(config).catch((err) => {
+  process.exit(-1)
+}).then(async (config) => {
+  await configChecker(config, warnState)
+  var app = require('../app');
+  app.set('warnState', warnState)
+  var debug = require('debug')('growth:server');
+  var http = require('http');
 
-if(typeof process.env.PORT == undefined){
-  var port = normalizePort(process.env.PORT);
-} else {
-  var port = normalizePort(config.node_port);
-}
-app.set('port', port);
+  /**
+   * Get port from config or environment and store in Express.
+   */
 
-/**
- * Create HTTP server.
- */
-var server = http.createServer(app);
+  if(typeof process.env.PORT == undefined){
+    var port = normalizePort(process.env.PORT);
+  } else {
+    var port = normalizePort(config.node_port);
+  }
+  app.set('port', port);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+  /**
+   * Create HTTP server.
+   */
+  var server = http.createServer(app);
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+  /**
+   * Listen on provided port, on all network interfaces.
+   */
 
-/**
- * Normalize a port into a number, string, or false.
- */
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
 
-function normalizePort(val) {
-  var port = parseInt(val, 10);
+  /**
+   * Normalize a port into a number, string, or false.
+   */
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
+  function normalizePort(val) {
+    var port = parseInt(val, 10);
+
+    if (isNaN(port)) {
+      // named pipe
+      return val;
+    }
+
+    if (port >= 0) {
+      // port number
+      return port;
+    }
+
+    return false;
   }
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+  /**
+   * Event listener for HTTP server "error" event.
+   */
 
-  return false;
-}
-
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
+  function onError(error) {
+    if (error.syscall !== 'listen') {
       throw error;
+    }
+
+    var bind = typeof port === 'string'
+      ? 'Pipe ' + port
+      : 'Port ' + port;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+      case 'EACCES':
+        console.error(bind + ' requires elevated privileges');
+        process.exit(1);
+        break;
+      case 'EADDRINUSE':
+        console.error(bind + ' is already in use');
+        process.exit(1);
+        break;
+      default:
+        throw error;
+    }
   }
+
+  /**
+   * Event listener for HTTP server "listening" event.
+   */
+
+  function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+      ? 'pipe ' + addr
+      : 'port ' + addr.port;
+      console.log("Server running on port " + addr.port);
+    debug('Listening on ' + bind);
+  }
+
+})
+
+async function initializeConfig() {
+  var config;
+  return new Promise(async (resolve, reject) => {
+    try {
+      config = require('../config/config.json');
+      resolve(config)
+    } catch (e) {
+      console.log("[SETUP] Could not locate config.json, copying from default_config.json.");
+      fs.copyFile('./config/default_config.json', './config/config.json', (err) => {
+        if (err) {
+          console.error("ERROR: Could not copy config.json from default_config.json.")
+          reject(err)
+        } else {
+          config = require('../config/config.json');
+          resolve(config)
+        }
+      });
+    }
+  })
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
+async function configChecker(config, warnState){
+  // Screen for invalid config values
+  let update = false
+  let board_list_JSON = JSON.parse(fs.readFileSync('./config/board_mappings.json').toString())
+  let board_list = ''
+  let i = 1
+  for (let e in board_list_JSON){
+    board_list = board_list.concat(e)
+    if (i != Object.keys(board_list_JSON).length){
+      board_list = board_list.concat(", ")
+      i++;
+    }
+  }
+  return new Promise(async (resolve, reject) => {
+    if(config.board == 'null'){
+      console.log("[SETUP] No board specified in config. Please enter your arduino model:")
+      let board;
+      while (Object.keys(board_list_JSON).some((e) => e != board)){
+        console.log("Available: " + board_list);
+        board = await getInput('> ')
+      }
+      config.board = board
+      update = true 
+    }       
+    if (config.database.password == 'null'){
+      console.log("[SETUP] No database password specified in config. Please enter the database password for growth_admin:")
+      config.database.password = await getInput("> ")  
+      update = true  
+    }
+    if (config.jwt_secret == 'null'){
+      console.log("[SETUP] jwt_secret has not been changed in config. Please enter a string to use for authentication security:")
+      config.jwt_secret = await getInput("> ")
+      update = true
+    }
+    if ((config.nodemailer.service == 'null' || config.nodemailer.auth.user == 'null' || config.nodemailer.auth.pass == 'null') && config.nodemailer_setup_warn == 'true'){
+      console.log("[SETUP] nodemailer has not been setup in config, 'Warn' will not be sent.")
+      let input = await getInput("Would you like to set this up now? (y/N) ")
+      if (input == 'y' || input == 'Y'){
+        config.nodemailer.service = await getInput("Please input an emailing service: \n> ")
+        config.nodemailer.auth.user = await getInput("Please input the account's email address: \n>  ")
+        config.nodemailer.auth.pass = await getInput("Please input the account's password: \n>  ")
+        config.nodemailer_setup_warn = false
+        update = true
+      } else {
+        input = await getInput("Would you like to disable 'Warn' setup in the future? (Y/n) ")
+        if (input == 'y' || input == 'Y' || input == ''){
+          config.nodemailer_setup_warn = false
+          update = true
+        }
+        warnState = false;
+      }
+    }
+    resolve()
+  }).then(() => {
+    if (update == true){      
+      fs.writeFileSync('./config/config.json', JSON.stringify(config))
+      console.log("[SETUP] Config has been updated!\n")
+    }
+    return    
+  }).catch(() => {
+    console.error("ERROR: Could not update config.")
+    process.exit(-1)
+  })
+}
 
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-    console.log("Server running on port " + addr.port);
-  debug('Listening on ' + bind);
+function getInput(query) {
+  const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+  });
+
+  return new Promise(resolve => rl.question(query, ans => {
+      rl.close();
+      resolve(ans);
+  }))
 }

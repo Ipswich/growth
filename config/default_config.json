@@ -1,16 +1,17 @@
 {
-  "board": "mega",
-  "web_data": "../config/web-data-config-default.json",
+  "board": "null",
+  "web_data": "./web-data-config.json",
   "database": {
     "host": "localhost",
-    "user": "null",
+    "user": "growth_admin",
     "password": "null",
     "database": "growth",
     "multipleStatements": "true",
     "connectionLimit": 25
   },
+  "nodemailer_setup_warn": "true",
   "nodemailer": {
-    "service": "gmail",
+    "service": "null",
     "auth": {
       "user": "null",
       "pass": "null"
