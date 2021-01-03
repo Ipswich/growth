@@ -18,6 +18,10 @@
   color: var(--website-text-blue);
 }
 
+.website-text-light {
+  color: var(--website-text-light);
+}
+
 .nav-pill {
   color: var(--website-text-dark);
   background-color: var(--website-bg-almost-light);
