@@ -201,6 +201,12 @@
   box-shadow: none;
 }
 
+#AddUserSubmitButton {
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+
 #ManualSubmitButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);

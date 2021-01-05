@@ -467,6 +467,14 @@ READS SQL DATA
 $$
 DELIMITER ;
 
+##Get all users
+DELIMITER $$
+CREATE PROCEDURE `getAllUsers` ()
+READS SQL DATA
+  SELECT username FROM Users
+$$
+DELIMITER ;
+
 #############LOGGING#############
 
 ##Log event

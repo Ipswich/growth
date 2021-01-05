@@ -213,6 +213,37 @@ function manualForm() {
   });
 }
 
+//AJAX for AddUserForm (addUser)
+function addUserForm() {
+  $('#AddUserForm').submit(function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var data = form.serializeArray();
+    if(data[2].value != data[3].value){
+      alert("Passwords do not match!")
+      return
+    }
+    $('#AddUserSubmitButton').attr("disabled", true);
+    $.ajax({
+      type: 'POST',
+      url: '/addUser',
+      data: data,
+      cache: false,
+      success: function(res) {   
+        $('#AddUserSubmitButton').attr("disabled", false);
+        $('#AddUserForm').trigger("reset");
+        location.reload()
+      },
+      error: function(res) {
+        $('#AddUserSubmitButton').attr("disabled", false);
+        if(res.status == 409) {
+          alert("Username already exists!")
+        }
+      }
+    });
+  });
+}
+
 function manualFormOnChange(){
   $('#manual').find("select").on('change', function(e) {
     let outputID = $(this).attr('id').split('_')[1]

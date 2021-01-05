@@ -1,5 +1,12 @@
 extends layout
 
 block content
-  h1 #{title}
-  br
+  div
+    h1 #{web_data.title}
+    a.website-link.link(href="/") Home
+  hr
+  div
+    if new_user == 1
+      h1 NEW
+    else 
+      include ./settings_newUser.pug

@@ -19,6 +19,7 @@ var addPeriodicEventRouter = require('./routes/addPeriodicEvent');
 var addManualEventRouter = require('./routes/addManualEvent');
 var getScheduleDataRouter = require('./routes/getScheduleData');
 var updateScheduleRouter = require('./routes/updateSchedule');
+var addUserRouter = require('./routes/addUser');
 
 //API
 var getEnvironmentRouter = require('./api/getEnvironment')
@@ -61,6 +62,7 @@ app.use('/addPeriodicEvent', addPeriodicEventRouter);
 app.use('/addManualEvent', addManualEventRouter);
 app.use('/getScheduleData', getScheduleDataRouter);
 app.use('/updateSchedule', updateScheduleRouter);
+app.use('/addUser', addUserRouter);
 
 //Routes for API
 app.use('/api/getEnvironment', getEnvironmentRouter);
