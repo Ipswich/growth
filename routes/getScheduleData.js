@@ -23,21 +23,13 @@ router.post('/', async function(req, res, next) {
       res.status(500).send("Database error! Could not fetch schedule data.")
     }))[0]};    
     //Get enabled sensor types
-    var sensorTypes = {sensorTypes: await dbcalls.getEnabledSensorTypes().catch(() => {
-      res.status(500).send("Database error! Could not fetch schedule data.")
-    })};            
+    var sensorTypes = {sensorTypes: req.app.get('state').sensorState.getSensorTypes()};          
     //Get enabled outputs
-    var outputs = {outputs: await dbcalls.getEnabledOutputs().catch(() => {
-      res.status(500).send("Database error! Could not fetch schedule data.")
-    })};
+    var outputs = {outputs: req.app.get('state').outputState.getOutputIndexData()};      
     //Get enabled events
-    var events = {events: await dbcalls.getEnabledEvents().catch(() => {
-      res.status(500).send("Database error! Could not fetch schedule data.")
-    })};
+    var events = {events: req.app.get('state').events};
     //Get enabled sensors                      
-    var sensors = {sensors: await dbcalls.getEnabledSensors().catch(() => {
-      res.status(500).send("Database error! Could not fetch schedule data.")
-    })}
+    var sensors = {sensors: req.app.get('state').sensorState.getSensorIndexData()};
     //Check if authenticated
     var authenticated = {authenticated: utils.cookieDetector(req)}
     //Create data object for rendering html

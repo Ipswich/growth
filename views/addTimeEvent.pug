@@ -119,7 +119,9 @@ script.
 
   $().ready(function(){
     timeForm()
-    outputValueHider('#TimeOutput', '#TimeOutputValueDiv')
-    eventValueHider('#TimeEvent', '#TimeOutputValueDiv')
+    //- outputValueHider('#TimeOutput', '#TimeOutputValueDiv')
+    //- eventValueHider('#TimeOutput', '#TimeEvent', '#TimeOutputValueDiv')
+
+    valueHider('#TimeOutput', '#TimeEvent', '#TimeOutputValueDiv')
     outputHider('#TimeEvent', '#TimeOutputDiv', '#TimeWarnDiv', true)
   })
