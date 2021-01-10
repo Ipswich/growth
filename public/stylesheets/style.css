@@ -227,6 +227,19 @@
   box-shadow: none;
 }
 
+#accordion .card{
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+}
+
+#accordion .card .card-header{
+  cursor: pointer;
+}
+
+#accordion .card .card-body{
+  background-color: var(--website-bg-light);
+}
+
 .datepicker table tr td.active:active,
 .datepicker table tr td.active.highlighted:active,
 .datepicker table tr td.active.active,

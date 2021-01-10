@@ -423,6 +423,7 @@ SELECT * FROM Schedules s
 JOIN Events AS e ON s.eventID=e.eventID
 LEFT JOIN Sensors AS n on s.sensorID=n.sensorID
 JOIN Outputs AS o on s.outputID=o.outputID
+JOIN (SELECT outputPWM, outputType from OutputTypes) AS ot on o.outputType=ot.outputType
 JOIN (SELECT username, email FROM Users) as u on s.addedBy=u.username
 WHERE s.Senabled = 1
   AND ((LOCALTIMESTAMP <= s.scheduleStopDate OR s.scheduleStopDate IS NULL) AND (LOCALTIMESTAMP >= s.scheduleStartDate OR s.scheduleStartDate IS NULL))

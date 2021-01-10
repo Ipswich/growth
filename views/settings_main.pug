@@ -1,0 +1,32 @@
+div(id="accordion")
+  div.card
+    div.card-header(id="OutputTypeHeader" data-toggle="collapse" data-target="#OutputTypeCollapse" aria-expanded="true" aria-controls="OutputTypeCollapse")
+      h5.mb-0
+        | Output Types
+    div.collapse.show(id="OutputTypeCollapse" aria-labelledby="OutputTypeHeader" data-parent="#accordion")
+      div.card-body
+        | OUTPUT TYPES FORM
+
+  div.card
+    div.card-header(id="OutputHeader" data-toggle="collapse" data-target="#OutputCollapse" aria-expanded="false" aria-controls="OutputCollapse")
+      h5.mb-0
+        | Outputs
+    div.collapse(id="OutputCollapse" aria-labelledby="OutputHeader" data-parent="#accordion")
+      div.card-body
+        | OUTPUTS FORM
+
+  div.card
+    div.card-header(id="SensorHeader" data-toggle="collapse" data-target="#SensorCollapse" aria-expanded="false" aria-controls="SensorCollapse")
+      h5.mb-0
+        | Sensors
+    div.collapse(id="SensorCollapse" aria-labelledby="SensorHeader" data-parent="#accordion")
+      div.card-body
+        | SENSORS FORM
+
+  div.card
+    div.card-header(id="UserHeader" data-toggle="collapse" data-target="#UserCollapse" aria-expanded="false" aria-controls="UserCollapse")
+      h5.mb-0
+        | Users
+    div.collapse(id="UserCollapse" aria-labelledby="UserHeader" data-parent="#accordion")
+      div.card-body
+        include ./settings_addUserForm.pug
