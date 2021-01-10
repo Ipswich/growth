@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  div
+    h1 #{web_data.title}
+    a.website-link.link(href="/") Home
+  hr
+  div
+    if new_user == 1
+      include ./settings_newUser.pug
+    else 
+      h1 OLLLLLD

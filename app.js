@@ -12,12 +12,14 @@ var systemInitializer = require('./custom_node_modules/SystemInitializer.js')
 
 //Routes
 var indexRouter = require('./routes/index');
+var settingsRouter = require('./routes/settings');
 var addTimeEventRouter = require('./routes/addTimeEvent');
 var addSensorEventRouter = require('./routes/addSensorEvent');
 var addPeriodicEventRouter = require('./routes/addPeriodicEvent');
 var addManualEventRouter = require('./routes/addManualEvent');
 var getScheduleDataRouter = require('./routes/getScheduleData');
 var updateScheduleRouter = require('./routes/updateSchedule');
+var addUserRouter = require('./routes/addUser');
 
 //API
 var getEnvironmentRouter = require('./api/getEnvironment')
@@ -53,12 +55,14 @@ app.use('/js', express.static(path.join(__dirname, '/node_modules/chart.js/dist'
 
 //Routes for web pages
 app.use('/', indexRouter);
+app.use('/settings', settingsRouter);
 app.use('/addTimeEvent', addTimeEventRouter);
 app.use('/addSensorEvent', addSensorEventRouter);
 app.use('/addPeriodicEvent', addPeriodicEventRouter);
 app.use('/addManualEvent', addManualEventRouter);
 app.use('/getScheduleData', getScheduleDataRouter);
 app.use('/updateSchedule', updateScheduleRouter);
+app.use('/addUser', addUserRouter);
 
 //Routes for API
 app.use('/api/getEnvironment', getEnvironmentRouter);

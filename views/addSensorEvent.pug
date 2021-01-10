@@ -108,7 +108,9 @@ script.
 
   $().ready(function(){
     sensorForm()
-    outputValueHider('#SensorOutput', '#SensorOutputValueDiv')
-    eventValueHider('#SensorEvent', '#SensorOutputValueDiv')
+    //- outputValueHider('#SensorOutput', '#SensorOutputValueDiv')
+    //- eventValueHider('#SensorOutput', '#SensorEvent', '#SensorOutputValueDiv')
+
+    valueHider('#SensorOutput', '#SensorEvent', '#SensorOutputValueDiv')
     outputHider('#SensorEvent', '#SensorOutputDiv', '#SensorWarnDiv', true)
   })

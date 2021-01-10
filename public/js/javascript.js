@@ -11,14 +11,45 @@ function outputValueHider(output_element_ID, output_PWM_ID){
  }).trigger("change")
 }
 
-function eventValueHider(element_on_change, element_to_hide){
+function eventValueHider(output_element_id, element_on_change, element_to_hide){
  $(element_on_change).on('change', function() {
   let event = $(this).val().split("|")[1]
+  let PWM = $(output_element_id).val().split("|")[1]
+  console.log(PWM)
   if (event == 'Output Off'){
     $(element_to_hide).fadeOut()
   } else {
-    $(element_to_hide).fadeIn()
+    if(PWM == 1){
+      $(element_to_hide).fadeIn()
+    }
   }
+  }).trigger("change")
+}
+
+function valueHider(output_element_ID, event_element_ID, output_value){
+
+  $(output_element_ID).on('change', function() {
+    let PWM = $(output_element_ID).val().split("|")[1]
+    let event = $(event_element_ID).val().split("|")[1]
+    if (PWM == 0){
+      $(output_value).fadeOut()
+    } else {
+      if (event == "Output On") {
+        $(output_value).fadeIn()
+      }
+    }
+  }).trigger("change")
+
+  $(event_element_ID).on('change', function() {
+    let PWM = $(output_element_ID).val().split("|")[1]
+    let event = $(event_element_ID).val().split("|")[1]
+    if (event == 'Output Off'){
+      $(output_value).fadeOut()
+    } else {
+      if(PWM == 1){
+        $(output_value).fadeIn()
+      }
+    }
   }).trigger("change")
 }
 
@@ -208,6 +239,37 @@ function manualForm() {
       error: function(res) {
         $('#ManualSubmitButton').attr("disabled", false);
         alert("Error on manual change.");
+      }
+    });
+  });
+}
+
+//AJAX for AddUserForm (addUser)
+function addUserForm() {
+  $('#AddUserForm').submit(function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var data = form.serializeArray();
+    if(data[2].value != data[3].value){
+      alert("Passwords do not match!")
+      return
+    }
+    $('#AddUserSubmitButton').attr("disabled", true);
+    $.ajax({
+      type: 'POST',
+      url: '/addUser',
+      data: data,
+      cache: false,
+      success: function(res) {   
+        $('#AddUserSubmitButton').attr("disabled", false);
+        $('#AddUserForm').trigger("reset");
+        location.reload()
+      },
+      error: function(res) {
+        $('#AddUserSubmitButton').attr("disabled", false);
+        if(res.status == 409) {
+          alert("Username already exists!")
+        }
       }
     });
   });

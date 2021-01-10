@@ -31,8 +31,9 @@ script.
 
   $().ready(function(){
     updateForm()
-    outputValueHider('#UpdateOutput', '#UpdateOutputValueDiv')
-    eventValueHider('#UpdateEvent', '#UpdateOutputValueDiv')
+    //- outputValueHider('#UpdateOutput', '#UpdateOutputValueDiv')
+    //- eventValueHider('#UpdateOutput', '#UpdateEvent', '#UpdateOutputValueDiv')
+    valueHider('#UpdateOutput', '#UpdateEvent', '#UpdateOutputValueDiv')
     outputHider('#UpdateEvent', '#UpdateOutputDiv', '#UpdateWarnDiv', false)
   })
   

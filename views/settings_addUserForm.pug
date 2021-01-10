@@ -1,0 +1,30 @@
+div
+  form(id="AddUserForm" method="POST")   
+    div.form-group
+      div.form-row.justify-content-around
+        div.col-8
+          label(for="Username") Username
+          input(type='text' id="Username" name="Username" placeholder="Username" maxlength="32" autofocus required).form-control.formStyle
+    div.form-group
+      div.form-row.justify-content-around
+        div.col-8
+          label(for="Email") Email (optional)
+          input(type='text' id="Email" name="Email" placeholder="Email" maxlength="255").form-control.formStyle
+    div.form-group
+      div.form-row.justify-content-around
+        div.col-8
+          label(for="Password") Password
+          input(type='password' id="Password" name="Password" placeholder="Password" minlength="5" required).form-control.formStyle
+    div.form-group
+      div.form-row.justify-content-around
+        div.col-8
+          input(type='password' id="ConfirmPassword" name="ConfirmPassword" placeholder="Confirm password" required).form-control.formStyle
+    div.form-group
+      div.form-row
+        div.col
+          button(id="AddUserSubmitButton" type="submit").btn.submitButton Submit
+
+script.
+  $().ready(function(){
+    addUserForm()
+  })

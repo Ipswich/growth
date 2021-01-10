@@ -18,6 +18,10 @@
   color: var(--website-text-blue);
 }
 
+.website-text-light {
+  color: var(--website-text-light);
+}
+
 .nav-pill {
   color: var(--website-text-dark);
   background-color: var(--website-bg-almost-light);
@@ -192,6 +196,12 @@
 }
 
 .modal-body.modalStyle .submitButton {
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+  box-shadow: none;
+}
+
+#AddUserSubmitButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);
   box-shadow: none;
