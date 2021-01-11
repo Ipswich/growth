@@ -1,11 +1,33 @@
 div(id="accordion")
   div.card
-    div.card-header(id="OutputTypeHeader" data-toggle="collapse" data-target="#OutputTypeCollapse" aria-expanded="true" aria-controls="OutputTypeCollapse")
+    div.card-header(id="OutputTypeHeader" data-toggle="collapse" data-target="#OutputTypeCollapse" aria-expanded="false" aria-controls="OutputTypeCollapse")
       h5.mb-0
         | Output Types
-    div.collapse.show(id="OutputTypeCollapse" aria-labelledby="OutputTypeHeader" data-parent="#accordion")
+    div.collapse(id="OutputTypeCollapse" aria-labelledby="OutputTypeHeader" data-parent="#accordion")
       div.card-body
-        | OUTPUT TYPES FORM
+        form(id="OutputTypesForm" method="POST")
+          div.form-group
+            div.form-row
+              div.col-6
+                select(id="OutputTypesSelect" name="OutputTypesSelect").form-control.custom-select.formStyle
+                  option(value="-1" selected) Add New...
+                  each type, index in outputTypes
+                    option(value=type.outputType+"|"+type.outputPWM+"|"+type.outputPWMInversion) #{type.outputType}
+          div.form-group
+            div.form-row
+              label(for="OutputTypeName") Output Type
+              input(type="text" id="OutputTypeName" name="OutputTypeName" maxlength="32").form-control.formStyle
+          div.form-group
+            div.form-row
+              div.custom-control.custom-switch
+                input(id="OutputTypePWM" name="OutputTypePWM" type="checkbox").custom-control-input
+                label(for="OutputTypePWM").custom-control-label Output PWM
+          div.form-group
+            div.form-row
+              div.custom-control.custom-switch
+                input(id="OutputTypePWMInversion" name="OutputTypePWMInversion" type="checkbox").custom-control-input
+                label(for="OutputTypePWMInversion").custom-control-label Output PWM Inversion                
+
 
   div.card
     div.card-header(id="OutputHeader" data-toggle="collapse" data-target="#OutputCollapse" aria-expanded="false" aria-controls="OutputCollapse")
@@ -30,3 +52,8 @@ div(id="accordion")
     div.collapse(id="UserCollapse" aria-labelledby="UserHeader" data-parent="#accordion")
       div.card-body
         include ./settings_addUserForm.pug
+
+script.
+  $().ready(function(){
+    settings_OutputTypesForm()
+  }

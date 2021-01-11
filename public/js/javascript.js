@@ -365,7 +365,6 @@ function updateScheduleModal() {
   });
 };
 
-
 //Conditions and schedule refresh
 function dataRefresh() {
   setInterval(function() {
@@ -387,6 +386,18 @@ function dataRefresh() {
     });
   }, REFRESH_INTERVAL)
 };
+
+function settings_OutputTypesForm() {
+
+  $('#OutputTypesSelect').on('change', function() {
+    let OutputType = $(output_element_ID).val().split("|")[0]
+    let OutputPWM = $(event_element_ID).val().split("|")[1]
+    let OutputPWMInversion = $(event_element_ID).val().split("|")[2]
+    $('#OutputTypeName').val(OutputType)
+    $('#OutputTypePWM').val(OutputPWM)
+    $('#OutputTypePWMInversion').val(OutputPWMInversion)
+  }).trigger("change")
+}
 
 // Ajax for on change of chart interval
 function chartIntervalChange() {

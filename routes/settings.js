@@ -10,10 +10,13 @@ router.get('/', async function(req, res, next) {
     if(results.length <= 1){
         //No user accounts created - prompt user
         data.new_user = 1
-    } else {
+        res.status(200).render('settings', data);
+      } else {
+        let outputTypes = await dbcalls.getEnabledOutputTypes()
         data.new_user = 0
+        data.outputTypes = outputTypes;
+        res.status(200).render('settings', data);
     }
-    res.status(200).render('settings', data);
   } catch (e) {
     res.status(500).send('500: Server error')
   }
