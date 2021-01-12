@@ -15,7 +15,6 @@ router.post('/', async function(req, res, next) {
     }
     sanitizedData[key] = mysql.escape(sanitizedData[key])
   }
-  console.log(sanitizedData)
   let results = await dbcalls.getUser(sanitizedData.Username)
   if (results.length > 0){
     res.status(409).send();

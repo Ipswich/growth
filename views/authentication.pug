@@ -1,0 +1,24 @@
+h6 Please log in to continue.
+br
+div
+  div
+  form(id="LoginForm" method="POST")   
+    div.form-group
+      div.form-row.justify-content-around
+        div.col-8
+          label(for="Username") Username
+          input(type='text' id="Username" name="username" placeholder="Username" maxlength="32" autofocus required).form-control.formStyle
+    div.form-group
+      div.form-row.justify-content-around
+        div.col-8
+          label(for="Password") Password
+          input(type='password' id="Password" name="password" placeholder="Password" required).form-control.formStyle
+    div.form-group
+      div.form-row
+        div.col
+          button(id="LoginSubmitButton" type="submit").btn.submitButton Submit
+
+script.
+  $().ready(function(){
+    settings_LoginForm()
+  })

@@ -10,7 +10,7 @@ div(id="accordion")
             div.form-row
               div.col-6
                 select(id="OutputTypesSelect" name="OutputTypesSelect").form-control.custom-select.formStyle
-                  option(value="-1" selected) Add New...
+                  option(value="" selected) Add New...
                   each type, index in outputTypes
                     option(value=type.outputType+"|"+type.outputPWM+"|"+type.outputPWMInversion) #{type.outputType}
           div.form-group
@@ -21,12 +21,21 @@ div(id="accordion")
             div.form-row
               div.custom-control.custom-switch
                 input(id="OutputTypePWM" name="OutputTypePWM" type="checkbox").custom-control-input
-                label(for="OutputTypePWM").custom-control-label Output PWM
-          div.form-group
+                label(for="OutputTypePWM").custom-control-label PWM Output
+          div#OutputTypePWMInversiondiv.form-group
             div.form-row
               div.custom-control.custom-switch
                 input(id="OutputTypePWMInversion" name="OutputTypePWMInversion" type="checkbox").custom-control-input
-                label(for="OutputTypePWMInversion").custom-control-label Output PWM Inversion                
+                label(for="OutputTypePWMInversion").custom-control-label Reverse PWM
+          div.form-group
+            div.form-row
+                input(type="hidden" id="OutputTypeMode" name="OutputTypeMode" value='')
+                div#OutputTypeSubmitNew.col
+                    button(id="OutputTypeNewButton" name="OutputTypeNewButton" onclick="setOutputTypeNew()" type="submit").btn.submitButton Add New
+                div#OutputTypeSubmitOld.col
+                    button(id="OutputTypeDeleteButton" name="OutputTypeDeleteButton" onclick="setOutputTypeDelete()" type="submit").btn.submitButton.float-left Delete
+                    button(id="OutputTypeUpdateButton" name="OutputTypeUpdateButton" onclick="setOutputTypeUpdate()" type="submit").btn.submitButton.float-right Update
+                
 
 
   div.card
@@ -56,4 +65,4 @@ div(id="accordion")
 script.
   $().ready(function(){
     settings_OutputTypesForm()
-  }
+  })

@@ -1,14 +1,16 @@
 const REFRESH_INTERVAL = 60 * 1000 // 1 minute
 
 function outputValueHider(output_element_ID, output_PWM_ID){
- $(output_element_ID).on('change', function() {
-   let PWM = $(this).val().split("|")[1]
-   if (PWM == 0){
-     $(output_PWM_ID).fadeOut()
-   } else {
-     $(output_PWM_ID).fadeIn()
-   }
- }).trigger("change")
+  if($(output_element_ID).val() != null){
+    $(output_element_ID).on('change', function() {
+      let PWM = $(this).val().split("|")[1]
+      if (PWM == 0){
+        $(output_PWM_ID).fadeOut()
+      } else {
+        $(output_PWM_ID).fadeIn()
+      }
+    }).trigger("change")
+  }
 }
 
 function eventValueHider(output_element_id, element_on_change, element_to_hide){
@@ -27,30 +29,32 @@ function eventValueHider(output_element_id, element_on_change, element_to_hide){
 }
 
 function valueHider(output_element_ID, event_element_ID, output_value){
-
-  $(output_element_ID).on('change', function() {
-    let PWM = $(output_element_ID).val().split("|")[1]
-    let event = $(event_element_ID).val().split("|")[1]
-    if (PWM == 0){
-      $(output_value).fadeOut()
-    } else {
-      if (event == "Output On") {
-        $(output_value).fadeIn()
+  if($(output_element_ID).val() != null){
+    $(output_element_ID).on('change', function() { 
+      let PWM = $(output_element_ID).val().split("|")[1] || {}
+      let event = $(event_element_ID).val().split("|")[1] || {}
+      if (PWM == 0){
+        $(output_value).fadeOut()
+      } else {
+        if (event == "Output On") {
+          $(output_value).fadeIn()
+        }
       }
-    }
-  }).trigger("change")
+    }).trigger("change")
+  
 
-  $(event_element_ID).on('change', function() {
-    let PWM = $(output_element_ID).val().split("|")[1]
-    let event = $(event_element_ID).val().split("|")[1]
-    if (event == 'Output Off'){
-      $(output_value).fadeOut()
-    } else {
-      if(PWM == 1){
-        $(output_value).fadeIn()
+    $(event_element_ID).on('change', function() {
+      let PWM = $(output_element_ID).val().split("|")[1]
+      let event = $(event_element_ID).val().split("|")[1]
+      if (event == 'Output Off'){
+        $(output_value).fadeOut()
+      } else {
+        if(PWM == 1){
+          $(output_value).fadeIn()
+        }
       }
-    }
-  }).trigger("change")
+    }).trigger("change")
+  }
 }
 
 function outputHider(output_element_ID, element_to_hide, element_to_show, trigger){
@@ -369,7 +373,10 @@ function updateScheduleModal() {
 function dataRefresh() {
   setInterval(function() {
     let select = document.getElementById("chart_interval")
-    let datagram = {interval: select.value}
+    let datagram = {interval: null}
+    if(select != null){
+      datagram = {interval: select.value}
+    }
     $.ajax({
       type: 'POST',
       url: '/api/getEnvironment',
@@ -390,13 +397,96 @@ function dataRefresh() {
 function settings_OutputTypesForm() {
 
   $('#OutputTypesSelect').on('change', function() {
-    let OutputType = $(output_element_ID).val().split("|")[0]
-    let OutputPWM = $(event_element_ID).val().split("|")[1]
-    let OutputPWMInversion = $(event_element_ID).val().split("|")[2]
+    let OutputType = $(this).val().split("|")[0]
+    let OutputPWM = $(this).val().split("|")[1]
+    let OutputPWMInversion = $(this).val().split("|")[2]
+
+    if(OutputType == ""){
+      $('#OutputTypeSubmitOld').fadeOut(400, () => {
+        $('#OutputTypeSubmitNew').fadeIn()
+      })
+    } else {
+      $('#OutputTypeSubmitNew').fadeOut(400, () => {
+        $('#OutputTypeSubmitOld').fadeIn()
+      })
+    }
+
+
     $('#OutputTypeName').val(OutputType)
-    $('#OutputTypePWM').val(OutputPWM)
-    $('#OutputTypePWMInversion').val(OutputPWMInversion)
+    if(OutputPWM == 1){
+      $('#OutputTypePWM').prop('checked', true)
+      $('#OutputTypePWMInversiondiv').fadeIn()
+    } else {
+      $('#OutputTypePWM').prop('checked', false)
+      $('#OutputTypePWMInversiondiv').fadeOut()
+    }
+    if(OutputPWMInversion == 1){
+      $('#OutputTypePWMInversion').prop('checked', true)
+    } else {
+      $('#OutputTypePWMInversion').prop('checked', false)
+    }
   }).trigger("change")
+
+  $('#OutputTypePWM').on('change', function() {
+    if(this.checked == true){
+      $('#OutputTypePWMInversiondiv').fadeIn()
+    } else {
+      $('#OutputTypePWMInversiondiv').fadeOut()
+      $('#OutputTypePWMInversion').prop('checked', false)
+    }
+  }).trigger('change')
+
+  $('#OutputTypesForm').on('submit', function(e) {
+    e.preventDefault();
+    $('#OutputTypeNewButton').attr("disabled", true);
+    $('#OutputTypeUpdateButton').attr("disabled", true);
+    $('#OutputTypeDeleteButton').attr("disabled", true);
+
+    var form = $(this);
+    var data = form.serializeArray();
+    $.ajax({
+      type: 'POST',
+      url: '#',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#OutputTypeNewButton').attr("disabled", false);
+        $('#OutputTypeUpdateButton').attr("disabled", false);
+        $('#OutputTypeDeleteButton').attr("disabled", false);
+        $('#OutputTypesForm').trigger("reset");
+      },
+      error: function(res) {
+        $('#OutputTypeNewButton').attr("disabled", false);
+        $('#OutputTypeUpdateButton').attr("disabled", false);
+        $('#OutputTypeDeleteButton').attr("disabled", false);
+        alert("Invalid login, please try again.");
+      }
+    });
+  })
+}
+
+function settings_LoginForm() {
+  $('#LoginForm').on('submit', function(e) {
+    e.preventDefault();
+    $('#LoginSubmitButton').attr("disabled", true);
+
+    var form = $(this);
+    var data = form.serializeArray();
+    $.ajax({
+      type: 'POST',
+      url: '/login',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#LoginSubmitButton').attr("disabled", false);
+        location.reload();
+      },
+      error: function(res) {
+        $('#LoginSubmitButton').attr("disabled", false);
+        alert("Invalid login, please try again.");
+      }
+    });
+  })
 }
 
 // Ajax for on change of chart interval
@@ -439,12 +529,24 @@ function docuReady() {
 
 $(document).ready(docuReady);
 
-function setDelete(){
+function setScheduleDelete(){
   $('#UpdateMode').val('Delete');
 }
 
-function setUpdate(){    
+function setScheduleUpdate(){    
   $('#UpdateMode').val('Update');
+}
+
+function setOutputTypeNew(){    
+  $('#OutputTypeMode').val('New');
+}
+
+function setOutputTypeUpdate(){    
+  $('#OutputTypeMode').val('Update');
+}
+
+function setOutputTypeDelete(){    
+  $('#OutputTypeMode').val('Delete');
 }
 
 function generateChart(sensorID, sensorUnits, data, sensorType){    
