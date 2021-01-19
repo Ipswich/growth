@@ -3,7 +3,6 @@ var mysql = require('mysql');
 var router = express.Router();
 var auth = require('../middleware/authenticateLogin.js')
 var dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
-var utils = require('../custom_node_modules/utility_modules/Utils.js');
 
 router.get('/', auth, async function(req, res, next) {
   try {
@@ -23,7 +22,7 @@ router.get('/html', auth, async function(req, res, next) {
   }
 })
 
-//Add new output type
+//Add new output
 router.post('/', auth, async function(req, res, next) {
   //Escape Data
   var sanitizedData = Object.assign({}, req.body);
@@ -46,7 +45,7 @@ router.post('/', auth, async function(req, res, next) {
   }
 })
 
-//Update output type
+//Update output
 router.put('/', auth, async function(req, res, next) {
   //Escape Data
   var sanitizedData = Object.assign({}, req.body);
@@ -71,7 +70,7 @@ router.put('/', auth, async function(req, res, next) {
   }
 })
 
-//Delete output type
+//Delete output
 router.delete('/', auth, async function(req, res, next) {
   //Escape Data
   var sanitizedData = Object.assign({}, req.body);

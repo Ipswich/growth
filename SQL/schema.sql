@@ -221,8 +221,8 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `addNewSensor` (IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_sensorProtocol` VARCHAR(32))
 MODIFIES SQL DATA
-	INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits, sensorHardwareID, sensorProtocol) VALUES (p_model, p_type, p_location, p_units, p_hardwareID, p_sensorProtocol);
-$$
+  INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits, sensorHardwareID, sensorProtocol, sensorAddress) VALUES (p_model, p_type, p_location, p_units, p_hardwareID, p_sensorProtocol, p_address)
+  $$
 DELIMITER ;
 
 ##Get sensor data for ALL sensors
@@ -257,6 +257,14 @@ END;
 $$
 DELIMITER ;
 
+##Update sensor 
+DELIMITER $$
+CREATE PROCEDURE `UpdateSensor`(IN `p_sensorID` INT, IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_protocol` VARCHAR(32), IN `p_address` VARCHAR(64))
+MODIFIES SQL DATA
+  UPDATE Sensors SET sensorModel = p_model, sensorType = p_type, sensorLocation = p_location, sensorUnits = p_units, sensorHardwareID = p_hardwareID, sensorProtocol = p_protocol, sensorAddress = p_address WHERE sensorID = p_sensorID
+$$
+DELIMITER $$
+
 ##Update sensor Address
 DELIMITER $$
 CREATE PROCEDURE `updateSensorAddress`(IN `p_sensorAddress` VARCHAR(64), IN `p_sensorID` INT)
@@ -264,6 +272,14 @@ MODIFIES SQL DATA
   UPDATE Sensors SET sensorAddress = p_sensorAddress WHERE sensorID = p_sensorID
 $$
 DELIMITER $$
+
+##Disable Sensor
+DELIMITER $$
+CREATE PROCEDURE `DisableSensor`(IN `p_sensorID` INT)
+MODIFIES SQL DATA
+  UPDATE Sensors SET SSenabled = 0 WHERE sensorID = p_sensorID
+  $$
+DELIMITER ;
 
 
 #############SENSOR READINGS#############

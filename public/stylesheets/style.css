@@ -208,7 +208,10 @@
 #OutputTypeDeleteButton ,
 #OutputNewButton,
 #OutputUpdateButton,
-#OutputDeleteButton ,
+#OutputDeleteButton,
+#SensorNewButton,
+#SensorUpdateButton,
+#SensorDeleteButton,
 #AddUserSubmitButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);

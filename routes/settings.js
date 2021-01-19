@@ -21,9 +21,13 @@ router.get('/', async function(req, res, next) {
       } else {
         let outputTypes = await dbcalls.getEnabledOutputTypes()
         let outputs = await dbcalls.getEnabledOutputs()
+        let sensorTypes = await dbcalls.getEnabledSensorTypes()
+        let sensors = await dbcalls.getEnabledSensors()
         data.new_user = 0
         data.outputTypes = outputTypes;
         data.outputs = outputs;
+        data.sensorTypes = sensorTypes
+        data.sensors = sensors
         res.status(200).render('settings', data);
       }
     }

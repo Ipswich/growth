@@ -22,7 +22,7 @@ div(id="accordion")
         | Sensors
     div.collapse(id="SensorCollapse" aria-labelledby="SensorHeader" data-parent="#accordion")
       div.card-body
-        | SENSORS FORM
+        include ./sensor/sensor_form.pug
 
   div.card
     div.card-header(id="UserHeader" data-toggle="collapse" data-target="#UserCollapse" aria-expanded="false" aria-controls="UserCollapse")
@@ -36,4 +36,5 @@ script.
   $().ready(function(){
     settings_OutputTypesForm()
     settings_OutputForm()
+    settings_SensorForm()
   })

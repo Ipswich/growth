@@ -17,7 +17,6 @@ function eventValueHider(output_element_id, element_on_change, element_to_hide){
  $(element_on_change).on('change', function() {
   let event = $(this).val().split("|")[1]
   let PWM = $(output_element_id).val().split("|")[1]
-  console.log(PWM)
   if (event == 'Output Off'){
     $(element_to_hide).fadeOut()
   } else {
@@ -581,7 +580,6 @@ function settings_OutputForm() {
             $('#OutputSelect').html(html);
             $('#OutputsForm').trigger("reset");
             $('#OutputSelect').trigger('change')
-            $('#OutputPWM').trigger('change')
           }
         });
       },
@@ -589,6 +587,103 @@ function settings_OutputForm() {
         $('#OutputNewButton').attr("disabled", false);
         $('#OutputUpdateButton').attr("disabled", false);
         $('#OutputDeleteButton').attr("disabled", false);
+        alert("Server error");
+      }
+    });
+
+  })
+}
+
+function settings_SensorForm() {
+
+  $('#SensorSelect').on('change', function() {
+    let SensorLocation = $(this).val().split("|")[0]
+    let SensorModel = $(this).val().split("|")[1]
+    let SensorType = $(this).val().split("|")[2]
+    let SensorUnits = $(this).val().split("|")[3]
+    let SensorHardwareID = $(this).val().split("|")[4]
+    let SensorProtocol = $(this).val().split("|")[5]
+    let SensorAddress = $(this).val().split("|")[6] == 'null' ? "" : $(this).val().split("|")[6]    
+    if(SensorLocation == ""){
+      $('#SensorSubmitOld').fadeOut(400, () => {
+        $('#SensorSubmitNew').fadeIn()
+        $('#SensorsForm').trigger('reset')
+      })
+    } else {
+      $('#SensorSubmitNew').fadeOut(400, () => {
+        $('#SensorTypeSelect').val(SensorType)
+        $('#SensorUnits').val(SensorUnits)
+        $('#SensorLocation').val(SensorLocation)
+        $('#SensorModel').val(SensorModel)
+        $('#SensorProtocolSelect').val(SensorProtocol)
+        $('#SensorAddress').val(SensorAddress)
+        $('#SensorHardwareID').val(SensorHardwareID)
+        
+        $('#SensorSubmitOld').fadeIn()
+      })
+    }
+  }).trigger("change")
+
+
+  $('#SensorNewButton').on('click', function (){
+    setSettingsSensor('New')
+  })
+
+  $('#SensorDeleteButton').on('click', function (){
+    setSettingsSensor('Delete')
+  })
+
+  $('#SensorUpdateButton').on('click', function (){
+    setSettingsSensor('Update')
+  })
+
+  $('#SensorsForm').on('submit', function(e) {
+    let mode = $('#SensorMode').val()
+    e.preventDefault();
+    $('#SensorNewButton').attr("disabled", true);
+    $('#SensorUpdateButton').attr("disabled", true);
+    $('#SensorDeleteButton').attr("disabled", true);
+
+    var form = $(this);
+    var data = form.serializeArray();
+    var type;
+    switch (mode) {
+      case 'New':
+        type = "POST"
+        break;
+      case 'Delete':
+        type = "DELETE"        
+        break;
+      case 'Update':
+        type = "PUT"                
+        break;
+      default:
+        alert('Error');
+    }
+    $.ajax({
+      type: type,
+      url: '/api/sensor',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#SensorNewButton').attr("disabled", false);
+        $('#SensorUpdateButton').attr("disabled", false);
+        $('#SensorDeleteButton').attr("disabled", false);
+        $.ajax({
+          type: 'GET',
+          url: '/api/sensor/html',
+          cache: false,
+          success: function(html) {
+            $('#SensorSelect').html(html);
+            $('#SensorsForm').trigger("reset");
+            $('#SensorSelect').trigger('change')
+          }
+        });
+      },
+      error: function(res) {
+        $('#SensorNewButton').attr("disabled", false);
+        $('#SensorUpdateButton').attr("disabled", false);
+        $('#SensorDeleteButton').attr("disabled", false);
         alert("Server error");
       }
     });
@@ -663,8 +758,13 @@ function setScheduleUpdate(){
 function setSettingsOutputType(val){    
   $('#OutputTypeMode').val(val);
 }
+
 function setSettingsOutput(val){    
   $('#OutputMode').val(val);
+}
+
+function setSettingsSensor(val){    
+  $('#SensorMode').val(val);
 }
 function generateChart(sensorID, sensorUnits, data, sensorType){    
   let config = generateChartConfig(sensorUnits, data, sensorType)

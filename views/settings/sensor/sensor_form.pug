@@ -1,0 +1,49 @@
+form(id="SensorsForm")
+  div.form-group
+    div.form-row
+      div.col-12
+        select(id="SensorSelect" name="SensorSelect").form-control.custom-select.formStyle
+          include ./sensor_select.pug
+  div.form-group
+    div.form-row
+      div.col-8
+        label(for="SensorTypeSelect") Sensor Type
+        select(id="SensorTypeSelect" name="SensorTypeSelect" required).form-control.custom-select.formStyle
+          each type, index in sensorTypes
+            option(value=type.sensorType) #{type.sensorType}
+      div.col-4
+        label(for="SensorUnits") Units
+        input(type="text" id="SensorUnits" name="SensorUnits" maxlength="64" required).form-control.formStyle
+  div.form-group
+    div.form-row
+      label(for="SensorLocation") Location
+      input(type="text" id="SensorLocation" name="SensorLocation" maxlength="64" required).form-control.formStyle
+  div.form-group
+    div.form-row
+      div.col-6
+        label(for="SensorModel") Model
+        input(type="text" id="SensorModel" name="SensorModel" maxlength="16" required).form-control.formStyle
+      div.col-6
+        label(for="SensorProtocolSelect") Protocol
+        select(id="SensorProtocolSelect" name="SensorProtocolSelect" required).form-control.custom-select.formStyle
+          option(value="ANALOG") Analog
+          option(value="I2C") I2C
+          option(value="ONEWIRE") One-wire
+  div.form-group
+    div.form-row
+      div.col-8
+        label(for="SensorAddress") Address
+        input(type="text" id="SensorAddress" name="SensorAddress" maxlength="64").form-control.formStyle      
+      div.col-4
+        label(for="SensorHardwareID") Hardware ID
+        input(type="number" id="SensorHardwareID" name="SensorHardwareID" min='0' max='100' value='0').form-control.formStyle
+
+  div.form-group
+    div.form-row
+        input(type="hidden" id="SensorMode" name="SensorMode" value='')
+        div#SensorSubmitNew.col
+          button(id="SensorNewButton" name="SensorNewButton" type="submit").btn.submitButton Add New
+        div#SensorSubmitOld.col
+          button(id="SensorDeleteButton" name="SensorDeleteButton" type="submit").btn.submitButton.float-left Delete
+          button(id="SensorUpdateButton" name="SensorUpdateButton" type="submit").btn.submitButton.float-right Update
+                
