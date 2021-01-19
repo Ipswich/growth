@@ -1,13 +1,13 @@
 form(id="OutputTypesForm")
   div.form-group
     div.form-row
-      div.col-6
+      div.col-8
         select(id="OutputTypesSelect" name="OutputTypesSelect").form-control.custom-select.formStyle
           include ./output_type_select.pug
   div.form-group
     div.form-row
       label(for="OutputTypeName") Output Type
-      input(type="text" id="OutputTypeName" name="OutputTypeName" maxlength="32").form-control.formStyle
+      input(type="text" id="OutputTypeName" name="OutputTypeName" maxlength="32" required).form-control.formStyle
   div.form-group
     div.form-row
       div.custom-control.custom-switch

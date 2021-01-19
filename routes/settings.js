@@ -20,8 +20,10 @@ router.get('/', async function(req, res, next) {
         res.status(401).render('settings', data)
       } else {
         let outputTypes = await dbcalls.getEnabledOutputTypes()
+        let outputs = await dbcalls.getEnabledOutputs()
         data.new_user = 0
         data.outputTypes = outputTypes;
+        data.outputs = outputs;
         res.status(200).render('settings', data);
       }
     }

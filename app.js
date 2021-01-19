@@ -24,6 +24,7 @@ var addUserRouter = require('./routes/addUser');
 //API
 var getEnvironmentRouter = require('./api/getEnvironment')
 var outputTypeRouter = require('./api/OutputType')
+var outputRouter = require('./api/Output')
 var loginRouter = require('./api/login');
 
 //App setup - load config
@@ -69,6 +70,7 @@ app.use('/addUser', addUserRouter);
 //Routes for API
 app.use('/api/getEnvironment', getEnvironmentRouter);
 app.use('/api/outputType', outputTypeRouter);
+app.use('/api/output', outputRouter);
 app.use('/api/login', loginRouter);
 
 // catch 404 and forward to error handler

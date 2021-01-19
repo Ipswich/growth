@@ -504,6 +504,98 @@ function settings_OutputTypesForm() {
   })
 }
 
+function settings_OutputForm() {
+
+  $('#OutputSelect').on('change', function() {
+    let OutputName = $(this).val().split("|")[0]
+    let OutputDescription = $(this).val().split("|")[1]
+    let OutputOrder = $(this).val().split("|")[2]
+    let OutputType = $(this).val().split("|")[3]
+
+    if(OutputName == ""){
+      $('#OutputSubmitOld').fadeOut(400, () => {
+        $('#OutputSubmitNew').fadeIn()
+        $('#OutputsForm').trigger('reset')
+      })
+    } else {
+      $('#OutputSubmitNew').fadeOut(400, () => {
+        $('#OutputOutputTypeSelect').val(OutputType)
+        $('#OutputOrder').val(OutputOrder)
+        $('#OutputDescription').val(OutputDescription)
+        $('#OutputName').val(OutputName)
+        $('#OutputSubmitOld').fadeIn()
+      })
+    }
+  }).trigger("change")
+
+
+  $('#OutputNewButton').on('click', function (){
+    setSettingsOutput('New')
+  })
+
+  $('#OutputDeleteButton').on('click', function (){
+    setSettingsOutput('Delete')
+  })
+
+  $('#OutputUpdateButton').on('click', function (){
+    setSettingsOutput('Update')
+  })
+
+  $('#OutputsForm').on('submit', function(e) {
+    let mode = $('#OutputMode').val()
+    e.preventDefault();
+    $('#OutputNewButton').attr("disabled", true);
+    $('#OutputUpdateButton').attr("disabled", true);
+    $('#OutputDeleteButton').attr("disabled", true);
+
+    var form = $(this);
+    var data = form.serializeArray();
+    var type;
+    switch (mode) {
+      case 'New':
+        type = "POST"
+        break;
+      case 'Delete':
+        type = "DELETE"        
+        break;
+      case 'Update':
+        type = "PUT"                
+        break;
+      default:
+        alert('Error');
+    }
+    $.ajax({
+      type: type,
+      url: '/api/output',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#OutputNewButton').attr("disabled", false);
+        $('#OutputUpdateButton').attr("disabled", false);
+        $('#OutputDeleteButton').attr("disabled", false);
+        $.ajax({
+          type: 'GET',
+          url: '/api/output/html',
+          cache: false,
+          success: function(html) {
+            $('#OutputSelect').html(html);
+            $('#OutputsForm').trigger("reset");
+            $('#OutputSelect').trigger('change')
+            $('#OutputPWM').trigger('change')
+          }
+        });
+      },
+      error: function(res) {
+        $('#OutputNewButton').attr("disabled", false);
+        $('#OutputUpdateButton').attr("disabled", false);
+        $('#OutputDeleteButton').attr("disabled", false);
+        alert("Server error");
+      }
+    });
+
+  })
+}
+
 function settings_LoginForm() {
   $('#LoginForm').on('submit', function(e) {
     e.preventDefault();
@@ -570,6 +662,9 @@ function setScheduleUpdate(){
 
 function setSettingsOutputType(val){    
   $('#OutputTypeMode').val(val);
+}
+function setSettingsOutput(val){    
+  $('#OutputMode').val(val);
 }
 function generateChart(sensorID, sensorUnits, data, sensorType){    
   let config = generateChartConfig(sensorUnits, data, sensorType)

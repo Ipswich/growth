@@ -13,8 +13,8 @@ div(id="accordion")
       h5.mb-0
         | Outputs
     div.collapse(id="OutputCollapse" aria-labelledby="OutputHeader" data-parent="#accordion")
-      div.card-body
-        | OUTPUTS FORM
+      div.card-body        
+        include ./output/output_form.pug
 
   div.card
     div.card-header(id="SensorHeader" data-toggle="collapse" data-target="#SensorCollapse" aria-expanded="false" aria-controls="SensorCollapse")
@@ -35,4 +35,5 @@ div(id="accordion")
 script.
   $().ready(function(){
     settings_OutputTypesForm()
+    settings_OutputForm()
   })

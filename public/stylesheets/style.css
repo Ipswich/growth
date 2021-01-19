@@ -206,6 +206,9 @@
 #OutputTypeNewButton,
 #OutputTypeUpdateButton,
 #OutputTypeDeleteButton ,
+#OutputNewButton,
+#OutputUpdateButton,
+#OutputDeleteButton ,
 #AddUserSubmitButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);

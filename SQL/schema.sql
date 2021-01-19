@@ -25,8 +25,8 @@ CREATE TABLE Outputs (
   outputTypeID INT NOT NULL,
   outputName VARCHAR(64) NOT NULL,
   outputDescription VARCHAR(128),
-  OEnabled BOOLEAN NOT NULL DEFAULT 1,
-  outputPosition INT DEFAULT NULL,
+  Oenabled BOOLEAN NOT NULL DEFAULT 1,
+  outputOrder INT DEFAULT 0,
   PRIMARY KEY (outputID),
   FOREIGN KEY (outputTypeID) REFERENCES OutputTypes(outputTypeID)
 );
@@ -155,9 +155,9 @@ DELIMITER ;
 
 ##Insert new Output
 DELIMITER $$
-CREATE PROCEDURE `addNewOutput` (IN `p_type` INT, IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128))
+CREATE PROCEDURE `addNewOutput` (IN `p_type` INT, IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_order` INT)
 MODIFIES SQL DATA
-	INSERT INTO Outputs (outputTypeID, outputName, outputDescription) VALUES (p_type, p_name, p_description);
+	INSERT INTO Outputs (outputTypeID, outputName, outputDescription, outputOrder) VALUES (p_type, p_name, p_description, p_order);
 $$
 DELIMITER ;
 
@@ -175,6 +175,21 @@ READS SQL DATA
   SELECT * FROM Outputs LEFT JOIN OutputTypes ON Outputs.outputTypeID=OutputTypes.outputTypeID WHERE Oenabled = 1
   $$
 DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `DisableOutput`(IN `p_outputID` INT)
+MODIFIES SQL DATA
+  UPDATE Outputs SET Oenabled = 0 WHERE outputID = p_outputID
+  $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `UpdateOutput`(IN `p_outputID` INT, IN `p_type` INT, IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_order` INT)
+MODIFIES SQL DATA
+  UPDATE Outputs SET outputTypeID = p_type, outputName = p_name, outputDescription = p_description, outputOrder = p_order WHERE outputID = p_outputID
+  $$
+DELIMITER ;
+
 #############SENSOR HARDWARE#############
 
 ##Insert new sensorType
