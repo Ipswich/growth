@@ -12,8 +12,7 @@ var systemInitializer = require('./custom_node_modules/SystemInitializer.js')
 
 //Routes
 var indexRouter = require('./routes/index');
-var settingsRouter = require('./routes/settings/settings');
-var loginRouter = require('./routes/settings/login');
+var settingsRouter = require('./routes/settings');
 var addTimeEventRouter = require('./routes/addTimeEvent');
 var addSensorEventRouter = require('./routes/addSensorEvent');
 var addPeriodicEventRouter = require('./routes/addPeriodicEvent');
@@ -24,6 +23,8 @@ var addUserRouter = require('./routes/addUser');
 
 //API
 var getEnvironmentRouter = require('./api/getEnvironment')
+var outputTypeRouter = require('./api/OutputType')
+var loginRouter = require('./api/login');
 
 //App setup - load config
 var config = require('./config/config.json');
@@ -31,12 +32,12 @@ var config = require('./config/config.json');
 var web_data = require('./config/web-data-config');
 app.set('web_data', web_data);
 app.set('config', config);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // app.use(logger('dev')); 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -57,7 +58,6 @@ app.use('/js', express.static(path.join(__dirname, '/node_modules/chart.js/dist'
 //Routes for web pages
 app.use('/', indexRouter);
 app.use('/settings', settingsRouter);
-app.use('/login', loginRouter);
 app.use('/addTimeEvent', addTimeEventRouter);
 app.use('/addSensorEvent', addSensorEventRouter);
 app.use('/addPeriodicEvent', addPeriodicEventRouter);
@@ -68,6 +68,8 @@ app.use('/addUser', addUserRouter);
 
 //Routes for API
 app.use('/api/getEnvironment', getEnvironmentRouter);
+app.use('/api/outputType', outputTypeRouter);
+app.use('/api/login', loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

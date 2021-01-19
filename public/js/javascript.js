@@ -436,7 +436,20 @@ function settings_OutputTypesForm() {
     }
   }).trigger('change')
 
+  $('#OutputTypeNewButton').on('click', function (){
+    setSettingsOutputType('New')
+  })
+
+  $('#OutputTypeDeleteButton').on('click', function (){
+    setSettingsOutputType('Delete')
+  })
+
+  $('#OutputTypeUpdateButton').on('click', function (){
+    setSettingsOutputType('Update')
+  })
+
   $('#OutputTypesForm').on('submit', function(e) {
+    let mode = $('#OutputTypeMode').val()
     e.preventDefault();
     $('#OutputTypeNewButton').attr("disabled", true);
     $('#OutputTypeUpdateButton').attr("disabled", true);
@@ -444,24 +457,50 @@ function settings_OutputTypesForm() {
 
     var form = $(this);
     var data = form.serializeArray();
+    var type;
+    switch (mode) {
+      case 'New':
+        type = "POST"
+        break;
+      case 'Delete':
+        type = "DELETE"        
+        break;
+      case 'Update':
+        type = "PUT"                
+        break;
+    
+      default:
+        alert('Error');
+    }
     $.ajax({
-      type: 'POST',
-      url: '#',
+      type: type,
+      url: '/api/outputType',
       data: data,
       cache: false,
       success: function(res) {
         $('#OutputTypeNewButton').attr("disabled", false);
         $('#OutputTypeUpdateButton').attr("disabled", false);
         $('#OutputTypeDeleteButton').attr("disabled", false);
-        $('#OutputTypesForm').trigger("reset");
+        $.ajax({
+          type: 'GET',
+          url: '/api/outputType/html',
+          cache: false,
+          success: function(html) {
+            $('#OutputTypesSelect').html(html);
+            $('#OutputTypesForm').trigger("reset");
+            $('#OutputTypesSelect').trigger('change')
+            $('#OutputTypePWM').trigger('change')
+          }
+        });
       },
       error: function(res) {
         $('#OutputTypeNewButton').attr("disabled", false);
         $('#OutputTypeUpdateButton').attr("disabled", false);
         $('#OutputTypeDeleteButton').attr("disabled", false);
-        alert("Invalid login, please try again.");
+        alert("Server error");
       }
     });
+
   })
 }
 
@@ -469,12 +508,11 @@ function settings_LoginForm() {
   $('#LoginForm').on('submit', function(e) {
     e.preventDefault();
     $('#LoginSubmitButton').attr("disabled", true);
-
     var form = $(this);
     var data = form.serializeArray();
     $.ajax({
       type: 'POST',
-      url: '/login',
+      url: '/api/login',
       data: data,
       cache: false,
       success: function(res) {
@@ -518,37 +556,21 @@ function docuReady() {
   dataRefresh()
   updateScheduleModal()
   chartIntervalChange()
-  //Prevent accidental form entries
-  $(window).keydown(function(event){
-    if(event.keyCode == 13) {
-      event.preventDefault();
-      return false;
-    }
-  });
 }
 
-$(document).ready(docuReady);
 
 function setScheduleDelete(){
   $('#UpdateMode').val('Delete');
 }
 
+
 function setScheduleUpdate(){    
   $('#UpdateMode').val('Update');
 }
 
-function setOutputTypeNew(){    
-  $('#OutputTypeMode').val('New');
+function setSettingsOutputType(val){    
+  $('#OutputTypeMode').val(val);
 }
-
-function setOutputTypeUpdate(){    
-  $('#OutputTypeMode').val('Update');
-}
-
-function setOutputTypeDelete(){    
-  $('#OutputTypeMode').val('Delete');
-}
-
 function generateChart(sensorID, sensorUnits, data, sensorType){    
   let config = generateChartConfig(sensorUnits, data, sensorType)
   let ctx = document.getElementById(sensorID + '-canvas').getContext("2d");

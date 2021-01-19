@@ -6,9 +6,9 @@ block content
   hr
   div
     if new_user == 1
-      include ./settings_newUser.pug
+      include ./settings/settings_newUser.pug
     else 
       if authenticated == 0
-        include ./authentication.pug
+        include ./settings/authentication.pug
       else
-        include ./settings_main.pug
+        include ./settings/settings_main.pug

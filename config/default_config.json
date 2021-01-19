@@ -20,7 +20,7 @@
   "node_port": 26420,
   "salt_rounds": 10,
   "log_interval": 60000,
-  "relay_toggle_prevention": true,
+  "relay_toggle_prevention": "null",
   "jwt_secret": "null",
   "jwt_expiration_time": 1800
 }

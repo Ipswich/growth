@@ -1,0 +1,29 @@
+form(id="OutputTypesForm")
+  div.form-group
+    div.form-row
+      div.col-6
+        select(id="OutputTypesSelect" name="OutputTypesSelect").form-control.custom-select.formStyle
+          include ./output_type_select.pug
+  div.form-group
+    div.form-row
+      label(for="OutputTypeName") Output Type
+      input(type="text" id="OutputTypeName" name="OutputTypeName" maxlength="32").form-control.formStyle
+  div.form-group
+    div.form-row
+      div.custom-control.custom-switch
+        input(id="OutputTypePWM" name="OutputTypePWM" type="checkbox").custom-control-input
+        label(for="OutputTypePWM").custom-control-label PWM Output
+  div#OutputTypePWMInversiondiv.form-group
+    div.form-row
+      div.custom-control.custom-switch
+        input(id="OutputTypePWMInversion" name="OutputTypePWMInversion" type="checkbox").custom-control-input
+        label(for="OutputTypePWMInversion").custom-control-label Reverse PWM
+  div.form-group
+    div.form-row
+        input(type="hidden" id="OutputTypeMode" name="OutputTypeMode" value='')
+        div#OutputTypeSubmitNew.col
+          button(id="OutputTypeNewButton" name="OutputTypeNewButton" type="submit").btn.submitButton Add New
+        div#OutputTypeSubmitOld.col
+          button(id="OutputTypeDeleteButton" name="OutputTypeDeleteButton" type="submit").btn.submitButton.float-left Delete
+          button(id="OutputTypeUpdateButton" name="OutputTypeUpdateButton" type="submit").btn.submitButton.float-right Update
+                
