@@ -603,7 +603,7 @@ function settings_SensorForm() {
     let SensorUnits = $(this).val().split("|")[3]
     let SensorHardwareID = $(this).val().split("|")[4]
     let SensorProtocol = $(this).val().split("|")[5]
-    let SensorAddress = $(this).val().split("|")[6] == 'null' ? "" : $(this).val().split("|")[6]    
+    let SensorAddress = $(this).val().split("|")[6] == 'NULL' ? "" : $(this).val().split("|")[6]    
     if(SensorLocation == ""){
       $('#SensorSubmitOld').fadeOut(400, () => {
         $('#SensorSubmitNew').fadeIn()

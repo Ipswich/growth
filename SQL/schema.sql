@@ -219,7 +219,7 @@ DELIMITER ;
 
 ##Insert new sensor
 DELIMITER $$
-CREATE PROCEDURE `addNewSensor` (IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_sensorProtocol` VARCHAR(32))
+CREATE PROCEDURE `addNewSensor` (IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_sensorProtocol` VARCHAR(32), IN `p_address` VARCHAR(64))
 MODIFIES SQL DATA
   INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits, sensorHardwareID, sensorProtocol, sensorAddress) VALUES (p_model, p_type, p_location, p_units, p_hardwareID, p_sensorProtocol, p_address)
   $$
