@@ -26,7 +26,8 @@ var getEnvironmentRouter = require('./api/getEnvironment')
 var outputTypeRouter = require('./api/OutputType')
 var outputRouter = require('./api/Output')
 var sensorRouter = require('./api/Sensor')
-var loginRouter = require('./api/login');
+var loginRouter = require('./api/Login');
+var stateRouter = require('./api/State');
 
 //App setup - load config
 var config = require('./config/config.json');
@@ -74,6 +75,7 @@ app.use('/api/outputType', outputTypeRouter);
 app.use('/api/output', outputRouter);
 app.use('/api/sensor', sensorRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/state', stateRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
