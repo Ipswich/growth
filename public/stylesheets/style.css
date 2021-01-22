@@ -201,13 +201,19 @@
   box-shadow: none;
 }
 
+#ManualSubmitButton,
+#LoginSubmitButton,
+#OutputTypeNewButton,
+#OutputTypeUpdateButton,
+#OutputTypeDeleteButton ,
+#OutputNewButton,
+#OutputUpdateButton,
+#OutputDeleteButton,
+#SensorNewButton,
+#SensorUpdateButton,
+#SensorDeleteButton,
+#RestartButton,
 #AddUserSubmitButton {
-  background-color: var(--website-bg-lighter);
-  color: var(--website-text-normal);
-  box-shadow: none;
-}
-
-#ManualSubmitButton {
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);
   box-shadow: none;
@@ -225,6 +231,19 @@
   background-color: var(--website-bg-lighter);
   color: var(--website-text-normal);
   box-shadow: none;
+}
+
+#accordion .card{
+  background-color: var(--website-bg-lighter);
+  color: var(--website-text-normal);
+}
+
+#accordion .card .card-header{
+  cursor: pointer;
+}
+
+#accordion .card .card-body{
+  background-color: var(--website-bg-light);
 }
 
 .datepicker table tr td.active:active,

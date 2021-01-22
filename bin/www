@@ -152,17 +152,17 @@ async function configChecker(config, warnState){
       update = true 
     }       
     if (config.database.password == 'null'){
-      console.log("[SETUP] No database password specified in config. Please enter the database password for growth_admin:")
+      console.log("\n[SETUP] No database password specified in config. Please enter the database password for growth_admin:")
       config.database.password = await getInput("> ")  
       update = true  
     }
     if (config.jwt_secret == 'null'){
-      console.log("[SETUP] jwt_secret has not been changed in config. Please enter a string to use for authentication security:")
+      console.log("\n[SETUP] jwt_secret has not been changed in config. Please enter a string to use for authentication security:")
       config.jwt_secret = await getInput("> ")
       update = true
     }
     if ((config.nodemailer.service == 'null' || config.nodemailer.auth.user == 'null' || config.nodemailer.auth.pass == 'null') && config.nodemailer_setup_warn == 'true'){
-      console.log("[SETUP] nodemailer has not been setup in config, 'Warn' will not be sent.")
+      console.log("\n[SETUP] nodemailer has not been setup in config, 'Warn' will not be sent.")
       let input = await getInput("Would you like to set this up now? (y/N) ")
       if (input == 'y' || input == 'Y'){
         config.nodemailer.service = await getInput("Please input an emailing service: \n> ")
@@ -179,11 +179,21 @@ async function configChecker(config, warnState){
         warnState = false;
       }
     }
+    if (config.relay_toggle_prevention == 'null'){
+      console.log("\n[SETUP] Relay toggle prevention has not been changed in config.")
+      input = await getInput("Would you like to enable this? (y/N)")
+      if (input == 'y' || input == 'Y'){
+        config.relay_toggle_prevention = true
+      } else {
+        config.relay_toggle_prevention = false
+      }
+      update = true
+    }
     resolve()
   }).then(() => {
     if (update == true){      
       fs.writeFileSync('./config/config.json', JSON.stringify(config))
-      console.log("[SETUP] Config has been updated!\n")
+      console.log("\n[SETUP] Config has been updated!\n")
     }
     return    
   }).catch(() => {

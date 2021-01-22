@@ -1,21 +1,22 @@
 const REFRESH_INTERVAL = 60 * 1000 // 1 minute
 
 function outputValueHider(output_element_ID, output_PWM_ID){
- $(output_element_ID).on('change', function() {
-   let PWM = $(this).val().split("|")[1]
-   if (PWM == 0){
-     $(output_PWM_ID).fadeOut()
-   } else {
-     $(output_PWM_ID).fadeIn()
-   }
- }).trigger("change")
+  if($(output_element_ID).val() != null){
+    $(output_element_ID).on('change', function() {
+      let PWM = $(this).val().split("|")[1]
+      if (PWM == 0){
+        $(output_PWM_ID).fadeOut()
+      } else {
+        $(output_PWM_ID).fadeIn()
+      }
+    }).trigger("change")
+  }
 }
 
 function eventValueHider(output_element_id, element_on_change, element_to_hide){
  $(element_on_change).on('change', function() {
   let event = $(this).val().split("|")[1]
   let PWM = $(output_element_id).val().split("|")[1]
-  console.log(PWM)
   if (event == 'Output Off'){
     $(element_to_hide).fadeOut()
   } else {
@@ -27,30 +28,32 @@ function eventValueHider(output_element_id, element_on_change, element_to_hide){
 }
 
 function valueHider(output_element_ID, event_element_ID, output_value){
-
-  $(output_element_ID).on('change', function() {
-    let PWM = $(output_element_ID).val().split("|")[1]
-    let event = $(event_element_ID).val().split("|")[1]
-    if (PWM == 0){
-      $(output_value).fadeOut()
-    } else {
-      if (event == "Output On") {
-        $(output_value).fadeIn()
+  if($(output_element_ID).val() != null){
+    $(output_element_ID).on('change', function() { 
+      let PWM = $(output_element_ID).val().split("|")[1] || {}
+      let event = $(event_element_ID).val().split("|")[1] || {}
+      if (PWM == 0){
+        $(output_value).fadeOut()
+      } else {
+        if (event == "Output On") {
+          $(output_value).fadeIn()
+        }
       }
-    }
-  }).trigger("change")
+    }).trigger("change")
+  
 
-  $(event_element_ID).on('change', function() {
-    let PWM = $(output_element_ID).val().split("|")[1]
-    let event = $(event_element_ID).val().split("|")[1]
-    if (event == 'Output Off'){
-      $(output_value).fadeOut()
-    } else {
-      if(PWM == 1){
-        $(output_value).fadeIn()
+    $(event_element_ID).on('change', function() {
+      let PWM = $(output_element_ID).val().split("|")[1]
+      let event = $(event_element_ID).val().split("|")[1]
+      if (event == 'Output Off'){
+        $(output_value).fadeOut()
+      } else {
+        if(PWM == 1){
+          $(output_value).fadeIn()
+        }
       }
-    }
-  }).trigger("change")
+    }).trigger("change")
+  }
 }
 
 function outputHider(output_element_ID, element_to_hide, element_to_show, trigger){
@@ -365,12 +368,14 @@ function updateScheduleModal() {
   });
 };
 
-
 //Conditions and schedule refresh
 function dataRefresh() {
   setInterval(function() {
     let select = document.getElementById("chart_interval")
-    let datagram = {interval: select.value}
+    let datagram = {interval: null}
+    if(select != null){
+      datagram = {interval: select.value}
+    }
     $.ajax({
       type: 'POST',
       url: '/api/getEnvironment',
@@ -387,6 +392,350 @@ function dataRefresh() {
     });
   }, REFRESH_INTERVAL)
 };
+
+function settings_OutputTypesForm() {
+
+  $('#OutputTypesSelect').on('change', function() {
+    let OutputType = $(this).val().split("|")[0]
+    let OutputPWM = $(this).val().split("|")[1]
+    let OutputPWMInversion = $(this).val().split("|")[2]
+
+    if(OutputType == ""){
+      $('#OutputTypeSubmitOld').fadeOut(400, () => {
+        $('#OutputTypeSubmitNew').fadeIn()
+      })
+    } else {
+      $('#OutputTypeSubmitNew').fadeOut(400, () => {
+        $('#OutputTypeSubmitOld').fadeIn()
+      })
+    }
+
+
+    $('#OutputTypeName').val(OutputType)
+    if(OutputPWM == 1){
+      $('#OutputTypePWM').prop('checked', true)
+      $('#OutputTypePWMInversiondiv').fadeIn()
+    } else {
+      $('#OutputTypePWM').prop('checked', false)
+      $('#OutputTypePWMInversiondiv').fadeOut()
+    }
+    if(OutputPWMInversion == 1){
+      $('#OutputTypePWMInversion').prop('checked', true)
+    } else {
+      $('#OutputTypePWMInversion').prop('checked', false)
+    }
+  }).trigger("change")
+
+  $('#OutputTypePWM').on('change', function() {
+    if(this.checked == true){
+      $('#OutputTypePWMInversiondiv').fadeIn()
+    } else {
+      $('#OutputTypePWMInversiondiv').fadeOut()
+      $('#OutputTypePWMInversion').prop('checked', false)
+    }
+  }).trigger('change')
+
+  $('#OutputTypeNewButton').on('click', function (){
+    setSettingsOutputType('New')
+  })
+
+  $('#OutputTypeDeleteButton').on('click', function (){
+    setSettingsOutputType('Delete')
+  })
+
+  $('#OutputTypeUpdateButton').on('click', function (){
+    setSettingsOutputType('Update')
+  })
+
+  $('#OutputTypesForm').on('submit', function(e) {
+    let mode = $('#OutputTypeMode').val()
+    e.preventDefault();
+    $('#OutputTypeNewButton').attr("disabled", true);
+    $('#OutputTypeUpdateButton').attr("disabled", true);
+    $('#OutputTypeDeleteButton').attr("disabled", true);
+
+    var form = $(this);
+    var data = form.serializeArray();
+    var type;
+    switch (mode) {
+      case 'New':
+        type = "POST"
+        break;
+      case 'Delete':
+        type = "DELETE"        
+        break;
+      case 'Update':
+        type = "PUT"                
+        break;
+    
+      default:
+        alert('Error');
+    }
+    $.ajax({
+      type: type,
+      url: '/api/outputType',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#OutputTypeNewButton').attr("disabled", false);
+        $('#OutputTypeUpdateButton').attr("disabled", false);
+        $('#OutputTypeDeleteButton').attr("disabled", false);
+        $.ajax({
+          type: 'GET',
+          url: '/api/outputType/html',
+          cache: false,
+          success: function(html) {
+            $('#OutputTypesSelect').html(html);
+            $('#OutputTypesForm').trigger("reset");
+            $('#OutputTypesSelect').trigger('change')
+            $('#OutputTypePWM').trigger('change')
+          }
+        });
+      },
+      error: function(res) {
+        $('#OutputTypeNewButton').attr("disabled", false);
+        $('#OutputTypeUpdateButton').attr("disabled", false);
+        $('#OutputTypeDeleteButton').attr("disabled", false);
+        alert("Server error");
+      }
+    });
+
+  })
+}
+
+function settings_OutputForm() {
+
+  $('#OutputSelect').on('change', function() {
+    let OutputName = $(this).val().split("|")[0]
+    let OutputDescription = $(this).val().split("|")[1]
+    let OutputOrder = $(this).val().split("|")[2]
+    let OutputType = $(this).val().split("|")[3]
+
+    if(OutputName == ""){
+      $('#OutputSubmitOld').fadeOut(400, () => {
+        $('#OutputSubmitNew').fadeIn()
+        $('#OutputsForm').trigger('reset')
+      })
+    } else {
+      $('#OutputSubmitNew').fadeOut(400, () => {
+        $('#OutputOutputTypeSelect').val(OutputType)
+        $('#OutputOrder').val(OutputOrder)
+        $('#OutputDescription').val(OutputDescription)
+        $('#OutputName').val(OutputName)
+        $('#OutputSubmitOld').fadeIn()
+      })
+    }
+  }).trigger("change")
+
+
+  $('#OutputNewButton').on('click', function (){
+    setSettingsOutput('New')
+  })
+
+  $('#OutputDeleteButton').on('click', function (){
+    setSettingsOutput('Delete')
+  })
+
+  $('#OutputUpdateButton').on('click', function (){
+    setSettingsOutput('Update')
+  })
+
+  $('#OutputsForm').on('submit', function(e) {
+    let mode = $('#OutputMode').val()
+    e.preventDefault();
+    $('#OutputNewButton').attr("disabled", true);
+    $('#OutputUpdateButton').attr("disabled", true);
+    $('#OutputDeleteButton').attr("disabled", true);
+
+    var form = $(this);
+    var data = form.serializeArray();
+    var type;
+    switch (mode) {
+      case 'New':
+        type = "POST"
+        break;
+      case 'Delete':
+        type = "DELETE"        
+        break;
+      case 'Update':
+        type = "PUT"                
+        break;
+      default:
+        alert('Error');
+    }
+    $.ajax({
+      type: type,
+      url: '/api/output',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#OutputNewButton').attr("disabled", false);
+        $('#OutputUpdateButton').attr("disabled", false);
+        $('#OutputDeleteButton').attr("disabled", false);
+        $.ajax({
+          type: 'GET',
+          url: '/api/output/html',
+          cache: false,
+          success: function(html) {
+            $('#OutputSelect').html(html);
+            $('#OutputsForm').trigger("reset");
+            $('#OutputSelect').trigger('change')
+          }
+        });
+      },
+      error: function(res) {
+        $('#OutputNewButton').attr("disabled", false);
+        $('#OutputUpdateButton').attr("disabled", false);
+        $('#OutputDeleteButton').attr("disabled", false);
+        alert("Server error");
+      }
+    });
+
+  })
+}
+
+function settings_SensorForm() {
+
+  $('#SensorSelect').on('change', function() {
+    let SensorLocation = $(this).val().split("|")[0]
+    let SensorModel = $(this).val().split("|")[1]
+    let SensorType = $(this).val().split("|")[2]
+    let SensorUnits = $(this).val().split("|")[3]
+    let SensorHardwareID = $(this).val().split("|")[4]
+    let SensorProtocol = $(this).val().split("|")[5]
+    let SensorAddress = $(this).val().split("|")[6] == 'null' ? "" : $(this).val().split("|")[6]    
+    if(SensorLocation == ""){
+      $('#SensorSubmitOld').fadeOut(400, () => {
+        $('#SensorSubmitNew').fadeIn()
+        $('#SensorsForm').trigger('reset')
+      })
+    } else {
+      $('#SensorSubmitNew').fadeOut(400, () => {
+        $('#SensorTypeSelect').val(SensorType)
+        $('#SensorUnits').val(SensorUnits)
+        $('#SensorLocation').val(SensorLocation)
+        $('#SensorModel').val(SensorModel)
+        $('#SensorProtocolSelect').val(SensorProtocol)
+        $('#SensorAddress').val(SensorAddress)
+        $('#SensorHardwareID').val(SensorHardwareID)
+        
+        $('#SensorSubmitOld').fadeIn()
+      })
+    }
+  }).trigger("change")
+
+
+  $('#SensorNewButton').on('click', function (){
+    setSettingsSensor('New')
+  })
+
+  $('#SensorDeleteButton').on('click', function (){
+    setSettingsSensor('Delete')
+  })
+
+  $('#SensorUpdateButton').on('click', function (){
+    setSettingsSensor('Update')
+  })
+
+  $('#SensorsForm').on('submit', function(e) {
+    let mode = $('#SensorMode').val()
+    e.preventDefault();
+    $('#SensorNewButton').attr("disabled", true);
+    $('#SensorUpdateButton').attr("disabled", true);
+    $('#SensorDeleteButton').attr("disabled", true);
+
+    var form = $(this);
+    var data = form.serializeArray();
+    var type;
+    switch (mode) {
+      case 'New':
+        type = "POST"
+        break;
+      case 'Delete':
+        type = "DELETE"        
+        break;
+      case 'Update':
+        type = "PUT"                
+        break;
+      default:
+        alert('Error');
+    }
+    $.ajax({
+      type: type,
+      url: '/api/sensor',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#SensorNewButton').attr("disabled", false);
+        $('#SensorUpdateButton').attr("disabled", false);
+        $('#SensorDeleteButton').attr("disabled", false);
+        $.ajax({
+          type: 'GET',
+          url: '/api/sensor/html',
+          cache: false,
+          success: function(html) {
+            $('#SensorSelect').html(html);
+            $('#SensorsForm').trigger("reset");
+            $('#SensorSelect').trigger('change')
+          }
+        });
+      },
+      error: function(res) {
+        $('#SensorNewButton').attr("disabled", false);
+        $('#SensorUpdateButton').attr("disabled", false);
+        $('#SensorDeleteButton').attr("disabled", false);
+        alert("Server error");
+      }
+    });
+
+  })
+}
+
+function settings_RestartServer(){
+  $('#RestartButton').on('click', () => {
+    $('#RestartButton').attr("disabled", true);
+    if(confirm("Are you sure you want to restart server? This will interrupt currently running schedules.")){
+      $.ajax({
+        type: 'POST',
+        url: '/api/state',
+        data: null,
+        cache: false,
+        success: function(res) {
+          $('#RestartButton').attr("disabled", false);
+        },
+        error: function(res) {
+          $('#RestartButton').attr("disabled", false);
+          alert("Error Restarting Server.");
+        }
+      });
+    } else {
+      $('#RestartButton').attr("disabled", false);
+    }
+  })
+}
+
+function settings_LoginForm() {
+  $('#LoginForm').on('submit', function(e) {
+    e.preventDefault();
+    $('#LoginSubmitButton').attr("disabled", true);
+    var form = $(this);
+    var data = form.serializeArray();
+    $.ajax({
+      type: 'POST',
+      url: '/api/login',
+      data: data,
+      cache: false,
+      success: function(res) {
+        $('#LoginSubmitButton').attr("disabled", false);
+        location.reload();
+      },
+      error: function(res) {
+        $('#LoginSubmitButton').attr("disabled", false);
+        alert("Invalid login, please try again.");
+      }
+    });
+  })
+}
 
 // Ajax for on change of chart interval
 function chartIntervalChange() {
@@ -417,25 +766,29 @@ function docuReady() {
   dataRefresh()
   updateScheduleModal()
   chartIntervalChange()
-  //Prevent accidental form entries
-  $(window).keydown(function(event){
-    if(event.keyCode == 13) {
-      event.preventDefault();
-      return false;
-    }
-  });
 }
 
-$(document).ready(docuReady);
 
-function setDelete(){
+function setScheduleDelete(){
   $('#UpdateMode').val('Delete');
 }
 
-function setUpdate(){    
+
+function setScheduleUpdate(){    
   $('#UpdateMode').val('Update');
 }
 
+function setSettingsOutputType(val){    
+  $('#OutputTypeMode').val(val);
+}
+
+function setSettingsOutput(val){    
+  $('#OutputMode').val(val);
+}
+
+function setSettingsSensor(val){    
+  $('#SensorMode').val(val);
+}
 function generateChart(sensorID, sensorUnits, data, sensorType){    
   let config = generateChartConfig(sensorUnits, data, sensorType)
   let ctx = document.getElementById(sensorID + '-canvas').getContext("2d");

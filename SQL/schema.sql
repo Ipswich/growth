@@ -12,21 +12,23 @@ CREATE TABLE Users (
 );
 
 CREATE TABLE OutputTypes (
+  outputTypeID INT NOT NULL AUTO_INCREMENT,
   outputType VARCHAR(32) NOT NULL,
   outputPWM BOOLEAN NOT NULL DEFAULT 0,
   outputPWMInversion BOOLEAN NOT NULL DEFAULT 0,
   OTenabled BOOLEAN NOT NULL DEFAULT 1,
-  PRIMARY KEY (outputType)
+  PRIMARY KEY (outputTypeID)
 );
 
 CREATE TABLE Outputs (
   outputID INT NOT NULL AUTO_INCREMENT,
-  outputType VARCHAR(32) NOT NULL,
+  outputTypeID INT NOT NULL,
   outputName VARCHAR(64) NOT NULL,
   outputDescription VARCHAR(128),
-  OEnabled BOOLEAN NOT NULL DEFAULT 1,
+  Oenabled BOOLEAN NOT NULL DEFAULT 1,
+  outputOrder INT DEFAULT 0,
   PRIMARY KEY (outputID),
-  FOREIGN KEY (outputType) REFERENCES OutputTypes(outputType)
+  FOREIGN KEY (outputTypeID) REFERENCES OutputTypes(outputTypeID)
 );
 
 CREATE TABLE SensorTypes (
@@ -114,7 +116,7 @@ CREATE TABLE ScheduledEventLog (
 
 ##Insert new outputType
 DELIMITER $$
-CREATE PROCEDURE `addNewOutputType` (IN `p_type` VARCHAR(32),IN `p_PWM` BOOLEAN, IN `p_PWMInversion` BOOLEAN, IN `p_enabled` BOOLEAN)
+CREATE PROCEDURE `addNewOutputType` (IN `p_type` VARCHAR(32), IN `p_PWM` BOOLEAN, IN `p_PWMInversion` BOOLEAN, IN `p_enabled` BOOLEAN)
 MODIFIES SQL DATA
   INSERT INTO OutputTypes (outputType, outputPWM, outputPWMInversion, OTenabled) VALUES (p_type, p_PWM, p_PWMInversion, p_enabled)
   $$
@@ -137,11 +139,25 @@ READS SQL DATA
   $$
 DELIMITER ;
 
+DELIMITER $$
+CREATE PROCEDURE `DisableOutputType`(IN `p_outputTypeID` INT)
+MODIFIES SQL DATA
+  UPDATE OutputTypes SET OTenabled = 0 WHERE outputTypeID = p_outputTypeID
+  $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `UpdateOutputType`(IN `p_outputTypeID` INT, IN `p_type` VARCHAR(32), IN `p_pwm` TINYINT, IN `p_pwmInversion` TINYINT)
+MODIFIES SQL DATA
+  UPDATE OutputTypes SET outputType = p_type, outputPWM = p_pwm, outputPWMInversion = p_pwmInversion WHERE outputTypeID = p_outputTypeID
+  $$
+DELIMITER ;
+
 ##Insert new Output
 DELIMITER $$
-CREATE PROCEDURE `addNewOutput` (IN `p_type` VARCHAR(32), IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128))
+CREATE PROCEDURE `addNewOutput` (IN `p_type` INT, IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_order` INT)
 MODIFIES SQL DATA
-	INSERT INTO Outputs (outputType, outputName, outputDescription) VALUES (p_type, p_name, p_description);
+	INSERT INTO Outputs (outputTypeID, outputName, outputDescription, outputOrder) VALUES (p_type, p_name, p_description, p_order);
 $$
 DELIMITER ;
 
@@ -156,9 +172,24 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getEnabledOutputs`()
 READS SQL DATA
-  SELECT * FROM Outputs LEFT JOIN OutputTypes ON Outputs.outputType=OutputTypes.outputType WHERE Oenabled = 1
+  SELECT * FROM Outputs LEFT JOIN OutputTypes ON Outputs.outputTypeID=OutputTypes.outputTypeID WHERE Oenabled = 1
   $$
 DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `DisableOutput`(IN `p_outputID` INT)
+MODIFIES SQL DATA
+  UPDATE Outputs SET Oenabled = 0 WHERE outputID = p_outputID
+  $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `UpdateOutput`(IN `p_outputID` INT, IN `p_type` INT, IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_order` INT)
+MODIFIES SQL DATA
+  UPDATE Outputs SET outputTypeID = p_type, outputName = p_name, outputDescription = p_description, outputOrder = p_order WHERE outputID = p_outputID
+  $$
+DELIMITER ;
+
 #############SENSOR HARDWARE#############
 
 ##Insert new sensorType
@@ -188,10 +219,10 @@ DELIMITER ;
 
 ##Insert new sensor
 DELIMITER $$
-CREATE PROCEDURE `addNewSensor` (IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_sensorProtocol` VARCHAR(32))
+CREATE PROCEDURE `addNewSensor` (IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_sensorProtocol` VARCHAR(32), IN `p_address` VARCHAR(64))
 MODIFIES SQL DATA
-	INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits, sensorHardwareID, sensorProtocol) VALUES (p_model, p_type, p_location, p_units, p_hardwareID, p_sensorProtocol);
-$$
+  INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits, sensorHardwareID, sensorProtocol, sensorAddress) VALUES (p_model, p_type, p_location, p_units, p_hardwareID, p_sensorProtocol, p_address)
+  $$
 DELIMITER ;
 
 ##Get sensor data for ALL sensors
@@ -226,6 +257,14 @@ END;
 $$
 DELIMITER ;
 
+##Update sensor 
+DELIMITER $$
+CREATE PROCEDURE `UpdateSensor`(IN `p_sensorID` INT, IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_protocol` VARCHAR(32), IN `p_address` VARCHAR(64))
+MODIFIES SQL DATA
+  UPDATE Sensors SET sensorModel = p_model, sensorType = p_type, sensorLocation = p_location, sensorUnits = p_units, sensorHardwareID = p_hardwareID, sensorProtocol = p_protocol, sensorAddress = p_address WHERE sensorID = p_sensorID
+$$
+DELIMITER $$
+
 ##Update sensor Address
 DELIMITER $$
 CREATE PROCEDURE `updateSensorAddress`(IN `p_sensorAddress` VARCHAR(64), IN `p_sensorID` INT)
@@ -233,6 +272,14 @@ MODIFIES SQL DATA
   UPDATE Sensors SET sensorAddress = p_sensorAddress WHERE sensorID = p_sensorID
 $$
 DELIMITER $$
+
+##Disable Sensor
+DELIMITER $$
+CREATE PROCEDURE `DisableSensor`(IN `p_sensorID` INT)
+MODIFIES SQL DATA
+  UPDATE Sensors SET SSenabled = 0 WHERE sensorID = p_sensorID
+  $$
+DELIMITER ;
 
 
 #############SENSOR READINGS#############
@@ -423,6 +470,7 @@ SELECT * FROM Schedules s
 JOIN Events AS e ON s.eventID=e.eventID
 LEFT JOIN Sensors AS n on s.sensorID=n.sensorID
 JOIN Outputs AS o on s.outputID=o.outputID
+JOIN (SELECT outputPWM, outputType, outputTypeID from OutputTypes) AS ot on o.outputTypeID=ot.outputTypeID
 JOIN (SELECT username, email FROM Users) as u on s.addedBy=u.username
 WHERE s.Senabled = 1
   AND ((LOCALTIMESTAMP <= s.scheduleStopDate OR s.scheduleStopDate IS NULL) AND (LOCALTIMESTAMP >= s.scheduleStartDate OR s.scheduleStartDate IS NULL))

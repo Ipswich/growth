@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 ExecStart=/home/pi/growth/startup/startup_script.sh
-Restart=on-failure
-RestartSec=10
+Restart=always
+RestartSec=3
 KillMode=process
 StandardOutput=inherit
 StandardError=inherit

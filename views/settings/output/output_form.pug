@@ -1,0 +1,32 @@
+form(id="OutputsForm")
+  div.form-group
+    div.form-row
+      div.col-10
+        select(id="OutputSelect" name="OutputSelect").form-control.custom-select.formStyle
+          include ./output_select.pug
+  div.form-group
+    div.form-row
+      div.col-8
+        label(for="OutputOutputTypeSelect") Output Type
+        select(id="OutputOutputTypeSelect" name="OutputOutputTypeSelect" required).form-control.custom-select.formStyle
+          include ./output_output_type_select.pug
+      div.col-4
+        label(for="OutputOrder") Order
+        input(type="number" id="OutputOrder" name="OutputOrder" min=0 value=1).form-control.custom-select.formStyle        
+  div.form-group
+    div.form-row
+      label(for="OutputName") Name
+      input(type="text" id="OutputName" name="OutputName" maxlength="64").form-control.formStyle
+  div.form-group
+    div.form-row
+      label(for="OutputDescription") Description
+      input(type="text" id="OutputDescription" name="OutputDescription" maxlength="64").form-control.formStyle
+  div.form-group
+    div.form-row
+        input(type="hidden" id="OutputMode" name="OutputMode" value='')
+        div#OutputSubmitNew.col
+          button(id="OutputNewButton" name="OutputNewButton" type="submit").btn.submitButton Add New
+        div#OutputSubmitOld.col
+          button(id="OutputDeleteButton" name="OutputDeleteButton" type="submit").btn.submitButton.float-left Delete
+          button(id="OutputUpdateButton" name="OutputUpdateButton" type="submit").btn.submitButton.float-right Update
+                

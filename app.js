@@ -23,6 +23,11 @@ var addUserRouter = require('./routes/addUser');
 
 //API
 var getEnvironmentRouter = require('./api/getEnvironment')
+var outputTypeRouter = require('./api/OutputType')
+var outputRouter = require('./api/Output')
+var sensorRouter = require('./api/Sensor')
+var loginRouter = require('./api/Login');
+var stateRouter = require('./api/State');
 
 //App setup - load config
 var config = require('./config/config.json');
@@ -30,12 +35,12 @@ var config = require('./config/config.json');
 var web_data = require('./config/web-data-config');
 app.set('web_data', web_data);
 app.set('config', config);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // app.use(logger('dev')); 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -66,6 +71,11 @@ app.use('/addUser', addUserRouter);
 
 //Routes for API
 app.use('/api/getEnvironment', getEnvironmentRouter);
+app.use('/api/outputType', outputTypeRouter);
+app.use('/api/output', outputRouter);
+app.use('/api/sensor', sensorRouter);
+app.use('/api/login', loginRouter);
+app.use('/api/state', stateRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
