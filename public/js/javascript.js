@@ -694,7 +694,7 @@ function settings_SensorForm() {
 function settings_RestartServer(){
   $('#RestartButton').on('click', () => {
     $('#RestartButton').attr("disabled", true);
-    if(confirm("Are you sure you want to restart server? This will interrupt current running schedules.")){
+    if(confirm("Are you sure you want to restart server? This will interrupt currently running schedules.")){
       $.ajax({
         type: 'POST',
         url: '/api/state',
@@ -702,7 +702,6 @@ function settings_RestartServer(){
         cache: false,
         success: function(res) {
           $('#RestartButton').attr("disabled", false);
-          alert()
         },
         error: function(res) {
           $('#RestartButton').attr("disabled", false);
