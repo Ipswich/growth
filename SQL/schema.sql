@@ -177,6 +177,13 @@ READS SQL DATA
 DELIMITER ;
 
 DELIMITER $$
+CREATE PROCEDURE `getEnabledOrderedOutputs`()
+READS SQL DATA
+  SELECT * FROM Outputs LEFT JOIN OutputTypes ON Outputs.outputTypeID=OutputTypes.outputTypeID WHERE Oenabled = 1 ORDER BY outputOrder = 0, outputOrder;
+  $$
+DELIMITER ;
+
+DELIMITER $$
 CREATE PROCEDURE `DisableOutput`(IN `p_outputID` INT)
 MODIFIES SQL DATA
   UPDATE Outputs SET Oenabled = 0 WHERE outputID = p_outputID
