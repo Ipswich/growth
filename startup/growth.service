@@ -1,11 +1,13 @@
 [Unit]
 Description=growth environmental control service
 After=network.target
+After=mysqld.service
+StartLimitIntervalSec=0
 
 [Service]
 ExecStart=/home/pi/growth/startup/startup_script.sh
 Restart=always
-RestartSec=3
+RestartSec=1
 KillMode=process
 StandardOutput=inherit
 StandardError=inherit

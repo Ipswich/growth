@@ -20,7 +20,7 @@ router.get('/', async function(req, res, next) {
         res.status(401).render('settings', data)
       } else {
         let outputTypes = await dbcalls.getEnabledOutputTypes()
-        let outputs = await dbcalls.getEnabledOutputs()
+        let outputs = await dbcalls.getEnabledOrderedOutputs()
         let sensorTypes = await dbcalls.getEnabledSensorTypes()
         let sensors = await dbcalls.getEnabledSensors()
         data.new_user = 0
