@@ -22,6 +22,10 @@
   color: var(--website-text-light);
 }
 
+.no-show {
+  display: none;
+}
+
 .nav-pill {
   color: var(--website-text-dark);
   background-color: var(--website-bg-almost-light);

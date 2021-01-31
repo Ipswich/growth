@@ -6,7 +6,10 @@ div
           label(for="TimeEvent") Event
           select(id="TimeEvent" name="TimeEvent").form-control.custom-select.formStyle
             each event, index in events
-              option(value=(event.eventID + "|" + event.eventName)) #{event.eventName}
+              if index == 0
+                option(selected value=(event.eventID + "|" + event.eventName)) #{event.eventName}
+              else
+                option(value=(event.eventID + "|" + event.eventName)) #{event.eventName}
         div.col-4(id="TimeTimeDiv")
           script.
             if (!Modernizr.inputtypes.time) {
@@ -41,24 +44,34 @@ div
               <input type="time" id="TimeTrigger" name="TimeTrigger" class="form-control formStyle" required>
               `;
             }  
+    div(id="TimeVariableDiv")
+      div(id="TimeOutputDiv").form-group
+        div.form-row
+          div.col-8
+            label(for="TimeOutput") Output
+            select(id="TimeOutput" name="TimeOutput" required).form-control.formStyle.custom-select
+              each output, index in outputs              
+                option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+          div(id="TimeOutputValueDiv").col-4
+            label(for="TimeOutputValue") Output Value
+            select(id="TimeOutputValue" name="TimeOutputValue" required).form-control.formStyle.custom-select
+              - for(var i = 100; i>= 0; i--)
+                option= i
 
-
-    div(id="TimeOutputDiv").form-group
-      div.form-row
-        div.col-8
-          label(for="TimeOutput") Output
-          select(id="TimeOutput" name="TimeOutput" required).form-control.formStyle.custom-select
-            each output, index in outputs              
-              option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
-        div(id="TimeOutputValueDiv").col-4
-          label(for="TimeOutputValue") Output Value
-          select(id="TimeOutputValue" name="TimeOutputValue" required).form-control.formStyle.custom-select
-            - for(var i = 100; i>= 0; i--)
-              option= i
-
-    div(id="TimeWarnDiv").form-group
-      div.form-row
-        div.col-5 
+      div(id="TimeWarnDiv" style="display:none").form-group
+        div.form-row
+          div.col-5 
+      div(id="TimePythonDiv" style="display:none").form-group
+        div.form-row
+          div.col-6
+            label(for="TimePythonScript") Script
+            select(required id="TimePythonScript" name="TimePythonScript").form-control.custom-select.formStyle
+              each script, index in python
+                if index == 0
+                  option(selected value=script) #{script}
+                else
+                  option(value=script) #{script}
+        
     div.form-group           
       label(for="TimeDateDiv") #[a(href="#TimeDateDiv" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseStart").website-link Optional]
       div(id="TimeDateDiv").form-row.collapse
@@ -116,12 +129,14 @@ div
           button(id="TimeSubmitButton" type="submit").btn.float-right.submitButton Submit
 
 script.
-
-  $().ready(function(){
+  $(document).ready(function(){
+    let event_object = {
+      "Output Off":"#TimeOutputDiv",
+      "Output On":"#TimeOutputDiv",
+      "Email Warn":"#TimeWarnDiv",
+      "Python Script":"#TimePythonDiv"
+    }
     timeForm()
-    //- outputValueHider('#TimeOutput', '#TimeOutputValueDiv')
-    //- eventValueHider('#TimeOutput', '#TimeEvent', '#TimeOutputValueDiv')
-
     valueHider('#TimeOutput', '#TimeEvent', '#TimeOutputValueDiv')
-    outputHider('#TimeEvent', '#TimeOutputDiv', '#TimeWarnDiv', true)
+    outputHiderz('#TimeEvent', '#TimeVariableDiv', true, event_object)
   })

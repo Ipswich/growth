@@ -29,12 +29,16 @@ div
 
 script.
 
-  $().ready(function(){
+  $(document).ready(function(){
+    let event_object = {
+      "Output Off":"#UpdateOutputDiv",
+      "Output On":"#UpdateOutputDiv",
+      "Email Warn":"#UpdateWarnDiv",
+      "Python Script":"#UpdatePythonDiv"
+    }
     updateForm()
-    //- outputValueHider('#UpdateOutput', '#UpdateOutputValueDiv')
-    //- eventValueHider('#UpdateOutput', '#UpdateEvent', '#UpdateOutputValueDiv')
     valueHider('#UpdateOutput', '#UpdateEvent', '#UpdateOutputValueDiv')
-    outputHider('#UpdateEvent', '#UpdateOutputDiv', '#UpdateWarnDiv', false)
+    outputHiderz('#UpdateEvent', '#UpdateVariableDiv', false, event_object)
   })
   
   

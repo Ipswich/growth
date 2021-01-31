@@ -17,7 +17,8 @@ CALL addNewScheduleType ('Manual', 1);
 
 CALL addNewEvent ('Output On', 'ON', 1);
 CALL addNewEvent ('Output Off', 'OFF', 1);
-CALL addNewEvent ('Email Warn', 'Warn', 1);
+CALL addNewEvent ('Email Warn', 'Email Warn', 1);
+CALL addNewEvent ('Python Script', 'Run Python Script', 1);
 
 CALL addNewSensorType('Temperature', 1);
 CALL addNewSensorType('Pressure', 1);

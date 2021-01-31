@@ -88,7 +88,7 @@ router.post('/', auth, async function(req, res, next) {
         element.manualOutputValue = 100
       }
       // Add Manual schedule to DB
-      await dbcalls.addNewSchedule("'Manual'", element.manualOutputSwitch, null, null, element.outputID, element.manualOutputValue, null, "'" + utils.formatTimeStringForDB(moment().format('h:mm A')) + "'", null, null, null, null, '1', "'"+res.locals.username+"'", null)
+      await dbcalls.addNewSchedule("'Manual'", element.manualOutputSwitch, null, null, element.outputID, element.manualOutputValue, null, "'" + utils.formatTimeStringForDB(moment().format('h:mm A')) + "'", null, null, null, null, '1', "'"+res.locals.username+"'", null, null)
       .catch(() => {
         return res.status(500).send("Database error! Event not added.");
       });

@@ -11,7 +11,9 @@ div.card.schedule-card
           if schedule.scheduleType == 'Time'
             tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
               td.align-middle #{schedule.eventTriggerTime}
-              if (schedule.eventName == 'Warn')
+              if (schedule.eventName == 'Python Script')
+                td.align-middle.schedule-data #{schedule.eventDescription} <br>  #[span.blue #{schedule.parameter1}]                
+              else if (schedule.eventName == 'Email Warn')
                 td.align-middle.schedule-data #{schedule.username}<br>  #[span.blue #{schedule.eventDescription}]
               else if (schedule.eventName == 'Output Off')
                 td.align-middle.schedule-data #{schedule.outputName}<br>  #[span.blue #{schedule.eventDescription}]
@@ -35,7 +37,9 @@ div.card.schedule-card
           tr(data-toggle="modal" data-target="#updateScheduleModal" data-scheduleid=schedule.scheduleID).scheduleTableRow
             td.align-middle #{schedule.sensorType} @<br> #{schedule.sensorLocation}
             td.align-middle.green #{schedule.scheduleComparator} #{schedule.sensorValue}#{schedule.sensorUnits}            
-            if (schedule.eventName == 'Warn')
+            if (schedule.eventName == 'Python Script')
+              td.align-middle.schedule-data #{schedule.eventDescription} <br>  #[span.blue #{schedule.parameter1}]                
+            else if (schedule.eventName == 'Email Warn')
               td.align-middle.schedule-data #{schedule.username}<br>  #[span.blue #{schedule.eventDescription}]
             else if (schedule.eventName == 'Output Off')
               td.align-middle.schedule-data #{schedule.outputName}<br>  #[span.blue #{schedule.eventDescription}]

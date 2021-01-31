@@ -20,7 +20,7 @@ router.post('/', auth, async function(req, res, next) {
   let PeriodicDuration = parseInt(sanitizedData.PeriodicDurationMinutes.slice(1,-1)) + 60*parseInt(sanitizedData.PeriodicDurationHours.slice(1,-1)) + 1440*parseInt(sanitizedData.PeriodicDurationDays.slice(1,-1))
   let PeriodicInterval = parseInt(sanitizedData.PeriodicIntervalMinutes.slice(1,-1)) + 60*parseInt(sanitizedData.PeriodicIntervalHours.slice(1,-1)) + 1440*parseInt(sanitizedData.PeriodicIntervalDays.slice(1,-1))
   // Database call
-  await dbcalls.addNewSchedule("'Periodic'", '1', null, null, output, sanitizedData.PeriodicOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.PeriodicTrigger) + "'", PeriodicDuration, PeriodicInterval, null, null, '1', "'"+res.locals.username+"'", null)
+  await dbcalls.addNewSchedule("'Periodic'", '1', null, null, output, sanitizedData.PeriodicOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.PeriodicTrigger) + "'", PeriodicDuration, PeriodicInterval, null, null, '1', "'"+res.locals.username+"'", null, null)
   .catch(() => {
     res.status(500).send("Database error! Event not added.");
   });

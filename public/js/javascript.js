@@ -56,10 +56,10 @@ function valueHider(output_element_ID, event_element_ID, output_value){
   }
 }
 
-function outputHider(output_element_ID, element_to_hide, element_to_show, trigger){
+function outputHider(output_element_ID, element_to_hide, element_to_show, trigger, event){
   $(output_element_ID).on('change', function() {
-    let event = $(this).val().split("|")[1]
-    if (event == 'Warn'){
+    let data_event = $(this).val().split("|")[1]
+    if (data_event == event){
       $(element_to_hide).fadeOut({done: () => {
         $(element_to_show).fadeIn()
       }})
@@ -71,11 +71,29 @@ function outputHider(output_element_ID, element_to_hide, element_to_show, trigge
   if (trigger) {
     $(output_element_ID).trigger("change")
   }
+}
+
+function outputHiderz(output_element_ID, variable_div, trigger, events){
+  $(output_element_ID).on('change', function() {
+    let data_event = $(this).val().split("|")[1]
+    let visible_div = "#".concat($(variable_div).children(':visible').attr('id'))
+    for (const [key, value] of Object.entries(events)) {      
+      if (data_event == key && visible_div != value){
+        $(visible_div).fadeOut({done: () => {
+          $(value).fadeIn()
+        }})
+      }
+    }
+  })
+  if (trigger) {
+    $(output_element_ID).trigger("change")
+  }
  }
 
 //AJAX for timeForm (addTimeEvent)
 function timeForm() {
-  $('#TimeForm').submit(function(e) {
+  $('#TimeForm').trigger('reset');
+  $('#TimeForm').on('submit', function(e) {
     e.preventDefault();
     $('#TimeSubmitButton').attr("disabled", true);
     var form = $(this);
@@ -104,7 +122,8 @@ function timeForm() {
 
 //AJAX for sensorForm (addSensorEvent)
 function sensorForm() {
-  $('#SensorForm').submit(function(e) {
+  $('#SensorForm').trigger('reset');
+  $('#SensorForm').on('submit', function(e) {
     e.preventDefault();
     $('#SensorSubmitButton').attr("disabled", true);
     var form = $(this);
@@ -133,7 +152,8 @@ function sensorForm() {
 
 //AJAX for periodicForm (addPeriodicEvent)
 function periodicForm() {
-  $('#PeriodicForm').submit(function(e) {
+  $('#PeriodicForm').trigger('reset')
+  $('#PeriodicForm').on('submit', function(e) {
     e.preventDefault();
     $('#PeriodicSubmitButton').attr("disabled", true);
     var form = $(this);
@@ -165,7 +185,7 @@ function periodicForm() {
 //in element generation. As this form is generated and not present otherwise,
 //this function is best called when the form is actually created.
 function updateForm() {
-  $('#UpdateForm').submit(function(e) {
+  $('#UpdateForm').on('submit', function(e) {
     e.preventDefault();
     $('#UpdateDeleteButton').attr("disabled", true);
     $('#UpdateUpdateButton').attr("disabled", true);
@@ -197,7 +217,6 @@ function updateForm() {
 
 //AJAX and stuff for Manual Control
 function manualForm() {
-
   $('.manualCheckbox').each(function()
   {
     let id = (this.id).split('|')[1]
@@ -351,8 +370,11 @@ function updateScheduleModal() {
         $('#updateScheduleContent').html(res.html);
         $('#UpdateOutputDiv').hide()
         $('#UpdateWarnDiv').hide()
-        if(res.defaults.eventName == "Warn"){
+        $('#UpdatePythonDiv').hide()
+        if(res.defaults.eventName == "Email Warn"){
           $('#UpdateWarnDiv').show()
+        } else if (res.defaults.eventName == "Python Script"){
+          $('#UpdatePythonDiv').show()          
         } else {
           $('#UpdateOutputDiv').show()
         }
