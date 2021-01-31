@@ -48,7 +48,7 @@ router.post('/', auth, async function(req, res, next) {
       if (dbschedule.scheduleType == 'Time'){
         let output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
         let event = sanitizedData.UpdateEvent.slice(1, -1).split("|")[0]
-        dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.UpdateOutputValue, null, "'"+utils.formatTimeStringForDB(sanitizedData.UpdateTrigger)+"'", null, null, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null)
+        dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.UpdateOutputValue, null, "'"+utils.formatTimeStringForDB(sanitizedData.UpdateTrigger)+"'", null, null, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.UpdatePythonScript)
         .catch(() => {                    
           res.status(500).send("Database error! Event not changed. (failed at update)");
         })
@@ -56,14 +56,15 @@ router.post('/', auth, async function(req, res, next) {
       } else if (dbschedule.scheduleType == 'Sensor') {
         let output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
         let event = sanitizedData.UpdateEvent.slice(1, -1).split("|")[0]
-        dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.UpdateName, sanitizedData.UpdateSensorValue, output, sanitizedData.UpdateOutputValue, sanitizedData.UpdateComparator, null, null, sanitizedData.UpdateWarnInterval, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null)
+        dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.UpdateName, sanitizedData.UpdateSensorValue, output, sanitizedData.UpdateOutputValue, sanitizedData.UpdateComparator, null, null, sanitizedData.UpdateWarnInterval, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.UpdatePythonScript)
         .catch(()=> {
           res.status(500).send("Database error! Event not changed. (failed at update)");
         });
       } else if (dbschedule.scheduleType == 'Periodic') { 
         let PeriodicDuration = parseInt(sanitizedData.UpdateDurationMinutes.slice(1,-1)) + 60*parseInt(sanitizedData.UpdateDurationHours.slice(1,-1)) + 1440*parseInt(sanitizedData.UpdateDurationDays.slice(1,-1))
         let PeriodicInterval = parseInt(sanitizedData.UpdateIntervalMinutes.slice(1,-1)) + 60*parseInt(sanitizedData.UpdateIntervalHours.slice(1,-1)) + 1440*parseInt(sanitizedData.UpdateIntervalDays.slice(1,-1))              
-        await dbcalls.addNewSchedule("'Periodic'", '1', null, null, sanitizedData.UpdateOutput, sanitizedData.UpdateOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.UpdatePeriodicTrigger) + "'", "'" + PeriodicDuration + "'", "'" + PeriodicInterval + "'", null, null, '1', "'"+res.locals.username+"'", null).catch(()=> {
+        await dbcalls.addNewSchedule("'Periodic'", '1', null, null, sanitizedData.UpdateOutput, sanitizedData.UpdateOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.UpdatePeriodicTrigger) + "'", "'" + PeriodicDuration + "'", "'" + PeriodicInterval + "'", null, null, '1', "'"+res.locals.username+"'", null, null)
+        .catch(()=> {
           res.status(500).send("Database error! Event not changed. (failed at update)");
         });
       }

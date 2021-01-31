@@ -11,7 +11,7 @@ div
       div.form-row
         div.col-11
           label(for="SensorSensorName") Sensor
-          select(id="SensorName" name="SensorSensorName").form-control.custom-select.formStyle
+          select(required id="SensorName" name="SensorSensorName").form-control.custom-select.formStyle
             each sensor, index in sensors
               option(value=sensor.sensorID) #{sensor.sensorType} @ #{sensor.sensorLocation}
     div.form-group
@@ -24,31 +24,45 @@ div
         div.col-4
           label(for="SensorSensorValue") Sensor Value
           input(type="number" name="SensorSensorValue" min="0" step="1" maxlength="4" required).form-control.formStyle
-    div(id='SensorOutputDiv').form-group
-      div.form-row
-        div.col-8
-          label(for="SensorOutput") Output
-          select(id="SensorOutput" name="SensorOutput" required).form-control.formStyle.custom-select
-            each output, index in outputs
-              option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
-        div(id="SensorOutputValueDiv").col-4
-          label(for="SensorOutputValue") Output Value
-          select(id="SensorOutputValue" name="SensorOutputValue" required).form-control.formStyle.custom-select
-            - for(var i = 100; i>= 0; i--)
-              option= i 
+    div(id="SensorVariableDiv")
+      div(id='SensorOutputDiv').form-group
+        div.form-row
+          div.col-8
+            label(for="SensorOutput") Output
+            select(id="SensorOutput" name="SensorOutput" required).form-control.formStyle.custom-select
+              each output, index in outputs
+                if index == 0
+                  option(selected value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+                else 
+                  option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+          div(id="SensorOutputValueDiv").col-4
+            label(for="SensorOutputValue") Output Value
+            select(id="SensorOutputValue" name="SensorOutputValue" required).form-control.formStyle.custom-select
+              - for(var i = 100; i>= 0; i--)
+                option= i 
 
-    div(id="SensorWarnDiv").form-group
-      div.form-row
-        div.col-6
-          label(for="SensorWarnInterval") Warning Timeout
-          select(id="SensorWarnInterval" name="SensorWarnInterval").form-control.formStyle.custom-select
-            option(value=60) 1 Hour
-            option(value=120 selected) 2 Hours
-            option(value=240) 4 Hours
-            option(value=480) 8 Hours
-            option(value=720) 12 Hours
-            option(value=960) 16 Hours
-            option(value=1440) 24 Hours              
+      div(id="SensorWarnDiv" style="display:none").form-group
+        div.form-row
+          div.col-6
+            label(for="SensorWarnInterval") Warning Timeout
+            select(id="SensorWarnInterval" name="SensorWarnInterval").form-control.formStyle.custom-select
+              option(value=60) 1 Hour
+              option(value=120 selected) 2 Hours
+              option(value=240) 4 Hours
+              option(value=480) 8 Hours
+              option(value=720) 12 Hours
+              option(value=960) 16 Hours
+              option(value=1440) 24 Hours    
+      div(required id="SensorPythonDiv" style="display:none").form-group
+        div.form-row
+          div.col-6
+            label(for="SensorPythonScript") Script
+            select(id="SensorPythonScript" name="SensorPythonScript").form-control.custom-select.formStyle
+              each script, index in python
+                if index == 0
+                  option(selected value=script) #{script}
+                else
+                  option(value=script) #{script}
     div.form-group           
       label(for="SensorDateDiv") #[a(href="#SensorDateDiv" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseStart").website-link Optional]
       div(id="SensorDateDiv").form-row.collapse
@@ -107,10 +121,13 @@ div
 script.
 
   $().ready(function(){
+    let event_object = {
+      "Output Off":"#SensorOutputDiv",
+      "Output On":"#SensorOutputDiv",
+      "Email Warn":"#SensorWarnDiv",
+      "Python Script":"#SensorPythonDiv"
+    }
     sensorForm()
-    //- outputValueHider('#SensorOutput', '#SensorOutputValueDiv')
-    //- eventValueHider('#SensorOutput', '#SensorEvent', '#SensorOutputValueDiv')
-
     valueHider('#SensorOutput', '#SensorEvent', '#SensorOutputValueDiv')
-    outputHider('#SensorEvent', '#SensorOutputDiv', '#SensorWarnDiv', true)
+    outputHiderz('#SensorEvent', '#SensorVariableDiv', true, event_object)
   })

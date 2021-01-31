@@ -91,6 +91,7 @@ CREATE TABLE Schedules (
   Senabled BOOLEAN NOT NULL DEFAULT 1,
   addedBy VARCHAR(32) DEFAULT NULL,
   disabledBy VARCHAR(32) DEFAULT NULL,
+  parameter1 VARCHAR(4096) DEFAULT NULL,
   PRIMARY KEY (scheduleID),
   FOREIGN KEY (outputID) REFERENCES Outputs(outputID),
   FOREIGN KEY (sensorID) REFERENCES Sensors(sensorID),
@@ -407,7 +408,8 @@ CREATE PROCEDURE `addNewSchedule` (
   IN `p_scheduleStopDate` DATE,
   IN `p_enabled` BOOLEAN,
   IN `p_addedBy` VARCHAR(32),
-  IN `p_disabledBy` VARCHAR(32))
+  IN `p_disabledBy` VARCHAR(32),
+  IN `p_parameter1` VARCHAR(4096))
 MODIFIES SQL DATA
 INSERT INTO Schedules (
   scheduleType,
@@ -424,7 +426,8 @@ INSERT INTO Schedules (
   scheduleStopDate,
   Senabled,
   addedBy,
-  disabledBy)
+  disabledBy,
+  parameter1)
  VALUES (
    p_scheduleType,
    p_eventID,
@@ -440,7 +443,8 @@ INSERT INTO Schedules (
    p_scheduleStopDate,
    p_enabled,
    p_addedBy,
-   p_disabledBy);
+   p_disabledBy,
+   p_parameter1);
 $$
 DELIMITER ;
 

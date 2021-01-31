@@ -8,37 +8,47 @@ div.form-group
             option(value=(event.eventID + "|" + event.eventName) selected) #{event.eventName}
           else 
             option(value=(event.eventID + "|" + event.eventName)) #{event.eventName}            
-div(id="UpdateOutputDiv").form-group      
-  div.form-row
-    div.col-8
-      label(for="UpdateOutput") Output
-      select(id="UpdateOutput" name="UpdateOutput" required).form-control.formStyle.custom-select
-        each output, index in outputs
-          if output.outputID == schedule.outputID
-            option(value=(output.outputID + '|' + output.outputPWM) selected) #{output.outputName}
-          else 
-            option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
-    div(id="UpdateOutputValueDiv").col-4
-      label(for="UpdateOutputValue") Output Value
-      select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
-        - for(var i = 100; i>= 0; i--)
-          if i == defaults.outputValue
-            option(selected)= i
-          else 
-            option= i   
-
-div(id="UpdateWarnDiv").form-group
-  div.form-row
-    div.col-5
-      label(for="UpdateWarnInterval") Warning Timeout
-      select(id="UpdateWarnInterval" name="UpdateWarnInterval").form-control.formStyle.custom-select
-        option(value=60) 1 Hour
-        option(value=120 selected) 2 Hours
-        option(value=240) 4 Hours
-        option(value=480) 8 Hours
-        option(value=720) 12 Hours
-        option(value=960) 16 Hours
-        option(value=1440) 24 Hours 
+div(id="UpdateVariableDiv")
+  div(id="UpdateOutputDiv").form-group      
+    div.form-row
+      div.col-8
+        label(for="UpdateOutput") Output
+        select(id="UpdateOutput" name="UpdateOutput" required).form-control.formStyle.custom-select
+          each output, index in outputs
+            if output.outputID == schedule.outputID
+              option(value=(output.outputID + '|' + output.outputPWM) selected) #{output.outputName}
+            else 
+              option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+      div(id="UpdateOutputValueDiv").col-4
+        label(for="UpdateOutputValue") Output Value
+        select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
+          - for(var i = 100; i>= 0; i--)
+            if i == defaults.outputValue
+              option(selected)= i
+            else 
+              option= i   
+  div(id="UpdateWarnDiv").form-group
+    div.form-row
+      div.col-5
+        label(for="UpdateWarnInterval") Warning Timeout
+        select(id="UpdateWarnInterval" name="UpdateWarnInterval").form-control.formStyle.custom-select
+          option(value=60) 1 Hour
+          option(value=120 selected) 2 Hours
+          option(value=240) 4 Hours
+          option(value=480) 8 Hours
+          option(value=720) 12 Hours
+          option(value=960) 16 Hours
+          option(value=1440) 24 Hours 
+  div(id="UpdatePythonDiv").form-group
+    div.form-row
+      div.col-6
+        label(for="UpdatePythonScript") Script
+        select(required id="UpdatePythonScript" name="UpdatePythonScript").form-control.custom-select.formStyle
+          each script, index in python
+            if script == defaults.pythonScript
+              option(selected value=script) #{script}
+            else
+              option(value=script) #{script}
 div.form-group
   div.form-row
     div.col-11

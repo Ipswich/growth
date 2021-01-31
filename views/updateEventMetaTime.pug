@@ -8,7 +8,7 @@ div.form-group
             option(value=(event.eventID + "|" + event.eventName) selected) #{event.eventName}
           else 
             option(value=(event.eventID + "|" + event.eventName)) #{event.eventName}
-    div(id="UpdateTimeDiv" data-defaultTime=defaults.eventTriggerTime).col-4
+    div(id="UpdateTimeDiv" data-defaultTime=defaults.eventTriggerTime).col-5
       script.
         var defaultTime = $("#UpdateTimeDiv").data('defaulttime');
         if (!Modernizr.inputtypes.time) {
@@ -42,29 +42,41 @@ div.form-group
           <label for="UpdateTrigger"> Event Time</label>
           <input type="time" id="UpdateTrigger" name="UpdateTrigger" value="` + defaultTime + `" class="form-control formStyle" required>
           `;
-        }        
-div(id='UpdateOutputDiv').form-group      
-  div.form-row
-    div.col-8
-      label(for="UpdateOutput") Output
-      select(id="UpdateOutput" name="UpdateOutput" required).form-control.formStyle.custom-select
-        each output, index in outputs
-          if output.outputID == schedule.outputID
-            option(value=(output.outputID + '|' + output.outputPWM) selected) #{output.outputName}
-          else 
-            option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
-    div(id="UpdateOutputValueDiv").col-4
-      label(for="UpdateOutputValue") Output Value
-      select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
-        - for(var i = 100; i>= 0; i--)
-          if i == defaults.outputValue
-            option(selected)= i
-          else 
-            option= i    
+        }  
+  div(id="UpdateVariableDiv")
+    div(id='UpdateOutputDiv').form-group      
+      div.form-row
+        div.col-8
+          label(for="UpdateOutput") Output
+          select(id="UpdateOutput" name="UpdateOutput" required).form-control.formStyle.custom-select
+            each output, index in outputs
+              if output.outputID == schedule.outputID
+                option(value=(output.outputID + '|' + output.outputPWM) selected) #{output.outputName}
+              else 
+                option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+        div(id="UpdateOutputValueDiv").col-4
+          label(for="UpdateOutputValue") Output Value
+          select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
+            - for(var i = 100; i>= 0; i--)
+              if i == defaults.outputValue
+                option(selected)= i
+              else 
+                option= i    
 
-div(id="UpdateWarnDiv").form-group
-  div.form-row
-    div.col-5
+    div(id="UpdateWarnDiv").form-group
+      div.form-row
+        div.col-5
+    div(id="UpdatePythonDiv").form-group
+      div.form-row
+        div.col-6
+          label(for="UpdatePythonScript") Script
+          select(required id="UpdatePythonScript" name="UpdatePythonScript").form-control.custom-select.formStyle
+            each script, index in python
+              if script == defaults.pythonScript
+                option(selected value=script) #{script}
+              else
+                option(value=script) #{script}
+
 div.form-group
   div.form-row
     div.col

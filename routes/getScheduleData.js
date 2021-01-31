@@ -30,12 +30,13 @@ router.post('/', async function(req, res, next) {
     var events = {events: req.app.get('state').events};
     //Get enabled sensors                      
     var sensors = {sensors: req.app.get('state').sensorState.getSensorIndexData()};
+    var python = {python: utils.getScriptFileNames('py')}
     //Check if authenticated
     var authenticated = {authenticated: utils.cookieDetector(req)}
     //Create data object for rendering html
     defaultData = {}
-    defaultData.defaults = await formatDefaults(schedule, outputs, events, sensors)
-    var data = Object.assign({}, defaultData, schedule, sensorTypes, outputs, events, sensors, authenticated);
+    defaultData.defaults = await formatDefaults(schedule, outputs, events, sensors, python)
+    var data = Object.assign({}, defaultData, schedule, sensorTypes, outputs, events, sensors, authenticated, python);
     //Render html, send to server!        
     var html = fn(data);
     let result = Object.assign({}, {html: html}, defaultData);
@@ -44,7 +45,7 @@ router.post('/', async function(req, res, next) {
 })
 
 
-async function formatDefaults(schedule, outputs, events, sensors){
+async function formatDefaults(schedule, outputs, events, sensors, python){
   var defaults = {};
   defaults.outputName = schedule.schedule.outputName;
   defaults.sensorValue = schedule.schedule.sensorValue;
@@ -101,6 +102,12 @@ async function formatDefaults(schedule, outputs, events, sensors){
     //Create sensor list for schedule, matching sensor Type with Location
     if(schedule.schedule.sensorID == sensors.sensors[i].eventID) {
       defaults.sensor = sensors.sensors[i].sensorType + " @ " + sensors.sensors[i].sensorLocation;
+    }
+  }
+  //Get default python script
+  for (let i = 0; i < python.python.length; i++) {
+    if(schedule.schedule.parameter1 == python.python[i]) {
+      defaults.pythonScript = python.python[i]
     }
   }
   return defaults
