@@ -17,3 +17,4 @@ Additionally, while the interface and status of the system is visible without a 
 * Events:
   * Output On/Off with PWM intensity control
   * Email warnings
+  * Python scripts
