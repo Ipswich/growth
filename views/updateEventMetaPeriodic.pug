@@ -1,22 +1,5 @@
 div
-  div.form-group
-    div.form-row
-      div.col
-        label(for="UpdateOutput") Output
-        select(id="UpdateOutput" name="UpdateOutput" required).form-control.formStyle.custom-select
-          each output, index in outputs
-            if output.outputID == schedule.outputID
-              option(value=output.outputID selected) #{output.outputName}
-            else 
-              option(value=output.outputID) #{output.outputName}
-      div.col-4
-        label(for="UpdateOutputValue") Output Value
-        select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
-          - for(var i = 100; i>= 0; i--)
-            if i == defaults.outputValue
-              option(selected)= i
-            else 
-              option= i  
+  
   div.form-group
     h6 Duration
     div.form-row.justify-content-around
@@ -73,8 +56,7 @@ div
               option= i       
   div.form-group   
     div.form-row
-
-      div(id="UpdatePeriodicTimeDiv" data-defaultTime=defaults.eventTriggerTime).col-4
+      div(id="UpdatePeriodicTimeDiv" data-defaultTime=defaults.eventTriggerTime).col-5
         script.
           var defaultTime = $("#UpdatePeriodicTimeDiv").data('defaulttime');
           if (!Modernizr.inputtypes.time) {
@@ -109,3 +91,22 @@ div
             <input type="time" id="UpdatePeriodicTrigger" name="UpdatePeriodicTrigger" value="` + defaultTime + `" class="form-control formStyle" required>
             `;
           }      
+  div(id="UpdateVariableDiv")
+    div(id='UpdateOutputDiv').form-group      
+      div.form-row
+        div.col-8
+          label(for="UpdateOutput") Output
+          select(id="UpdateOutput" name="UpdateOutput" required).form-control.formStyle.custom-select
+            each output, index in outputs
+              if output.outputID == schedule.outputID
+                option(value=(output.outputID + '|' + output.outputPWM) selected) #{output.outputName}
+              else 
+                option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+        div(id="UpdateOutputValueDiv").col-4
+          label(for="UpdateOutputValue") Output Value
+          select(id="UpdateOutputValue" name="UpdateOutputValue" required).form-control.formStyle.custom-select
+            - for(var i = 100; i>= 0; i--)
+              if i == defaults.outputValue
+                option(selected)= i
+              else 
+                option= i  

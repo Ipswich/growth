@@ -26,9 +26,7 @@ div
           button(id="UpdateDeleteButton" name="UpdateDelete" onclick="setScheduleDelete()" type="submit").btn.float-left.submitButton Delete
           button(id="UpdateUpdateButton" name="UpdateUpdate" onclick="setScheduleUpdate()" type="submit").btn.float-right.submitButton Update
 
-
 script.
-
   $(document).ready(function(){
     let event_object = {
       "Output Off":"#UpdateOutputDiv",
@@ -37,8 +35,10 @@ script.
       "Python Script":"#UpdatePythonDiv"
     }
     updateForm()
-    valueHider('#UpdateOutput', '#UpdateEvent', '#UpdateOutputValueDiv')
     outputHiderz('#UpdateEvent', '#UpdateVariableDiv', false, event_object)
   })
-  
+if schedule.scheduleType != 'Periodic'
+  script.
+    valueHider('#UpdateOutput', '#UpdateEvent', '#UpdateOutputValueDiv')
+
   

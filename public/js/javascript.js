@@ -13,20 +13,6 @@ function outputValueHider(output_element_ID, output_PWM_ID){
   }
 }
 
-function eventValueHider(output_element_id, element_on_change, element_to_hide){
- $(element_on_change).on('change', function() {
-  let event = $(this).val().split("|")[1]
-  let PWM = $(output_element_id).val().split("|")[1]
-  if (event == 'Output Off'){
-    $(element_to_hide).fadeOut()
-  } else {
-    if(PWM == 1){
-      $(element_to_hide).fadeIn()
-    }
-  }
-  }).trigger("change")
-}
-
 function valueHider(output_element_ID, event_element_ID, output_value){
   if($(output_element_ID).val() != null){
     $(output_element_ID).on('change', function() { 

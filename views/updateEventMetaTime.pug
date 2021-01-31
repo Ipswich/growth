@@ -8,7 +8,7 @@ div.form-group
             option(value=(event.eventID + "|" + event.eventName) selected) #{event.eventName}
           else 
             option(value=(event.eventID + "|" + event.eventName)) #{event.eventName}
-    div(id="UpdateTimeDiv" data-defaultTime=defaults.eventTriggerTime).col-4
+    div(id="UpdateTimeDiv" data-defaultTime=defaults.eventTriggerTime).col-5
       script.
         var defaultTime = $("#UpdateTimeDiv").data('defaulttime');
         if (!Modernizr.inputtypes.time) {

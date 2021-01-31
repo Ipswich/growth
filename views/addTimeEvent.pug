@@ -10,7 +10,7 @@ div
                 option(selected value=(event.eventID + "|" + event.eventName)) #{event.eventName}
               else
                 option(value=(event.eventID + "|" + event.eventName)) #{event.eventName}
-        div.col-4(id="TimeTimeDiv")
+        div.col-5(id="TimeTimeDiv")
           script.
             if (!Modernizr.inputtypes.time) {
               $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
