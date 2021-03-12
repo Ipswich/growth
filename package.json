@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "NODE_ENV='test' mocha --recursive --exit --timeout 10000"
+    "test": "NODE_ENV='test' mocha --recursive --exit --timeout 20000"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
@@ -22,6 +22,7 @@
     "moment": "^2.28.0",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
+    "mysql-import": "^5.0.21",
     "nodemailer": "^6.4.16",
     "pug": "^3.0.2",
     "tempusdominus-bootstrap-4": "^5.1.2",

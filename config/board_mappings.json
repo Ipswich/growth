@@ -15,5 +15,22 @@
 
 		"START_ANALOG_PIN": 54,
 		"END_ANALOG_PIN": 69
+	},
+	"test":
+	{
+		"START_OUTPUT_PIN": 1,
+		"END_OUTPUT_PIN": 10,
+
+		"START_PWM_PIN": 11,
+		"END_PWM_PIN": 20,
+
+		"SDAPIN": 41,
+		"SCLPIN": 42,
+
+		"START_SENSOR_PIN": 21,
+		"END_SENSOR_PIN": 30,
+
+		"START_ANALOG_PIN": 31,
+		"END_ANALOG_PIN": 40
 	}
 }

@@ -30,7 +30,7 @@ var stateRouter = require('./api/State');
 
 //App setup - load config
 if(process.env.NODE_ENV == 'test'){
-  console.log("####RUNNING TEST SUITE####")
+  console.log("####RUNNING IN TEST####")
   var config = require('./config/test-config.json');
 } else {
   var config = require('./config/config.json');
