@@ -6,7 +6,6 @@ before(async (done) => {
   await dbcalls.createTestDBStructure().then(() => {
     app = require("../app.js");
     app.once('started', () => {
-      console.log("DONE")
       done()
     })
   })
