@@ -332,7 +332,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `addNewEvent`(IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_enabled` BOOLEAN)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addNewEvent`(IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_enabled` BOOLEAN)
     MODIFIES SQL DATA
 INSERT INTO Events (eventName, eventDescription, Eenabled) VALUES (p_name, p_description, p_enabled) ;;
 DELIMITER ;
@@ -350,7 +350,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `addNewOutput`(IN `p_type` INT, IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_order` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addNewOutput`(IN `p_type` INT, IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_order` INT)
     MODIFIES SQL DATA
 INSERT INTO Outputs (outputTypeID, outputName, outputDescription, outputOrder) VALUES (p_type, p_name, p_description, p_order) ;;
 DELIMITER ;
@@ -368,7 +368,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `addNewOutputType`(IN `p_type` VARCHAR(32), IN `p_PWM` BOOLEAN, IN `p_PWMInversion` BOOLEAN, IN `p_enabled` BOOLEAN)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addNewOutputType`(IN `p_type` VARCHAR(32), IN `p_PWM` BOOLEAN, IN `p_PWMInversion` BOOLEAN, IN `p_enabled` BOOLEAN)
     MODIFIES SQL DATA
 INSERT INTO OutputTypes (outputType, outputPWM, outputPWMInversion, OTenabled) VALUES (p_type, p_PWM, p_PWMInversion, p_enabled) ;;
 DELIMITER ;
@@ -386,7 +386,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `addNewSchedule`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addNewSchedule`(
   IN `p_scheduleType` VARCHAR(32),
   IN `p_eventID` INT,
   IN `p_sensorID` INT,
@@ -453,7 +453,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `addNewScheduleType`(IN `p_type` VARCHAR(32), IN `p_enabled` BOOLEAN)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addNewScheduleType`(IN `p_type` VARCHAR(32), IN `p_enabled` BOOLEAN)
     MODIFIES SQL DATA
 INSERT INTO ScheduleTypes (scheduleType, STenabled) VALUES (p_type, p_enabled) ;;
 DELIMITER ;
@@ -471,7 +471,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `addNewSensor`(IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_sensorProtocol` VARCHAR(32), IN `p_address` VARCHAR(64))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addNewSensor`(IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_sensorProtocol` VARCHAR(32), IN `p_address` VARCHAR(64))
     MODIFIES SQL DATA
 INSERT INTO Sensors (sensorModel, sensorType, sensorLocation, sensorUnits, sensorHardwareID, sensorProtocol, sensorAddress) VALUES (p_model, p_type, p_location, p_units, p_hardwareID, p_sensorProtocol, p_address) ;;
 DELIMITER ;
@@ -489,7 +489,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `addNewSensorType`(IN `p_type` VARCHAR(32), IN `p_enabled` BOOLEAN)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addNewSensorType`(IN `p_type` VARCHAR(32), IN `p_enabled` BOOLEAN)
     MODIFIES SQL DATA
 INSERT INTO SensorTypes (sensorType, STenabled) VALUES (p_type, p_enabled) ;;
 DELIMITER ;
@@ -507,7 +507,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `addNewUser`(IN `p_username` VARCHAR(32), IN `p_hash` VARCHAR(60), in `p_email` VARCHAR(255))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addNewUser`(IN `p_username` VARCHAR(32), IN `p_hash` VARCHAR(60), in `p_email` VARCHAR(255))
     MODIFIES SQL DATA
 INSERT INTO Users (username, passhash, email) VALUES (p_username, p_hash, p_email) ;;
 DELIMITER ;
@@ -525,7 +525,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `addSensorReading`(IN `p_sensorID` INT, IN `p_data` decimal(12, 7))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addSensorReading`(IN `p_sensorID` INT, IN `p_data` decimal(12, 7))
     MODIFIES SQL DATA
 INSERT INTO SensorData (sensorID, data) VALUES (p_sensorID, p_data) ;;
 DELIMITER ;
@@ -543,7 +543,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `DisableOutput`(IN `p_outputID` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DisableOutput`(IN `p_outputID` INT)
     MODIFIES SQL DATA
 UPDATE Outputs SET Oenabled = 0 WHERE outputID = p_outputID ;;
 DELIMITER ;
@@ -561,7 +561,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `DisableOutputType`(IN `p_outputTypeID` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DisableOutputType`(IN `p_outputTypeID` INT)
     MODIFIES SQL DATA
 UPDATE OutputTypes SET OTenabled = 0 WHERE outputTypeID = p_outputTypeID ;;
 DELIMITER ;
@@ -579,7 +579,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `DisableSchedule`(IN `p_id` INT, `p_user` VARCHAR(32))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DisableSchedule`(IN `p_id` INT, `p_user` VARCHAR(32))
     MODIFIES SQL DATA
 UPDATE Schedules
 SET SEnabled = 0, disabledBy = p_user
@@ -599,7 +599,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `DisableSensor`(IN `p_sensorID` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DisableSensor`(IN `p_sensorID` INT)
     MODIFIES SQL DATA
 UPDATE Sensors SET SSenabled = 0 WHERE sensorID = p_sensorID ;;
 DELIMITER ;
@@ -617,7 +617,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getAllEvents`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllEvents`()
     READS SQL DATA
 SELECT * FROM Events ;;
 DELIMITER ;
@@ -635,7 +635,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getAllOutputs`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllOutputs`()
     READS SQL DATA
 SELECT * FROM Outputs ;;
 DELIMITER ;
@@ -653,7 +653,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getAllOutputTypes`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllOutputTypes`()
     READS SQL DATA
 SELECT * FROM OutputTypes
   ORDER BY outputType DESC ;;
@@ -672,7 +672,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getAllSchedules`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllSchedules`()
     READS SQL DATA
 SELECT * FROM Schedules s
   JOIN Events AS e ON s.eventID=e.eventID
@@ -694,7 +694,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getAllScheduleTypes`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllScheduleTypes`()
     READS SQL DATA
 SELECT * FROM ScheduleTypes
   ORDER BY scheduleType DESC ;;
@@ -713,7 +713,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getAllSensors`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllSensors`()
     READS SQL DATA
 SELECT * FROM Sensors ;;
 DELIMITER ;
@@ -731,7 +731,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getAllSensorTypes`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllSensorTypes`()
     READS SQL DATA
 SELECT * FROM SensorTypes
   ORDER BY sensorType DESC ;;
@@ -750,7 +750,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getAllUsers`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllUsers`()
     READS SQL DATA
 SELECT username FROM Users ;;
 DELIMITER ;
@@ -768,7 +768,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getEnabledEvents`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEnabledEvents`()
     READS SQL DATA
 SELECT * FROM Events WHERE Eenabled = 1 ;;
 DELIMITER ;
@@ -786,7 +786,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getEnabledLiveSchedules`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEnabledLiveSchedules`()
     READS SQL DATA
 SELECT * FROM Schedules s
 JOIN Events AS e ON s.eventID=e.eventID
@@ -812,7 +812,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getEnabledOrderedOutputs`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEnabledOrderedOutputs`()
     READS SQL DATA
 SELECT * FROM Outputs LEFT JOIN OutputTypes ON Outputs.outputTypeID=OutputTypes.outputTypeID WHERE Oenabled = 1 ORDER BY outputOrder = 0, outputOrder ;;
 DELIMITER ;
@@ -830,7 +830,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getEnabledOutputs`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEnabledOutputs`()
     READS SQL DATA
 SELECT * FROM Outputs LEFT JOIN OutputTypes ON Outputs.outputTypeID=OutputTypes.outputTypeID WHERE Oenabled = 1 ;;
 DELIMITER ;
@@ -848,7 +848,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getEnabledOutputTypes`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEnabledOutputTypes`()
     READS SQL DATA
 SELECT * FROM OutputTypes WHERE OTenabled = 1
   ORDER BY outputType DESC ;;
@@ -867,7 +867,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getEnabledSchedules`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEnabledSchedules`()
     READS SQL DATA
 SELECT * FROM Schedules s
   JOIN Events AS e ON s.eventID=e.eventID
@@ -890,7 +890,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getEnabledScheduleTypes`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEnabledScheduleTypes`()
     READS SQL DATA
 SELECT * FROM ScheduleTypes WHERE STenabled = 1
   ORDER BY scheduleType DESC ;;
@@ -909,7 +909,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getEnabledSensors`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEnabledSensors`()
     READS SQL DATA
 SELECT * FROM Sensors WHERE SSenabled = 1 ;;
 DELIMITER ;
@@ -927,7 +927,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getEnabledSensorTypes`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEnabledSensorTypes`()
     READS SQL DATA
 SELECT * FROM SensorTypes WHERE STenabled = 1
   ORDER BY sensorType DESC ;;
@@ -946,7 +946,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getScheduleByID`(IN `p_id` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getScheduleByID`(IN `p_id` INT)
     READS SQL DATA
 SELECT * FROM Schedules
 WHERE ScheduleID = p_id ;;
@@ -965,7 +965,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getSensorDataByType`(IN `p_type` VARCHAR(32))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getSensorDataByType`(IN `p_type` VARCHAR(32))
     READS SQL DATA
 sp:BEGIN
   DECLARE result INT DEFAULT 0;
@@ -991,7 +991,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getSensorLastReadings`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getSensorLastReadings`()
     READS SQL DATA
 SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, s.SSenabled, data, s.sensorUnits, d.logTime
   FROM Sensors s
@@ -1018,7 +1018,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getSensorLastReadingsByHours`(IN `p_hours` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getSensorLastReadingsByHours`(IN `p_hours` INT)
     READS SQL DATA
 SELECT s.sensorID, s.sensorModel, s.sensorType, s.sensorLocation, s.SSenabled, data, s.sensorUnits, logTime
   FROM Sensors s
@@ -1044,7 +1044,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `getUser`(IN `p_username` VARCHAR(32))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getUser`(IN `p_username` VARCHAR(32))
     READS SQL DATA
 SELECT * FROM Users WHERE Users.username = p_username ;;
 DELIMITER ;
@@ -1062,7 +1062,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `logScheduledEvent`(IN `p_scheduleID` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `logScheduledEvent`(IN `p_scheduleID` INT)
     MODIFIES SQL DATA
 INSERT INTO ScheduledEventLog (scheduleID) VALUES (p_scheduleID) ;;
 DELIMITER ;
@@ -1080,7 +1080,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `UpdateOutput`(IN `p_outputID` INT, IN `p_type` INT, IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_order` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateOutput`(IN `p_outputID` INT, IN `p_type` INT, IN `p_name` VARCHAR(64), IN `p_description` VARCHAR(128), IN `p_order` INT)
     MODIFIES SQL DATA
 UPDATE Outputs SET outputTypeID = p_type, outputName = p_name, outputDescription = p_description, outputOrder = p_order WHERE outputID = p_outputID ;;
 DELIMITER ;
@@ -1098,7 +1098,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `UpdateOutputType`(IN `p_outputTypeID` INT, IN `p_type` VARCHAR(32), IN `p_pwm` TINYINT, IN `p_pwmInversion` TINYINT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateOutputType`(IN `p_outputTypeID` INT, IN `p_type` VARCHAR(32), IN `p_pwm` TINYINT, IN `p_pwmInversion` TINYINT)
     MODIFIES SQL DATA
 UPDATE OutputTypes SET outputType = p_type, outputPWM = p_pwm, outputPWMInversion = p_pwmInversion WHERE outputTypeID = p_outputTypeID ;;
 DELIMITER ;
@@ -1116,7 +1116,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `UpdateSensor`(IN `p_sensorID` INT, IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_protocol` VARCHAR(32), IN `p_address` VARCHAR(64))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateSensor`(IN `p_sensorID` INT, IN `p_model` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_location` VARCHAR(64), IN `p_units` VARCHAR(16), IN `p_hardwareID` INT, IN `p_protocol` VARCHAR(32), IN `p_address` VARCHAR(64))
     MODIFIES SQL DATA
 UPDATE Sensors SET sensorModel = p_model, sensorType = p_type, sensorLocation = p_location, sensorUnits = p_units, sensorHardwareID = p_hardwareID, sensorProtocol = p_protocol, sensorAddress = p_address WHERE sensorID = p_sensorID ;;
 DELIMITER ;
@@ -1134,7 +1134,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`growth_admin`@`localhost` PROCEDURE `updateSensorAddress`(IN `p_sensorAddress` VARCHAR(64), IN `p_sensorID` INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateSensorAddress`(IN `p_sensorAddress` VARCHAR(64), IN `p_sensorID` INT)
     MODIFIES SQL DATA
 UPDATE Sensors SET sensorAddress = p_sensorAddress WHERE sensorID = p_sensorID ;;
 DELIMITER ;
