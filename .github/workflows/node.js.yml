@@ -20,7 +20,7 @@ jobs:
         env:
           MYSQL_USER: growth_test
           MYSQL_PASSWORD: password1
-          MYSQL_DATABASE: test
+          MYSQL_DATABASE: growth-test
           MYSQL_ROOT_PASSWORD: password1
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
       
