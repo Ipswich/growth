@@ -1,10 +1,12 @@
 const request = require("supertest");
 const app = require("../app");
+const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
 
-setTimeout(function() {
+setTimeout(async function() {
+  await dbcalls.createTestDBStructure()
+  
   describe("GET /", function() {
     it("it should have status code 200", function(done) {
-      this.timeout(10000)
       request(app)
         .get("/")
         .expect(200, done);
@@ -19,4 +21,4 @@ setTimeout(function() {
     });
   });
   run();
-}, 7000)
+}, 2000)

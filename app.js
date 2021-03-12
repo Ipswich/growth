@@ -30,7 +30,13 @@ var loginRouter = require('./api/Login');
 var stateRouter = require('./api/State');
 
 //App setup - load config
-var config = require('./config/config.json');
+if(process.env.NODE_ENV == 'test'){
+  console.log("RUNNING TEST SUITE")
+  var config = require('./config/test-config.json');
+} else {
+  var config = require('./config/config.json');
+}
+
 
 var web_data = require('./config/web-data-config');
 app.set('web_data', web_data);

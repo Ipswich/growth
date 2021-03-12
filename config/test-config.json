@@ -1,0 +1,26 @@
+{
+  "board": "test",
+  "web_data": "./web-data-config.json",
+  "database": {
+    "host": "localhost",
+    "user": "growth_admin",
+    "password": "password",
+    "database": "growth-test",
+    "multipleStatements": "true",
+    "connectionLimit": 25
+  },
+  "nodemailer_setup_warn": false,
+  "nodemailer": {
+    "service": "null",
+    "auth": {
+      "user": "null",
+      "pass": "null"
+    }
+  },
+  "node_port": 26420,
+  "salt_rounds": 10,
+  "log_interval": 60000,
+  "relay_toggle_prevention": true,
+  "jwt_secret": "aiojsdfoijawefakjsdfhlawieufhaksjdhflnvm,nvxb,mnwiueyqtp",
+  "jwt_expiration_time": 1800
+}
