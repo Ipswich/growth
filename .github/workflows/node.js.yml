@@ -43,4 +43,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: npm test
+      - name: Run tests
+        run: npm test
+        env:
+            DB_PORT: ${{ job.services.mariadb.ports[3306] }}
