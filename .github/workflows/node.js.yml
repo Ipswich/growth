@@ -38,8 +38,6 @@ jobs:
             while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
               sleep 1
             done
-            sudo apt-get install -y mysql-client;
-            mysql --host 127.0.0.1 --port $PORT -u growth_test -p password1 -e "SHOW DATABASES";
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
