@@ -3,8 +3,8 @@
   "web_data": "./web-data-config.json",
   "database": {
     "host": "localhost",
-    "user": "growth_admin",
-    "password": "password",
+    "user": "growth_test",
+    "password": "password1",
     "database": "growth-test",
     "multipleStatements": "true",
     "connectionLimit": 25
