@@ -41,7 +41,7 @@ jobs:
       - name: Create test database
         env:
             PORT: ${{ job.services.mariadb.ports[3306] }}
-        run: 'mysql -h"127.0.0.1" -P"$PORT"-u root -ppassword1 growth-test < ./SQL/schema_testDB.sql'
+        run: 'mysql -h"127.0.0.1" -P"$PORT" -u root -ppassword1 growth-test < ./SQL/schema_testDB.sql'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
