@@ -18,10 +18,10 @@ jobs:
         ports:
           - 3306
         env:
-          MYSQL_USER: growth_test
+          MYSQL_USER: growth-test
           MYSQL_PASSWORD: password1
           MYSQL_DATABASE: growth-test
-          MYSQL_ROOT_PASSWORD: password
+          MYSQL_ROOT_PASSWORD: password1
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
       
     strategy:
@@ -38,10 +38,17 @@ jobs:
             while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
               sleep 1
             done
-            sudo apt-get install -y mysql-client;
-            mysql --host 127.0.0.1 --port $PORT -u user -p password -e "SHOW DATABASES";
+      # - name: Create test database
+      #   env:
+      #       PORT: ${{ job.services.mariadb.ports[3306] }}
+      #   run: 'mysql -h"127.0.0.1" -P"$PORT" -u root -ppassword1 growth-test < ./SQL/schema_testDB.sql'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
+      - name: Run tests
+        run: npm test
+        env:
+            TEST_RUNNER: ${{ 'github' }}
+            DB_PORT: ${{ job.services.mariadb.ports[3306] }}

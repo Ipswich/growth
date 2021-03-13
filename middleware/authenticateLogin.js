@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 const mysql = require('mysql');
-const config = require('../config/config.json')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls')
 
 module.exports = async function(req, res, next) {
+  let config = req.app.get('config')
   if(req.body.username) {
     let username = mysql.escape(req.body.username)
     var results = await dbcalls.getUser(username)

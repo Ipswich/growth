@@ -2,12 +2,12 @@ var bcrypt = require('bcrypt');
 var express = require('express');
 var mysql = require('mysql');
 var router = express.Router();
-const config = require('../config/config.json')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
 const utils = require('../custom_node_modules/utility_modules/Utils.js')
 
 router.post('/', async function(req, res, next) {
   //Escape Data  
+  let config = req.app.get('config')
   var sanitizedData = Object.assign({}, req.body);
   for (const key in sanitizedData){
     if (sanitizedData[key] == ''){

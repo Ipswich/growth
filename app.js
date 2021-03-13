@@ -4,7 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var app = express();
-
 //Custom Modules for Events/Readings
 var outputState = require('./custom_node_modules/state_modules/OutputState.js');
 var sensorState = require('./custom_node_modules/state_modules/SensorState.js');
@@ -30,7 +29,13 @@ var loginRouter = require('./api/Login');
 var stateRouter = require('./api/State');
 
 //App setup - load config
-var config = require('./config/config.json');
+if(process.env.NODE_ENV == 'test'){
+  console.log("####RUNNING IN TEST####")
+  var config = require('./config/test-config.json');
+} else {
+  var config = require('./config/config.json');
+}
+
 
 var web_data = require('./config/web-data-config');
 app.set('web_data', web_data);

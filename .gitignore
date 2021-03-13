@@ -107,6 +107,8 @@ dist
 config/config.json
 
 #Misc files
+.ignore-tests/*
 SQL/initial_setup.sql
+# SQL/schema_testDB.sql
 *.DS_Store
 test.js
