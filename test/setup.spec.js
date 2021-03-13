@@ -1,14 +1,10 @@
 const request = require("supertest");
-var app
-const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
+var app = require("../app.js");
 
 before(async (done) => {
-  await dbcalls.createTestDBStructure().then(() => {
-    app = require("../app.js");
     app.once('started', () => {
       done()
     })
-  })
 })
 
 
