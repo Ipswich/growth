@@ -63,8 +63,18 @@ CREATE TABLE `OutputTypes` (
   `outputPWMInversion` tinyint(1) NOT NULL DEFAULT 0,
   `OTenabled` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`outputTypeID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `OutputTypes`
+--
+
+LOCK TABLES `OutputTypes` WRITE;
+/*!40000 ALTER TABLE `OutputTypes` DISABLE KEYS */;
+INSERT INTO `OutputTypes` VALUES (1,'PWM Light',1,1,1),(2,'Light',0,0,1),(3,'Circulation',0,0,1),(4,'Exhaust',0,0,1),(5,'PWM Exhaust',1,1,1),(6,'Intake',0,0,1),(7,'Heat',0,0,1),(8,'Water',0,0,1);
+/*!40000 ALTER TABLE `OutputTypes` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `Outputs`

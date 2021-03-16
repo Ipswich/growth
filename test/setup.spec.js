@@ -5,6 +5,7 @@ const assert = require('assert')
 
 before(async function() {
   await dbcalls.createTestDBStructure()
+  await dbcalls.addTestDBData()
   app = require("../app.js");
   app.once('started', () => {
       done()
