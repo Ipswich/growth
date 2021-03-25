@@ -30,16 +30,6 @@ router.post('/', auth, async function(req, res, next) {
     .catch(() => {
       res.status(500).send("Database error! Event not changed. (failed at delete)");
     })
-    //Get output for scheduleID
-    for(let i = 0; i < state.outputState.getOutputState().length; i++){
-      //if current output ID matches passed schedule output ID
-      if (state.outputState.getOutputState()[i].outputID == dbschedule.outputID){
-        //set output to that output
-        var output = state.outputState.getOutputState()[i];
-      }
-    }
-    //Remove schedule (turns off output if no other schedules for that output)
-    state.outputState.removeOutputSchedules(output.outputID, dbschedule.scheduleID);
     //Update response message
     var msg = "Event successfully removed!";
     //If marked for update, add new schedule with passed values.
