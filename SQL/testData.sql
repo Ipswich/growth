@@ -19,8 +19,8 @@ CALL addNewOutput(3, 'Inverted PWM Output', '', 2);
 CALL addNewSensor('BME280', 'Temperature', 'Control Box', '°F', 1, 'I2C', NULL);
 CALL addNewSensor('BME280', 'Pressure', 'Control Box', 'kPa', 1, 'I2C', NULL);
 CALL addNewSensor('BME280', 'Humidity', 'Control Box', '% rH', 1, 'I2C', NULL);
-CALL addNewSensor('DS18B20', 'Temperature', 'OutsideF', '°F', 2, 'ONEWIRE', NULL);
-CALL addNewSensor('DS18B20', 'Temperature', 'OutsideC', '°C', 3, 'ONEWIRE', NULL);
+CALL addNewSensor('DS18B20', 'Temperature', 'OutsideF', '°F', 2, 'ONEWIRE', '0000000000000');
+CALL addNewSensor('DS18B20', 'Temperature', 'OutsideC', '°C', 3, 'ONEWIRE', '0000000000001');
 
 CALL addNewUser ('test_user', '$2y$10$K1ZvYq8/LVfmx7uj.uGNuuOzh9JBocxyXZamyRMKSW.NGzRMqTbXu', 'notarealemailaddress@example.com');
 

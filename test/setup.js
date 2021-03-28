@@ -1,4 +1,3 @@
-
 const sinon = require('sinon')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
 var app;
