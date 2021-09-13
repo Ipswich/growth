@@ -61,16 +61,26 @@ div
       div(id="TimeWarnDiv" style="display:none").form-group
         div.form-row
           div.col-5 
-      div(id="TimePythonDiv" style="display:none").form-group
-        div.form-row
-          div.col-6
-            label(for="TimePythonScript") Script
-            select(required id="TimePythonScript" name="TimePythonScript").form-control.custom-select.formStyle
-              each script, index in python
-                if index == 0
-                  option(selected value=script) #{script}
-                else
-                  option(value=script) #{script}
+      div(id="TimePythonDiv" style="display:none")
+        div.form-group
+          div.form-row
+            div.col-6
+              label(for="TimePythonScript") Script
+              select(required id="TimePythonScript" name="TimePythonScript").form-control.custom-select.formStyle
+                each script, index in python
+                  if index == 0
+                    option(selected value=script) #{script}
+                  else
+                    option(value=script) #{script}
+        div.form-group
+          div.form-row
+            div.col-8
+              label(for="TimePythonOutput") Output
+              select(id="TimePythonOutput" name="TimePythonOutput" required).form-control.formStyle.custom-select
+                option(selected value='NULL | NULL') None
+                each output, index in outputs
+                  option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+    
         
     div.form-group           
       label(for="TimeDateDiv") #[a(href="#TimeDateDiv" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseStart").website-link Optional]
