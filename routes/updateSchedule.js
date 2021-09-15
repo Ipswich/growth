@@ -6,6 +6,7 @@ const dbcalls = require('../custom_node_modules/utility_modules/database_calls.j
 const utils = require('../custom_node_modules/utility_modules/Utils.js')
 
 router.post('/', auth, async function(req, res, next) {
+  let eventMap = await dbcalls.getEnabledEvents()
   var state = req.app.get('state');
   //Sanitize data
   var sanitizedData = Object.assign({}, req.body);
@@ -30,36 +31,41 @@ router.post('/', auth, async function(req, res, next) {
     .catch(() => {
       res.status(500).send("Database error! Event not changed. (failed at delete)");
     })
-    //Get output for scheduleID
-    for(let i = 0; i < state.outputState.getOutputState().length; i++){
-      //if current output ID matches passed schedule output ID
-      if (state.outputState.getOutputState()[i].outputID == dbschedule.outputID){
-        //set output to that output
-        var output = state.outputState.getOutputState()[i];
-      }
-    }
-    //Remove schedule (turns off output if no other schedules for that output)
-    state.outputState.removeOutputSchedules(output.outputID, dbschedule.scheduleID);
     //Update response message
     var msg = "Event successfully removed!";
     //If marked for update, add new schedule with passed values.
     if (sanitizedData.UpdateMode == "'Update'"){
-      // Update time schedule
+      // Update Time schedule
       if (dbschedule.scheduleType == 'Time'){
-        let output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
         let event = sanitizedData.UpdateEvent.slice(1, -1).split("|")[0]
+        //Get the event name for non auto-incremented value comparison
+        let eventName = eventMap.find(e => e.eventID == event).eventName
+        let output = ''
+        if (eventName == 'Python Script'){
+          output = sanitizedData.UpdatePythonOutput.slice(1, -1).split("|")[0]
+        } else {
+          output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
+        }
         dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.UpdateOutputValue, null, "'"+utils.formatTimeStringForDB(sanitizedData.UpdateTrigger)+"'", null, null, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.UpdatePythonScript)
         .catch(() => {                    
           res.status(500).send("Database error! Event not changed. (failed at update)");
         })
       // Update Sensor schedule
       } else if (dbschedule.scheduleType == 'Sensor') {
-        let output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
         let event = sanitizedData.UpdateEvent.slice(1, -1).split("|")[0]
+        //Get the event name for non auto-incremented value comparison
+        let eventName = eventMap.find(e => e.eventID == event).eventName
+        let output = ''
+        if (eventName == 'Python Script'){
+          output = sanitizedData.UpdatePythonOutput.slice(1, -1).split("|")[0]
+        } else {
+          output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
+        }
         dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.UpdateName, sanitizedData.UpdateSensorValue, output, sanitizedData.UpdateOutputValue, sanitizedData.UpdateComparator, null, null, sanitizedData.UpdateWarnInterval, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.UpdatePythonScript)
         .catch(()=> {
           res.status(500).send("Database error! Event not changed. (failed at update)");
         });
+      // Update Periodic Schedule
       } else if (dbschedule.scheduleType == 'Periodic') { 
         let PeriodicDuration = parseInt(sanitizedData.UpdateDurationMinutes.slice(1,-1)) + 60*parseInt(sanitizedData.UpdateDurationHours.slice(1,-1)) + 1440*parseInt(sanitizedData.UpdateDurationDays.slice(1,-1))
         let PeriodicInterval = parseInt(sanitizedData.UpdateIntervalMinutes.slice(1,-1)) + 60*parseInt(sanitizedData.UpdateIntervalHours.slice(1,-1)) + 1440*parseInt(sanitizedData.UpdateIntervalDays.slice(1,-1))              

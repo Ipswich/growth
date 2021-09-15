@@ -469,7 +469,7 @@ READS SQL DATA
   SELECT * FROM Schedules s
   JOIN Events AS e ON s.eventID=e.eventID
   LEFT JOIN Sensors AS n on s.sensorID=n.sensorID
-  JOIN Outputs AS o on s.outputID=o.outputID
+  LEFT JOIN Outputs AS o on s.outputID=o.outputID
   WHERE s.Senabled = 1
   ORDER BY eventTriggerTime IS NULL, outputName DESC
 $$
@@ -482,7 +482,7 @@ READS SQL DATA
 SELECT * FROM Schedules s
 JOIN Events AS e ON s.eventID=e.eventID
 LEFT JOIN Sensors AS n on s.sensorID=n.sensorID
-JOIN Outputs AS o on s.outputID=o.outputID
+LEFT JOIN Outputs AS o on s.outputID=o.outputID
 JOIN (SELECT outputPWM, outputType, outputTypeID from OutputTypes) AS ot on o.outputTypeID=ot.outputTypeID
 JOIN (SELECT username, email FROM Users) as u on s.addedBy=u.username
 WHERE s.Senabled = 1

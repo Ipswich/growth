@@ -6,6 +6,7 @@ const dbcalls = require('../custom_node_modules/utility_modules/database_calls.j
 const utils = require('../custom_node_modules/utility_modules/Utils.js')
 
 router.post('/', auth, async function(req, res, next) { 
+  let eventMap = await dbcalls.getEnabledEvents()
   //Escape Data
   var sanitizedData = Object.assign({}, req.body);
   for (const key in sanitizedData){
@@ -14,8 +15,16 @@ router.post('/', auth, async function(req, res, next) {
     }
     sanitizedData[key] = mysql.escape(sanitizedData[key])
   }          
-  let output = sanitizedData.SensorOutput.slice(1, -1).split("|")[0]
   let event = sanitizedData.SensorEvent.slice(1, -1).split("|")[0]
+  //Get the event name for non auto-incremented value comparison
+  let eventName = eventMap.find(e => e.eventID == event).eventName
+  //Get proper output based on event (cleanup input)
+  let output = ''
+  if (eventName == 'Python Script'){
+    output = sanitizedData.SensorPythonOutput.slice(1, -1).split("|")[0]
+  } else {
+    output = sanitizedData.SensorOutput.slice(1, -1).split("|")[0]
+  }
   //DO STUFF WITH ESCAPED DATA
   await dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.SensorSensorName, sanitizedData.SensorSensorValue, output, sanitizedData.SensorOutputValue, sanitizedData.SensorComparator, null, null, sanitizedData.SensorWarnInterval, utils.formatDateString(sanitizedData.SensorStartDate), utils.formatDateString(sanitizedData.SensorEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.SensorPythonScript)
   .catch(() => {

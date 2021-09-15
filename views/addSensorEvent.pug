@@ -53,16 +53,25 @@ div
               option(value=720) 12 Hours
               option(value=960) 16 Hours
               option(value=1440) 24 Hours    
-      div(required id="SensorPythonDiv" style="display:none").form-group
-        div.form-row
-          div.col-6
-            label(for="SensorPythonScript") Script
-            select(id="SensorPythonScript" name="SensorPythonScript").form-control.custom-select.formStyle
-              each script, index in python
-                if index == 0
-                  option(selected value=script) #{script}
-                else
-                  option(value=script) #{script}
+      div(required id="SensorPythonDiv" style="display:none")
+        div.form-group
+          div.form-row
+            div.col-6
+              label(for="SensorPythonScript") Script
+              select(id="SensorPythonScript" name="SensorPythonScript").form-control.custom-select.formStyle
+                each script, index in python
+                  if index == 0
+                    option(selected value=script) #{script}
+                  else
+                    option(value=script) #{script}          
+        div.form-group
+          div.form-row
+            div.col-8
+              label(for="SensorPythonOutput") Output
+              select(id="SensorPythonOutput" name="SensorPythonOutput" required).form-control.formStyle.custom-select
+                option(selected value='NULL | NULL') None
+                each output, index in outputs
+                  option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
     div.form-group           
       label(for="SensorDateDiv") #[a(href="#SensorDateDiv" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseStart").website-link Optional]
       div(id="SensorDateDiv").form-row.collapse

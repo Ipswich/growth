@@ -76,6 +76,24 @@ div.form-group
                 option(selected value=script) #{script}
               else
                 option(value=script) #{script}
+    div.form-group
+      div.form-row
+        div.col-8
+          label(for="UpdatePythonOutput") Output
+          select(id="UpdatePythonOutput" name="UpdatePythonOutput" required).form-control.formStyle.custom-select
+            - var null_displayed = 0
+            each output, index in outputs
+              if output.outputID == 'NULL' 
+                option(selected value='NULL | NULL') None
+                - null_displayed = 1
+              if null_displayed == 0
+                option(value='NULL | NULL') None
+                - null_displayed = 1
+              if output.outputID == schedule.outputID 
+                option(value=(output.outputID + '|' + output.outputPWM) selected) #{output.outputName}
+              else 
+                option(value=(output.outputID + '|' + output.outputPWM)) #{output.outputName}
+
 
 div.form-group
   div.form-row
