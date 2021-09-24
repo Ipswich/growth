@@ -1,4 +1,5 @@
 import json
+import os
 import random
 import sys
 import time
@@ -13,6 +14,8 @@ import time
 # This output file MUST contain a dictionary with properties ```output``` and ```outputPWM```
 # ```output``` MUST be either a 0 or 1, for OFF or ON.
 # ```outputPWM``` MUST be a value between 0 and 100, representing percentage of duty cycle.
+# Values will only be passed if exit code is 3.
+
 
 # print("Arguments: ")
 # print(sys.argv[1:])
@@ -25,9 +28,10 @@ Output_Value = random.randint(0,1)
 OutputPWM_Value = Output_Value * random.randint(1, 100)
 
 # Write to file
-f = open(SCRIPT_DIRECTORY + 'test.txt', 'w')
+filename = os.path.basename(__file__).split('.')[0]
+f = open(SCRIPT_DIRECTORY + filename + '.txt', 'w')
 data = dict({"output": Output_Value, "outputPWM": OutputPWM_Value})
 f.write(json.dumps(data))
 f.close
 
-sys.exit(1)
+sys.exit(3)
