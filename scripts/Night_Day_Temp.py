@@ -18,19 +18,39 @@ import time
 
 SCRIPT_DIRECTORY = "./scripts/"
 CURRENT_TEMPERATURE = float(sys.argv[1])
-DAYTIME_HIGH = 75
+
+MORNING_HOURS = list([2, 3])
+MORNING_HIGH = 69
+MORNING_LOW = 67
+
+DAYTIME_HOURS = list([4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
+DAYTIME_HIGH = 72
+DAYTIME_LOW = 69
+
+EVENING_HOURS = list([18, 19])
+EVENING_HIGH = 69
+EVENING_LOW = 67
+
+NIGHTTIME_HOURS = list([0, 1, 20, 21, 22, 23])
 NIGHTTIME_HIGH = 67
-DAYTIME_LOW = 72
 NIGHTTIME_LOW = 64
 
-DAYLIGHT_HOURS = list([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19])
-# NIGHTTIME_HOURS = list([0, 1, 20, 21, 22, 23])
 current_hour = time.localtime().tm_hour
-
 Output_Value = -1
 OutputPWM_Value = -1
+
+# Morning hours
+if(current_hour in MORNING_HOURS):
+  # Temperature is above high, turn off
+  if CURRENT_TEMPERATURE > MORNING_HIGH:
+    Output_Value = 0
+    OutputPWM_Value = 0
+  # Temperature is below low, turn on
+  elif CURRENT_TEMPERATURE < MORNING_LOW:
+    Output_Value = 1
+    OutputPWM_Value = 100
 # Daytime hours
-if(current_hour in DAYLIGHT_HOURS):
+elif(current_hour in DAYTIME_HOURS):
   # Temperature is above high, turn off
   if CURRENT_TEMPERATURE > DAYTIME_HIGH:
     Output_Value = 0
@@ -39,8 +59,18 @@ if(current_hour in DAYLIGHT_HOURS):
   elif CURRENT_TEMPERATURE < DAYTIME_LOW:
     Output_Value = 1
     OutputPWM_Value = 100
+# Evening hours
+elif(current_hour in EVENING_HOURS):
+  # Temperature is above high, turn off
+  if CURRENT_TEMPERATURE > EVENING_HIGH:
+    Output_Value = 0
+    OutputPWM_Value = 0
+  # Temperature is below low, turn on
+  elif CURRENT_TEMPERATURE < EVENING_LOW:
+    Output_Value = 1
+    OutputPWM_Value = 100
 # Nighttime hours
-else:
+elif(current_hour in NIGHTTIME_HOURS):
   # Temperature is above high, turn off
   if CURRENT_TEMPERATURE > NIGHTTIME_HIGH:
     Output_Value = 0
