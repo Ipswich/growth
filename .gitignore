@@ -110,6 +110,7 @@ config/config.json
 .ignore-tests/*
 SQL/initial_setup.sql
 scripts/*.txt
+data/*
 # SQL/schema_testDB.sql
 *.DS_Store
 test.js
