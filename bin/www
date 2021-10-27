@@ -5,15 +5,13 @@
  */
 //App setup - load config
 
-var fs = require('fs');
-const { argv } = require('process');
-var readline = require('readline');
+const config_check = require('../custom_node_modules/utility_modules/config_check')
 var config;
 var warnState = true;
-config = initializeConfig(config).catch((err) => {
+config = config_check.initializeConfig().catch((err) => {
   process.exit(-1)
 }).then(async (config) => {
-  await configChecker(config, warnState)
+  await config_check.configChecker(config, warnState)
   var app = require('../app');
   app.set('warnState', warnState)
   var debug = require('debug')('growth:server');
@@ -105,111 +103,3 @@ config = initializeConfig(config).catch((err) => {
   }
 
 })
-
-async function initializeConfig() {
-  var config;
-  return new Promise(async (resolve, reject) => {
-    try {
-      config = require('../config/config.json');
-      resolve(config)
-    } catch (e) {
-      console.log("[SETUP] Could not locate config.json, copying from default_config.json.");
-      fs.copyFile('./config/default_config.json', './config/config.json', (err) => {
-        if (err) {
-          console.error("ERROR: Could not copy config.json from default_config.json.")
-          reject(err)
-        } else {
-          config = require('../config/config.json');
-          resolve(config)
-        }
-      });
-    }
-  })
-}
-
-async function configChecker(config, warnState){
-  // Screen for invalid config values
-  let update = false
-  let board_list_JSON = JSON.parse(fs.readFileSync('./config/board_mappings.json').toString())
-  let board_list = ''
-  let i = 1
-  for (let e in board_list_JSON){
-    board_list = board_list.concat(e)
-    if (i != Object.keys(board_list_JSON).length){
-      board_list = board_list.concat(", ")
-      i++;
-    }
-  }
-  return new Promise(async (resolve, reject) => {
-    if(config.board == 'null'){
-      console.log("[SETUP] No board specified in config. Please enter your arduino model:")
-      let board;
-      while (Object.keys(board_list_JSON).some((e) => e != board)){
-        console.log("Available: " + board_list);
-        board = await getInput('> ')
-      }
-      config.board = board
-      update = true 
-    }       
-    if (config.database.password == 'null'){
-      console.log("\n[SETUP] No database password specified in config. Please enter the database password for growth_admin:")
-      config.database.password = await getInput("> ")  
-      update = true  
-    }
-    if (config.jwt_secret == 'null'){
-      console.log("\n[SETUP] jwt_secret has not been changed in config. Please enter a string to use for authentication security:")
-      config.jwt_secret = await getInput("> ")
-      update = true
-    }
-    if ((config.nodemailer.service == 'null' || config.nodemailer.auth.user == 'null' || config.nodemailer.auth.pass == 'null') && config.nodemailer_setup_warn == 'true'){
-      console.log("\n[SETUP] nodemailer has not been setup in config, 'Warn' will not be sent.")
-      let input = await getInput("Would you like to set this up now? (y/N) ")
-      if (input == 'y' || input == 'Y'){
-        config.nodemailer.service = await getInput("Please input an emailing service: \n> ")
-        config.nodemailer.auth.user = await getInput("Please input the account's email address: \n>  ")
-        config.nodemailer.auth.pass = await getInput("Please input the account's password: \n>  ")
-        config.nodemailer_setup_warn = false
-        update = true
-      } else {
-        input = await getInput("Would you like to disable 'Warn' setup in the future? (Y/n) ")
-        if (input == 'y' || input == 'Y' || input == ''){
-          config.nodemailer_setup_warn = false
-          update = true
-        }
-        warnState = false;
-      }
-    }
-    if (config.relay_toggle_prevention == 'null'){
-      console.log("\n[SETUP] Relay toggle prevention has not been changed in config.")
-      input = await getInput("Would you like to enable this? (y/N)")
-      if (input == 'y' || input == 'Y'){
-        config.relay_toggle_prevention = true
-      } else {
-        config.relay_toggle_prevention = false
-      }
-      update = true
-    }
-    resolve()
-  }).then(() => {
-    if (update == true){      
-      fs.writeFileSync('./config/config.json', JSON.stringify(config))
-      console.log("\n[SETUP] Config has been updated!\n")
-    }
-    return    
-  }).catch(() => {
-    console.error("ERROR: Could not update config.")
-    process.exit(-1)
-  })
-}
-
-function getInput(query) {
-  const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-  });
-
-  return new Promise(resolve => rl.question(query, ans => {
-      rl.close();
-      resolve(ans);
-  }))
-}
