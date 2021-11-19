@@ -111,6 +111,7 @@ config/config.json
 SQL/initial_setup.sql
 scripts/*.txt
 data/*
+.vscode/*
 # SQL/schema_testDB.sql
 *.DS_Store
 test.js

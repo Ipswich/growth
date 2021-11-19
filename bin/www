@@ -5,13 +5,12 @@
  */
 //App setup - load config
 
-const config_check = require('../custom_node_modules/utility_modules/config_check')
+const config_helper = require('../custom_node_modules/utility_modules/config_helper')
 var config;
-var warnState = true;
-config = config_check.initializeConfig().catch((err) => {
+config = config_helper.initializeConfig().catch((err) => {
   process.exit(-1)
 }).then(async (config) => {
-  await config_check.configChecker(config, warnState)
+  let warnState = await config_helper.configChecker(config)
   var app = require('../app');
   app.set('warnState', warnState)
   var debug = require('debug')('growth:server');
