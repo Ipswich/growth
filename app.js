@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var app = express();
+//Database connection
+var dbcalls = require('./custom_node_modules/utility_modules/database_calls')
 //Custom Modules for Events/Readings
 var outputState = require('./custom_node_modules/state_modules/OutputState.js');
 var sensorState = require('./custom_node_modules/state_modules/SensorState.js');
@@ -100,9 +102,16 @@ app.use(function(err, req, res, next) {
 
 var state = {};
 new Promise(async (resolve) => {
+  await dbcalls.getPool()
+  await dbcalls.testConnectivity().catch((error) => {
+    // Exit if no DB connection
+    process.exit(-1)
+  })
+  resolve(state)
+}).then(async (state) => {
   //load output state
   state.outputState = await new outputState();
-  resolve(state);
+  return state;
 }).then(async (state) => {
   //load sensor state
   state.sensorState = await new sensorState();
