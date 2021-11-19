@@ -5,10 +5,11 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var app = express();
 //Database connection
+var config_helper = require('./custom_node_modules/utility_modules/config_helper')
 var dbcalls = require('./custom_node_modules/utility_modules/database_calls')
 //Custom Modules for Events/Readings
-var outputState = require('./custom_node_modules/state_modules/OutputState.js');
-var sensorState = require('./custom_node_modules/state_modules/SensorState.js');
+var OutputState = require('./custom_node_modules/state_modules/OutputState.js');
+var SensorState = require('./custom_node_modules/state_modules/SensorState.js');
 var systemInitializer = require('./custom_node_modules/SystemInitializer.js')
 
 //Routes
@@ -31,15 +32,9 @@ var loginRouter = require('./api/Login');
 var stateRouter = require('./api/State');
 
 //App setup - load config
-if(process.env.NODE_ENV == 'test'){
-  console.log("####RUNNING IN TEST####")
-  var config = require('./config/test-config.json');
-} else {
-  var config = require('./config/config.json');
-}
+var config = config_helper.getConfig()
 
-
-var web_data = require('./config/web-data-config');
+var web_data = config_helper.getWebData()
 app.set('web_data', web_data);
 app.set('config', config);
 
@@ -110,11 +105,11 @@ new Promise(async (resolve) => {
   resolve(state)
 }).then(async (state) => {
   //load output state
-  state.outputState = await new outputState();
+  state.outputState = await new OutputState();
   return state;
 }).then(async (state) => {
   //load sensor state
-  state.sensorState = await new sensorState();
+  state.sensorState = await new SensorState();
   return state;
 }).then(async (state) => {
   //Initialize the system based on those states
