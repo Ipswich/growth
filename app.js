@@ -113,7 +113,10 @@ new Promise(async (resolve) => {
   return state;
 }).then(async (state) => {
   //Initialize the system based on those states
-  await systemInitializer.initialize(state, app);
+  state.warnState = app.get('warnState')
+  await systemInitializer.initialize(state);
+  app.set('state', state)
+  app.emit('started');
 });
 
 module.exports = app;
