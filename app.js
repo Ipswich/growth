@@ -10,7 +10,7 @@ var dbcalls = require('./custom_node_modules/utility_modules/database_calls')
 //Custom Modules for Events/Readings
 var OutputState = require('./custom_node_modules/state_modules/OutputState.js');
 var SensorState = require('./custom_node_modules/state_modules/SensorState.js');
-var systemInitializer = require('./custom_node_modules/initialization_modules/SystemInitializer.js')
+var systemInitializer = require('./custom_node_modules/initialization_modules/systemInitializer.js')
 
 //Routes
 var indexRouter = require('./routes/index');
