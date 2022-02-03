@@ -1,0 +1,4 @@
+# Ignore everything in this directory, only used for temp data.
+*
+# Except this file
+!.gitignore
