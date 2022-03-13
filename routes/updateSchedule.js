@@ -4,6 +4,7 @@ var router = express.Router();
 const auth = require('../middleware/authenticateLogin.js')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
 const utils = require('../custom_node_modules/utility_modules/utils.js')
+const html_generators = require('../custom_node_modules/utility_modules/html_generators.js')
 
 router.post('/', auth, async function(req, res, next) {
   let eventMap = await dbcalls.getEnabledEvents()
@@ -78,9 +79,9 @@ router.post('/', auth, async function(req, res, next) {
       msg = "Event successfully modified!";
     }
     //Get index data
-    let addEvent = await utils.getAddEventHTML(res, req)
-    let schedules = await utils.getSchedulesHTML(res, req)
-    let manual = await utils.getManualHTML(res, req)
+    let addEvent = await html_generators.getAddEventHTML(res, req)
+    let schedules = await html_generators.getSchedulesHTML(res, req)
+    let manual = await html_generators.getManualHTML(res, req)
     let returnData = {}
     returnData.token = res.locals.token
     returnData.msg = msg

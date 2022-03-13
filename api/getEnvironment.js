@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
-const utils = require('../custom_node_modules/utility_modules/utils.js')
+const html_generators = require('../custom_node_modules/utility_modules/html_generators.js')
 
 router.get('/', async function(req, res, next) {
-    var indexData = await utils.getIndexData(res, req).catch(() => {
+    var indexData = await html_generators.getIndexData(res, req).catch(() => {
         res.status(500).send("Database error, could not fetch environment data.")
     })
     if(!res.headersSent){
@@ -15,7 +15,7 @@ router.get('/', async function(req, res, next) {
 })
 
 router.post('/', async function(req, res, next) {
-    var indexData = await utils.getIndexData(res, req, req.body.interval).catch(() => {
+    var indexData = await html_generators.getIndexData(res, req, req.body.interval).catch(() => {
         return res.status(500).send("Database error, could not fetch environment data.")
     })
     if(!res.headersSent){

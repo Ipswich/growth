@@ -4,6 +4,7 @@ var router = express.Router();
 const auth = require('../middleware/authenticateLogin.js')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
 const utils = require('../custom_node_modules/utility_modules/utils.js')
+const html_generators = require('../custom_node_modules/utility_modules/html_generators.js')
 
 router.post('/', auth, async function(req, res, next) {
   //Escape Data
@@ -25,9 +26,9 @@ router.post('/', auth, async function(req, res, next) {
     res.status(500).send("Database error! Event not added.");
   });
   //Get index data
-  let addEvent = await utils.getAddEventHTML(res, req)
-  let schedules = await utils.getSchedulesHTML(res, req)
-  let manual = await utils.getManualHTML(res, req)
+  let addEvent = await html_generators.getAddEventHTML(res, req)
+  let schedules = await html_generators.getSchedulesHTML(res, req)
+  let manual = await html_generators.getManualHTML(res, req)
   .catch(() => {
     res.status(500).send("Database error! Could not fetch index.");                              
   })
