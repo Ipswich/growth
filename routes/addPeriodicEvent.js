@@ -3,7 +3,7 @@ var mysql = require('mysql');
 var router = express.Router();
 const auth = require('../middleware/authenticateLogin.js')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
-const utils = require('../custom_node_modules/utility_modules/Utils.js')
+const utils = require('../custom_node_modules/utility_modules/utils.js')
 
 router.post('/', auth, async function(req, res, next) {
   //Escape Data

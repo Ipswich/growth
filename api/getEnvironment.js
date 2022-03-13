@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const utils = require('../custom_node_modules/utility_modules/Utils.js')
+const utils = require('../custom_node_modules/utility_modules/utils.js')
 
 router.get('/', async function(req, res, next) {
     var indexData = await utils.getIndexData(res, req).catch(() => {

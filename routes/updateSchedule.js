@@ -3,7 +3,7 @@ var mysql = require('mysql');
 var router = express.Router();
 const auth = require('../middleware/authenticateLogin.js')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
-const utils = require('../custom_node_modules/utility_modules/Utils.js')
+const utils = require('../custom_node_modules/utility_modules/utils.js')
 
 router.post('/', auth, async function(req, res, next) {
   let eventMap = await dbcalls.getEnabledEvents()
@@ -46,7 +46,7 @@ router.post('/', auth, async function(req, res, next) {
         } else {
           output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
         }
-        dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.UpdateOutputValue, null, "'"+utils.formatTimeStringForDB(sanitizedData.UpdateTrigger)+"'", null, null, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.UpdatePythonScript)
+        dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.UpdateOutputValue, null, "'"+utils.formatTimeStringForDB(sanitizedData.UpdateTrigger)+"'", null, null, utils.formatDateStringForDB(sanitizedData.UpdateStartDate), utils.formatDateStringForDB(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.UpdatePythonScript)
         .catch(() => {                    
           res.status(500).send("Database error! Event not changed. (failed at update)");
         })
@@ -61,7 +61,7 @@ router.post('/', auth, async function(req, res, next) {
         } else {
           output = sanitizedData.UpdateOutput.slice(1, -1).split("|")[0]
         }
-        dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.UpdateName, sanitizedData.UpdateSensorValue, output, sanitizedData.UpdateOutputValue, sanitizedData.UpdateComparator, null, null, sanitizedData.UpdateWarnInterval, utils.formatDateString(sanitizedData.UpdateStartDate), utils.formatDateString(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.UpdatePythonScript)
+        dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.UpdateName, sanitizedData.UpdateSensorValue, output, sanitizedData.UpdateOutputValue, sanitizedData.UpdateComparator, null, null, sanitizedData.UpdateWarnInterval, utils.formatDateStringForDB(sanitizedData.UpdateStartDate), utils.formatDateStringForDB(sanitizedData.UpdateEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.UpdatePythonScript)
         .catch(()=> {
           res.status(500).send("Database error! Event not changed. (failed at update)");
         });

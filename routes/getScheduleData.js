@@ -5,7 +5,7 @@ var pug = require('pug');
 const path = require('path');
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
 const moment = require('moment')
-const utils = require('../custom_node_modules/utility_modules/Utils.js')
+const utils = require('../custom_node_modules/utility_modules/utils.js')
 
 router.post('/', async function(req, res, next) {
   //Set variables for pug rendering (get file location, prep function)

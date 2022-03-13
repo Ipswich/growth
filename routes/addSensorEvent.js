@@ -3,7 +3,7 @@ var mysql = require('mysql');
 var router = express.Router();
 const auth = require('../middleware/authenticateLogin.js')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
-const utils = require('../custom_node_modules/utility_modules/Utils.js')
+const utils = require('../custom_node_modules/utility_modules/utils.js')
 
 router.post('/', auth, async function(req, res, next) { 
   let eventMap = await dbcalls.getEnabledEvents()
@@ -26,7 +26,7 @@ router.post('/', auth, async function(req, res, next) {
     output = sanitizedData.SensorOutput.slice(1, -1).split("|")[0]
   }
   //DO STUFF WITH ESCAPED DATA
-  await dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.SensorSensorName, sanitizedData.SensorSensorValue, output, sanitizedData.SensorOutputValue, sanitizedData.SensorComparator, null, null, sanitizedData.SensorWarnInterval, utils.formatDateString(sanitizedData.SensorStartDate), utils.formatDateString(sanitizedData.SensorEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.SensorPythonScript)
+  await dbcalls.addNewSchedule("'Sensor'", event, sanitizedData.SensorSensorName, sanitizedData.SensorSensorValue, output, sanitizedData.SensorOutputValue, sanitizedData.SensorComparator, null, null, sanitizedData.SensorWarnInterval, utils.formatDateStringForDB(sanitizedData.SensorStartDate), utils.formatDateStringForDB(sanitizedData.SensorEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.SensorPythonScript)
   .catch(() => {
     res.status(500).send("Database error! Event not added.");
   });

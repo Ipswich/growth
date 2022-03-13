@@ -3,7 +3,6 @@ var express = require('express');
 var mysql = require('mysql');
 var router = express.Router();
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
-const utils = require('../custom_node_modules/utility_modules/Utils.js')
 
 router.post('/', async function(req, res, next) {
   //Escape Data  
