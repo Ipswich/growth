@@ -1,5 +1,5 @@
 var mEventHandler = require('../custom_node_modules/event_modules/event_handlers/manualEventHandler.js')
-var eventTriggers = require('../custom_node_modules/event_modules/EventTriggers.js')
+var eventTriggers = require('../custom_node_modules/event_modules/eventTriggers.js')
 var express = require('express');
 var moment = require('moment')
 var mysql = require('mysql');
