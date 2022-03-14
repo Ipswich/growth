@@ -6,7 +6,9 @@ var mysql = require('mysql');
 var router = express.Router();
 const auth = require('../middleware/authenticateLogin.js')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
-const utils = require('../custom_node_modules/utility_modules/Utils.js')
+const utils = require('../custom_node_modules/utility_modules/utils.js')
+const html_generators = require('../custom_node_modules/utility_modules/html_generators.js')
+const printouts = require('../custom_node_modules/utility_modules/printouts')
 
 router.post('/', auth, async function(req, res, next) {
   let state = req.app.get('state')
@@ -72,7 +74,7 @@ router.post('/', auth, async function(req, res, next) {
       if(outputState.getOutputController(element.outputID) != "Schedule"){
         //Update output controller, log schedule change, and resume.
         outputState.setOutputController(element.outputID, "Schedule")
-        utils.debugPrintout(outputState.getOutputName(element.outputID) + ": [Schedule] controller set")
+        printouts.debugPrintout(outputState.getOutputName(element.outputID) + ": [Schedule] controller set")
         eventTriggers.resumeSchedule(outputState, element.outputID)      
       }
       // end if not controlled by schedule
@@ -81,7 +83,7 @@ router.post('/', auth, async function(req, res, next) {
       //If not manual, update controller to manual, log manual change
       if(outputState.getOutputController(element.outputID) != "Manual"){
         outputState.setOutputController(element.outputID, "Manual")
-        utils.debugPrintout(outputState.getOutputName(element.outputID) + ": [Manual] controller set")
+        printouts.debugPrintout(outputState.getOutputName(element.outputID) + ": [Manual] controller set")
       }
       //Update output value
       if(element.manualOutputValue == undefined) {
@@ -102,9 +104,9 @@ router.post('/', auth, async function(req, res, next) {
     return res.status(500).send("Database error, manual event failed.")
   }
   try {
-    var addEvent = await utils.getAddEventHTML(res, req)
-    var schedules = await utils.getSchedulesHTML(res, req)
-    var manual = await utils.getManualHTML(res, req)
+    var addEvent = await html_generators.getAddEventHTML(res, req)
+    var schedules = await html_generators.getSchedulesHTML(res, req)
+    var manual = await html_generators.getManualHTML(res, req)
   } catch(e){
     console.log("Index error")
     return res.status(500).send("Database error! Could not fetch index.");                              

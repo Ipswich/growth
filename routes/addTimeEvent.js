@@ -3,7 +3,8 @@ var mysql = require('mysql');
 var router = express.Router();
 const auth = require('../middleware/authenticateLogin.js')
 const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
-const utils = require('../custom_node_modules/utility_modules/Utils.js')
+const utils = require('../custom_node_modules/utility_modules/utils.js')
+const html_generators = require('../custom_node_modules/utility_modules/html_generators.js')
 
 router.post('/', auth, async function(req, res, next) {
   let eventMap = await dbcalls.getEnabledEvents()
@@ -26,14 +27,14 @@ router.post('/', auth, async function(req, res, next) {
     output = sanitizedData.TimeOutput.slice(1, -1).split("|")[0]
   }
   //DO STUFF WITH ESCAPED DATA
-  await dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.TimeOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.TimeTrigger) + "'", null, null, utils.formatDateString(sanitizedData.TimeStartDate), utils.formatDateString(sanitizedData.TimeEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.TimePythonScript)
+  await dbcalls.addNewSchedule("'Time'", event, null, null, output, sanitizedData.TimeOutputValue, null, "'" + utils.formatTimeStringForDB(sanitizedData.TimeTrigger) + "'", null, null, utils.formatDateStringForDB(sanitizedData.TimeStartDate), utils.formatDateStringForDB(sanitizedData.TimeEndDate), '1', "'"+res.locals.username+"'", null, sanitizedData.TimePythonScript)
   .catch(() => {
     return res.status(500).send("Database error! Event not added.");
   });
   //Get index data
-  let addEvent = await utils.getAddEventHTML(res, req)
-  let schedules = await utils.getSchedulesHTML(res, req)
-  let manual = await utils.getManualHTML(res, req)
+  let addEvent = await html_generators.getAddEventHTML(res, req)
+  let schedules = await html_generators.getSchedulesHTML(res, req)
+  let manual = await html_generators.getManualHTML(res, req)
   .catch(() => {
     res.status(500).send("Database error! Could not fetch index.");                              
   })

@@ -3,7 +3,6 @@ var mysql = require('mysql');
 var router = express.Router();
 var auth = require('../middleware/authenticateLogin.js')
 var dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
-var utils = require('../custom_node_modules/utility_modules/Utils.js');
 
 router.get('/', auth, async function(req, res, next) {
   try {
