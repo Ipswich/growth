@@ -22,5 +22,6 @@
   "log_interval": 60000,
   "relay_toggle_prevention": "null",
   "jwt_secret": "null",
-  "jwt_expiration_time": 86400
+  "jwt_expiration_time": 86400,
+  "script_directory": "./scripts"
 }
