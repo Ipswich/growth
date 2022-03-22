@@ -16,7 +16,13 @@ config_helper.initializeWebData().catch((err) => {
   process.exit(-1)
   })
   .then(async (config) => {
-    let warnState = await config_helper.configChecker(config)
+    let warnState = await config_helper.configChecker(config).catch(() => {
+      simpleErrorPrintout("ERROR: Could not update config.")
+      if (e instanceof TypeError) {
+        simpleErrorPrintout('Config may be corrupted. Please fix or delete, then try again.')
+      }
+      process.exit(-1)
+    })
     var app = require('../app');
     app.set('warnState', warnState)
     var debug = require('debug')('growth:server');
