@@ -98,9 +98,9 @@ router.post('/', auth, async function(req, res, next) {
   })
   //Get index data
   try {
-    await mEventHandler.ManualEventHandler(state)
+    await mEventHandler.manualEventHandler(state)
   } catch(e) {
-    console.log("ManualEventHandler error")
+    console.log("manualEventHandler error")
     return res.status(500).send("Database error, manual event failed.")
   }
   try {
