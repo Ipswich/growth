@@ -4,10 +4,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var app = express();
+//Database connection
+var config_helper = require('./custom_node_modules/utility_modules/config_helper')
+var dbcalls = require('./custom_node_modules/utility_modules/database_calls')
 //Custom Modules for Events/Readings
-var outputState = require('./custom_node_modules/state_modules/OutputState.js');
-var sensorState = require('./custom_node_modules/state_modules/SensorState.js');
-var systemInitializer = require('./custom_node_modules/SystemInitializer.js')
+var OutputState = require('./custom_node_modules/state_modules/OutputState.js');
+var SensorState = require('./custom_node_modules/state_modules/SensorState.js');
+var systemInitializer = require('./custom_node_modules/initialization_modules/systemInitializer.js')
 
 //Routes
 var indexRouter = require('./routes/index');
@@ -27,17 +30,12 @@ var outputRouter = require('./api/Output')
 var sensorRouter = require('./api/Sensor')
 var loginRouter = require('./api/Login');
 var stateRouter = require('./api/State');
+const { debugPrintout } = require('./custom_node_modules/utility_modules/printouts');
 
 //App setup - load config
-if(process.env.NODE_ENV == 'test'){
-  console.log("####RUNNING IN TEST####")
-  var config = require('./config/test-config.json');
-} else {
-  var config = require('./config/config.json');
-}
+var config = config_helper.getConfig()
 
-
-var web_data = require('./config/web-data-config');
+var web_data = config_helper.getWebData()
 app.set('web_data', web_data);
 app.set('config', config);
 
@@ -100,16 +98,40 @@ app.use(function(err, req, res, next) {
 
 var state = {};
 new Promise(async (resolve) => {
-  //load output state
-  state.outputState = await new outputState();
-  resolve(state);
+  await dbcalls.getPool()
+  await dbcalls.testConnectivity().catch((error) => {
+    // Exit if no DB connection
+    process.exit(-1)
+  })
+  resolve(state)
 }).then(async (state) => {
-  //load sensor state
-  state.sensorState = await new sensorState();
+  //load output state, exit on error
+  try {
+    state.outputState = await new OutputState();
+  } catch (e) {
+    debugPrintout(e)
+    process.exit(-1)
+  }
+  return state;
+}).then(async (state) => {
+  //load sensor state; exit on error
+  try {
+    state.sensorState = await new SensorState();
+  } catch (e) {
+    debugPrintout(e)
+    process.exit(-1)
+  }
   return state;
 }).then(async (state) => {
   //Initialize the system based on those states
-  await systemInitializer.initialize(state, app);
+  state.warnState = app.get('warnState')
+  try {
+    await systemInitializer.initialize(state);
+  } catch (e) {
+    process.exit(-1)
+  }
+  app.set('state', state)
+  app.emit('started');
 });
 
 module.exports = app;

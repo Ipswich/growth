@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "trace": "node --trace-warnings ./bin/www",
+    "debug": "NODE_ENV='debug' node --trace-warnings ./bin/www",
     "test": "NODE_ENV='test' mocha --require ./test/setup.js --recursive --exit --timeout 20000"
   },
   "dependencies": {
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "chai": "^4.3.4",
-    "mocha": "^8.4.0",
+    "mocha": "^9.2.0",
     "mock-firmata": "^0.2.0",
     "nodemon": "^2.0.12",
     "sinon": "^9.2.4",

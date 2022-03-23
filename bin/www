@@ -5,101 +5,112 @@
  */
 //App setup - load config
 
-const config_check = require('../custom_node_modules/utility_modules/config_check')
-var config;
-var warnState = true;
-config = config_check.initializeConfig().catch((err) => {
+const config_helper = require('../custom_node_modules/utility_modules/config_helper')
+
+config_helper.initializeWebData().catch((err) => {
   process.exit(-1)
-}).then(async (config) => {
-  await config_check.configChecker(config, warnState)
-  var app = require('../app');
-  app.set('warnState', warnState)
-  var debug = require('debug')('growth:server');
-  var http = require('http');
+})
+.then(async () => {
+  config = config_helper.initializeConfig()
+  .catch((err) => {
+  process.exit(-1)
+  })
+  .then(async (config) => {
+    let warnState = await config_helper.configChecker(config).catch(() => {
+      simpleErrorPrintout("ERROR: Could not update config.")
+      if (e instanceof TypeError) {
+        simpleErrorPrintout('Config may be corrupted. Please fix or delete, then try again.')
+      }
+      process.exit(-1)
+    })
+    var app = require('../app');
+    app.set('warnState', warnState)
+    var debug = require('debug')('growth:server');
+    var http = require('http');
 
-  /**
-   * Get port from config or environment and store in Express.
-   */
+    /**
+     * Get port from config or environment and store in Express.
+     */
 
-  if(typeof process.env.PORT == undefined){
-    var port = normalizePort(process.env.PORT);
-  } else {
-    var port = normalizePort(config.node_port);
-  }
-  app.set('port', port);
+    if(typeof process.env.PORT == undefined){
+      var port = normalizePort(process.env.PORT);
+    } else {
+      var port = normalizePort(config.node_port);
+    }
+    app.set('port', port);
 
-  /**
-   * Create HTTP server.
-   */
-  var server = http.createServer(app);
+    /**
+     * Create HTTP server.
+     */
+    var server = http.createServer(app);
 
-  /**
-   * Listen on provided port, on all network interfaces.
-   */
+    /**
+     * Listen on provided port, on all network interfaces.
+     */
 
-  server.listen(port);
-  server.on('error', onError);
-  server.on('listening', onListening);
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
 
-  /**
-   * Normalize a port into a number, string, or false.
-   */
+    /**
+     * Normalize a port into a number, string, or false.
+     */
 
-  function normalizePort(val) {
-    var port = parseInt(val, 10);
+    function normalizePort(val) {
+      var port = parseInt(val, 10);
 
-    if (isNaN(port)) {
-      // named pipe
-      return val;
+      if (isNaN(port)) {
+        // named pipe
+        return val;
+      }
+
+      if (port >= 0) {
+        // port number
+        return port;
+      }
+
+      return false;
     }
 
-    if (port >= 0) {
-      // port number
-      return port;
-    }
+    /**
+     * Event listener for HTTP server "error" event.
+     */
 
-    return false;
-  }
-
-  /**
-   * Event listener for HTTP server "error" event.
-   */
-
-  function onError(error) {
-    if (error.syscall !== 'listen') {
-      throw error;
-    }
-
-    var bind = typeof port === 'string'
-      ? 'Pipe ' + port
-      : 'Port ' + port;
-
-    // handle specific listen errors with friendly messages
-    switch (error.code) {
-      case 'EACCES':
-        console.error(bind + ' requires elevated privileges');
-        process.exit(1);
-        break;
-      case 'EADDRINUSE':
-        console.error(bind + ' is already in use');
-        process.exit(1);
-        break;
-      default:
+    function onError(error) {
+      if (error.syscall !== 'listen') {
         throw error;
+      }
+
+      var bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
+
+      // handle specific listen errors with friendly messages
+      switch (error.code) {
+        case 'EACCES':
+          console.error(bind + ' requires elevated privileges');
+          process.exit(1);
+          break;
+        case 'EADDRINUSE':
+          console.error(bind + ' is already in use');
+          process.exit(1);
+          break;
+        default:
+          throw error;
+      }
     }
-  }
 
-  /**
-   * Event listener for HTTP server "listening" event.
-   */
+    /**
+     * Event listener for HTTP server "listening" event.
+     */
 
-  function onListening() {
-    var addr = server.address();
-    var bind = typeof addr === 'string'
-      ? 'pipe ' + addr
-      : 'port ' + addr.port;
-      console.log("Server running on port " + addr.port);
-    debug('Listening on ' + bind);
-  }
-
+    function onListening() {
+      var addr = server.address();
+      var bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+        console.log("Server running on port " + addr.port);
+      debug('Listening on ' + bind);
+    }
+  })
 })
