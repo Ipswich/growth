@@ -74,7 +74,7 @@ router.post('/', auth, async function(req, res, next) {
       if(outputState.getOutputController(element.outputID) != "Schedule"){
         //Update output controller, log schedule change, and resume.
         outputState.setOutputController(element.outputID, "Schedule")
-        printouts.debugPrintout(outputState.getOutputName(element.outputID) + ": [Schedule] controller set")
+        printouts.simpleLogPrintout(outputState.getOutputName(element.outputID) + ": [Schedule] controller set")
         eventTriggers.resumeSchedule(outputState, element.outputID)      
       }
       // end if not controlled by schedule
@@ -83,7 +83,7 @@ router.post('/', auth, async function(req, res, next) {
       //If not manual, update controller to manual, log manual change
       if(outputState.getOutputController(element.outputID) != "Manual"){
         outputState.setOutputController(element.outputID, "Manual")
-        printouts.debugPrintout(outputState.getOutputName(element.outputID) + ": [Manual] controller set")
+        printouts.simpleLogPrintout(outputState.getOutputName(element.outputID) + ": [Manual] controller set")
       }
       //Update output value
       if(element.manualOutputValue == undefined) {

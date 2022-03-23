@@ -8,7 +8,7 @@ const printouts = require('../custom_node_modules/utility_modules/printouts')
 router.post('/', auth, async function(req, res, next) {
 
   let username = jwt.decode(req.cookies.token).username
-  printouts.debugPrintout("Server shutting down {" + username + "}.")
+  printouts.simpleLogPrintout("Server shutting down {" + username + "}.")
   res.status(200).send()
   setTimeout(function() {
     process.exit();
