@@ -30,6 +30,7 @@ var outputRouter = require('./api/Output')
 var sensorRouter = require('./api/Sensor')
 var loginRouter = require('./api/Login');
 var stateRouter = require('./api/State');
+const { debugPrintout } = require('./custom_node_modules/utility_modules/printouts');
 
 //App setup - load config
 var config = config_helper.getConfig()
@@ -104,17 +105,31 @@ new Promise(async (resolve) => {
   })
   resolve(state)
 }).then(async (state) => {
-  //load output state
-  state.outputState = await new OutputState();
+  //load output state, exit on error
+  try {
+    state.outputState = await new OutputState();
+  } catch (e) {
+    debugPrintout(e)
+    process.exit(-1)
+  }
   return state;
 }).then(async (state) => {
-  //load sensor state
-  state.sensorState = await new SensorState();
+  //load sensor state; exit on error
+  try {
+    state.sensorState = await new SensorState();
+  } catch (e) {
+    debugPrintout(e)
+    process.exit(-1)
+  }
   return state;
 }).then(async (state) => {
   //Initialize the system based on those states
   state.warnState = app.get('warnState')
-  await systemInitializer.initialize(state);
+  try {
+    await systemInitializer.initialize(state);
+  } catch (e) {
+    process.exit(-1)
+  }
   app.set('state', state)
   app.emit('started');
 });
