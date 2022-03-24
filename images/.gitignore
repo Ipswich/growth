@@ -1,0 +1,4 @@
+# Ignore everything in this directory, not to be committed to github.
+*
+# Except this file
+!.gitignore

@@ -19,9 +19,11 @@
   },
   "node_port": 26420,
   "salt_rounds": 10,
+  "camera_interval": 300000,
   "log_interval": 60000,
   "relay_toggle_prevention": "null",
   "jwt_secret": "null",
   "jwt_expiration_time": 86400,
-  "script_directory": "./scripts"
+  "script_directory": "./scripts",
+  "image_directory": "./images"
 }
