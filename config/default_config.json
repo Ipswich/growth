@@ -17,14 +17,18 @@
       "pass": "null"
     }
   },
+  "camera": {
+    "enable": null,
+    "interval": 300000,
+    "image_directory": "./images",
+    "image_width": 1920,
+    "image_height": 1080
+  },
   "node_port": 26420,
   "salt_rounds": 10,
-  "camera_enable": null,
-  "camera_interval": 300000,
   "log_interval": 60000,
   "relay_toggle_prevention": "null",
   "jwt_secret": "null",
   "jwt_expiration_time": 86400,
-  "script_directory": "./scripts",
-  "image_directory": "./images"
+  "script_directory": "./scripts"
 }
