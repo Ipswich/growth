@@ -19,6 +19,7 @@
   },
   "node_port": 26420,
   "salt_rounds": 10,
+  "camera_enable": null,
   "camera_interval": 300000,
   "log_interval": 60000,
   "relay_toggle_prevention": "null",
