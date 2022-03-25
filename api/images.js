@@ -13,3 +13,5 @@ router.get('/latest', async function(req, res, next) {
     res.status(500).send(e.message)
   }
 })
+
+module.exports = router
