@@ -22,7 +22,8 @@
     "interval": 300000,
     "image_directory": "./images",
     "image_width": 1920,
-    "image_height": 1080
+    "image_height": 1080,
+    "image_quality": 100
   },
   "node_port": 26420,
   "salt_rounds": 10,
