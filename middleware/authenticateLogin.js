@@ -49,6 +49,6 @@ module.exports = async function(req, res, next) {
     })
   } else {
     res.clearCookie("token")
-    res.status(400).send("Login expired, please refresh page.")
+    res.status(400).send("No valid login token. Please login to continue.")
   }
 }
