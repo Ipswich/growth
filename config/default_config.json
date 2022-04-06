@@ -20,6 +20,10 @@
   "camera": {
     "enable": null,
     "interval": 300000,
+    "active_hours": {
+      "start": null,
+      "stop": null
+    },
     "image_directory": "./images",
     "image_width": 1920,
     "image_height": 1080,
