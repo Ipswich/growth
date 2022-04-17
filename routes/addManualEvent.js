@@ -100,7 +100,7 @@ router.post('/', auth, async function(req, res, next) {
   try {
     await mEventHandler.manualEventHandler(state)
   } catch(e) {
-    console.log("manualEventHandler error")
+    printouts.simpleErrorPrintout("manualEventHandler error")
     return res.status(500).send("Database error, manual event failed.")
   }
   try {
@@ -108,7 +108,7 @@ router.post('/', auth, async function(req, res, next) {
     var schedules = await html_generators.getSchedulesHTML(res, req)
     var manual = await html_generators.getManualHTML(res, req)
   } catch(e){
-    console.log("Index error")
+    printouts.simpleErrorPrintout("Index error")
     return res.status(500).send("Database error! Could not fetch index.");                              
   }
   let returnData = {}
