@@ -43,7 +43,7 @@
 
 #body {
   text-align: center;
-    padding: 20px;
+  padding: 20px;
 }
 
 #data-list {
@@ -119,6 +119,14 @@
   background-color:var(--website-bg-light);
 }
 
+.image-div {
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  color: var(--website-text-normal);
+  background-color:var(--website-bg-light);
+}
 
 #chart_interval {
   border: none;

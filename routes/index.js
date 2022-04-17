@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var html_generators = require('../custom_node_modules/utility_modules/html_generators.js');
+let express = require('express');
+let router = express.Router();
+let html_generators = require('../custom_node_modules/utility_modules/html_generators.js');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {

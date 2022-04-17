@@ -14,6 +14,9 @@ block content
   br
   div(id="pills-tabContent").tab-content
     div(id="current-conditions-div" role="tabpanel" arealabelledby="nav-current-conditions").tab-pane.fade.show.active
+      div(id="latest-image-container")
+        include ./latestImage.pug
+      br
       div(id="current-conditions") 
         include ./currentConditions.pug
       div(id="current-conditions-selector").container
