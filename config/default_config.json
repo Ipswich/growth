@@ -27,7 +27,11 @@
     "image_directory": "./images",
     "image_width": 1920,
     "image_height": 1080,
-    "image_quality": 100
+    "image_quality": 100,
+    "overlay_date": false,
+    "overlay_time": false,
+    "overlay_black": false
+
   },
   "node_port": 26420,
   "salt_rounds": 10,
