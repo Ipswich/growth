@@ -6,22 +6,18 @@
 //App setup - load config
 
 const config_helper = require('../custom_node_modules/utility_modules/config_helper')
+const printouts = require('../custom_node_modules/utility_modules/printouts')
 
-config_helper.initializeWebData().catch((err) => {
-  process.exit(-1)
-})
-.then(async () => {
-  config_helper.initializeConfig()
-  .catch((err) => {
-    process.exit(-1)
-  })
-  .then(async (config) => {
+new Promise(async (resolve, reject) => {
+  try {
+    await config_helper.initializeWebData()
+    await config_helper.initializeConfig()
     let warnState = await config_helper.configChecker(config).catch(() => {
       simpleErrorPrintout("ERROR: Could not update config.")
       if (e instanceof TypeError) {
         simpleErrorPrintout('Config may be corrupted. Please fix or delete, then try again.')
       }
-      process.exit(-1)
+      reject(e)
     })
     let app = require('../app');
     app.set('warnState', warnState)
@@ -112,5 +108,10 @@ config_helper.initializeWebData().catch((err) => {
         console.log("Server running on port " + addr.port);
       debug('Listening on ' + bind);
     }
-  })
+  } catch (e) {
+    reject(e)
+  }
+}).catch((e) => {
+  printouts.errorPrintout(e)
+  process.exit(-1)
 })
