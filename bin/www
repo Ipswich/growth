@@ -11,7 +11,7 @@ const printouts = require('../custom_node_modules/utility_modules/printouts')
 new Promise(async (resolve, reject) => {
   try {
     await config_helper.initializeWebData()
-    await config_helper.initializeConfig()
+    let config = await config_helper.initializeConfig()
     let warnState = await config_helper.configChecker(config).catch(() => {
       simpleErrorPrintout("ERROR: Could not update config.")
       if (e instanceof TypeError) {
