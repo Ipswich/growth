@@ -11,9 +11,9 @@ config_helper.initializeWebData().catch((err) => {
   process.exit(-1)
 })
 .then(async () => {
-  config = config_helper.initializeConfig()
+  config_helper.initializeConfig()
   .catch((err) => {
-  process.exit(-1)
+    process.exit(-1)
   })
   .then(async (config) => {
     let warnState = await config_helper.configChecker(config).catch(() => {
@@ -23,26 +23,26 @@ config_helper.initializeWebData().catch((err) => {
       }
       process.exit(-1)
     })
-    var app = require('../app');
+    let app = require('../app');
     app.set('warnState', warnState)
-    var debug = require('debug')('growth:server');
-    var http = require('http');
+    let debug = require('debug')('growth:server');
+    let http = require('http');
 
     /**
      * Get port from config or environment and store in Express.
      */
-
+    let port;
     if(typeof process.env.PORT == undefined){
-      var port = normalizePort(process.env.PORT);
+      port = normalizePort(process.env.PORT);
     } else {
-      var port = normalizePort(config.node_port);
+      port = normalizePort(config.node_port);
     }
     app.set('port', port);
 
     /**
      * Create HTTP server.
      */
-    var server = http.createServer(app);
+    let server = http.createServer(app);
 
     /**
      * Listen on provided port, on all network interfaces.
@@ -57,7 +57,7 @@ config_helper.initializeWebData().catch((err) => {
      */
 
     function normalizePort(val) {
-      var port = parseInt(val, 10);
+      let port = parseInt(val, 10);
 
       if (isNaN(port)) {
         // named pipe
@@ -81,7 +81,7 @@ config_helper.initializeWebData().catch((err) => {
         throw error;
       }
 
-      var bind = typeof port === 'string'
+      let bind = typeof port === 'string'
         ? 'Pipe ' + port
         : 'Port ' + port;
 
@@ -105,8 +105,8 @@ config_helper.initializeWebData().catch((err) => {
      */
 
     function onListening() {
-      var addr = server.address();
-      var bind = typeof addr === 'string'
+      let addr = server.address();
+      let bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
         console.log("Server running on port " + addr.port);
