@@ -1,27 +1,27 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var app = express();
+let createError = require('http-errors');
+let express = require('express');
+let path = require('path');
+let cookieParser = require('cookie-parser');
+let logger = require('morgan');
+let app = express();
 //Database connection
-var config_helper = require('./custom_node_modules/utility_modules/config_helper')
-var dbcalls = require('./custom_node_modules/utility_modules/database_calls')
+let config_helper = require('./custom_node_modules/utility_modules/config_helper')
+let dbcalls = require('./custom_node_modules/utility_modules/database_calls')
 //Custom Modules for Events/Readings
-var OutputState = require('./custom_node_modules/state_modules/OutputState.js');
-var SensorState = require('./custom_node_modules/state_modules/SensorState.js');
-var systemInitializer = require('./custom_node_modules/initialization_modules/systemInitializer.js')
+let OutputState = require('./custom_node_modules/state_modules/OutputState.js');
+let SensorState = require('./custom_node_modules/state_modules/SensorState.js');
+let systemInitializer = require('./custom_node_modules/initialization_modules/systemInitializer.js')
 
 //Routes
-var indexRouter = require('./routes/index');
-var settingsRouter = require('./routes/settings');
-var addTimeEventRouter = require('./routes/addTimeEvent');
-var addSensorEventRouter = require('./routes/addSensorEvent');
-var addPeriodicEventRouter = require('./routes/addPeriodicEvent');
-var addManualEventRouter = require('./routes/addManualEvent');
-var getScheduleDataRouter = require('./routes/getScheduleData');
-var updateScheduleRouter = require('./routes/updateSchedule');
-var addUserRouter = require('./routes/addUser');
+const indexRouter = require('./routes/index');
+const settingsRouter = require('./routes/settings');
+const addTimeEventRouter = require('./routes/addTimeEvent');
+const addSensorEventRouter = require('./routes/addSensorEvent');
+const addPeriodicEventRouter = require('./routes/addPeriodicEvent');
+const addManualEventRouter = require('./routes/addManualEvent');
+const getScheduleDataRouter = require('./routes/getScheduleData');
+const updateScheduleRouter = require('./routes/updateSchedule');
+const addUserRouter = require('./routes/addUser');
 
 //API
 const getEnvironmentRouter = require('./api/getEnvironment')
@@ -95,42 +95,27 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-var state = {};
-new Promise(async (resolve) => {
-  await dbcalls.getPool()
-  await dbcalls.testConnectivity().catch((error) => {
-    // Exit if no DB connection
-    process.exit(-1)
-  })
-  resolve(state)
-}).then(async (state) => {
-  //load output state, exit on error
+let state = {};
+new Promise(async (resolve, reject) => {
   try {
+    await dbcalls.getPool()
+    await dbcalls.testConnectivity()
+    // Load output and sensor states, exit on error
     state.outputState = await new OutputState();
-  } catch (e) {
-    debugPrintout(e)
-    process.exit(-1)
-  }
-  return state;
-}).then(async (state) => {
-  //load sensor state; exit on error
-  try {
     state.sensorState = await new SensorState();
-  } catch (e) {
-    debugPrintout(e)
-    process.exit(-1)
-  }
-  return state;
-}).then(async (state) => {
-  //Initialize the system based on those states
-  state.warnState = app.get('warnState')
-  try {
+    // Initialize the system based on those states
+    state.warnState = app.get('warnState')
     await systemInitializer.initialize(state);
+    // Store state in app
+    app.set('state', state)
+    resolve(state)
   } catch (e) {
-    process.exit(-1)
+    reject(e)
   }
-  app.set('state', state)
-  app.emit('started');
-});
+}).catch((e) => {
+  // If errors on startup, exit.
+  debugPrintout(e)
+  process.exit(-1)
+})
 
 module.exports = app;
