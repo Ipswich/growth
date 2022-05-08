@@ -705,7 +705,7 @@ function settings_RestartServer(){
     if(confirm("Are you sure you want to restart server? This will interrupt currently running schedules.")){
       $.ajax({
         type: 'POST',
-        url: '/api/state',
+        url: '/api/server/kill',
         data: null,
         cache: false,
         success: function(res) {

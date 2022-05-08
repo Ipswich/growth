@@ -11,6 +11,7 @@ let dbcalls = require('./custom_node_modules/utility_modules/database_calls')
 let OutputState = require('./custom_node_modules/state_modules/OutputState.js');
 let SensorState = require('./custom_node_modules/state_modules/SensorState.js');
 let systemInitializer = require('./custom_node_modules/initialization_modules/systemInitializer.js')
+const { debugPrintout } = require('./custom_node_modules/utility_modules/printouts');
 
 //Routes
 const indexRouter = require('./routes/index');
@@ -28,10 +29,12 @@ const getEnvironmentRouter = require('./api/getEnvironment')
 const outputTypeRouter = require('./api/OutputType')
 const outputRouter = require('./api/Output')
 const sensorRouter = require('./api/Sensor')
-const loginRouter = require('./api/Login');
-const stateRouter = require('./api/State');
+const loginRouter = require('./api/login');
+const stateRouter = require('./api/state');
+const serverRouter = require('./api/server');
 const imagesRouter = require('./api/images')
-const { debugPrintout } = require('./custom_node_modules/utility_modules/printouts');
+
+
 
 //App setup - load config
 app.set('config', config_helper.getConfig());
@@ -77,6 +80,7 @@ app.use('/api/output', outputRouter);
 app.use('/api/sensor', sensorRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/state', stateRouter);
+app.use('/api/server', serverRouter);
 app.use('/api/images', imagesRouter);
 
 // catch 404 and forward to error handler
