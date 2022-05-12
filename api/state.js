@@ -14,11 +14,41 @@ router.get('/outputs', auth, async function(req, res, next){
   }
 })
 
+router.get('/outputs/:outputid', auth, async function(req, res, next){
+  try {
+    let state = req.app.get('state')
+    let outputID = parseInt(req.body.outputid)
+    if (outputID == NaN){
+      throw new TypeError()
+    }
+    return_data = {}
+    return_data.outputState = state.outputState.getOutput(outputID)
+    res.status(200).send(return_data)
+  } catch (e) {
+    res.status(500).send()
+  }
+})
+
 router.get('/sensors', auth, async function(req, res, next){
   try {
     let state = req.app.get('state')
     return_data = {}
     return_data.sensorState = state.sensorState.getSensorData()
+    res.status(200).send(return_data)
+  } catch (e) {
+    res.status(500).send()
+  }
+})
+
+router.get('/sensors/:sensorid', auth, async function(req, res, next){
+  try {
+    let state = req.app.get('state')
+    let sensorID = parseInt(req.body.sensorid)
+    if (sensorID == NaN){
+      throw new TypeError()
+    }
+    return_data = {}
+    return_data.sensorState = state.sensorState.getSensor(sensorID)
     res.status(200).send(return_data)
   } catch (e) {
     res.status(500).send()
@@ -37,7 +67,6 @@ router.get('/events', auth, async function(req, res, next){
         data.Eenabled = false
       }
     }
-
     res.status(200).send(return_data)
   } catch (e) {
     res.status(500).send()
