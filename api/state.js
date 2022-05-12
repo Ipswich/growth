@@ -58,8 +58,7 @@ router.get('/sensors/:sensorid', auth, async function(req, res, next){
 router.get('/events', auth, async function(req, res, next){
   try {
     let state = req.app.get('state')
-    let return_data = {}
-    return_data.events = state.events
+    let return_data = state.events
     for(data in return_data.events){
       if (data.Eenabled == 1){
         data.Eenabled = true

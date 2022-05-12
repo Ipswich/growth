@@ -39,5 +39,6 @@
   "relay_toggle_prevention": "null",
   "jwt_secret": "null",
   "jwt_expiration_time": 86400,
-  "script_directory": "./scripts"
+  "script_directory": "./scripts",
+  "data_directory": "./data"
 }
