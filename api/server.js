@@ -1,17 +1,16 @@
-var express = require('express');
-var jwt = require('jsonwebtoken')
-var router = express.Router();
-var auth = require('../middleware/authenticateLogin.js')
+const express = require('express');
+const jwt = require('jsonwebtoken')
+const router = express.Router();
+const auth = require('../middleware/authenticateLogin.js')
 const printouts = require('../custom_node_modules/utility_modules/printouts')
 
 //Rebuild state
-router.post('/', auth, async function(req, res, next) {
-
+router.post('/kill', auth, async function(req, res, next) {
   let username = jwt.decode(req.cookies.token).username
   printouts.simpleLogPrintout("Server shutting down {" + username + "}.")
   res.status(200).send()
   setTimeout(function() {
-    process.exit();
+    process.exit(0);
   }, 1000)
 })
 
@@ -30,3 +29,4 @@ function restartServer() {
 }
 
 module.exports = router;
+

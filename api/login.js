@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var auth = require('../middleware/authenticateLogin.js')
+const express = require('express');
+const router = express.Router();
+const auth = require('../middleware/authenticateLogin.js')
 
 router.post('/', auth, async function(req, res, next) {
   res.status(200).send()
