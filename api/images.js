@@ -8,7 +8,7 @@ const utils = require('../custom_node_modules/utility_modules/utils')
 let config = config_helper.getConfig()
 
 router.get('/latest', auth, async function(req, res, next) {
-  if (config.camera.enable != true){
+  if (config.camera.image_api_enable != true){
     res.status(404).send()
   } else {
     try {
@@ -21,7 +21,7 @@ router.get('/latest', auth, async function(req, res, next) {
 })
 
 router.get('/take_image', auth, async function(req, res, next) {
-  if (config.camera.enable != true){
+  if (config.camera.image_api_enable != true){
     res.status(404).send()
   } else {
     try {
