@@ -1,20 +1,20 @@
 {
-  "board": "null",
+  "board": null,
   "web_data": "./web-data-config.json",
   "database": {
     "host": "localhost",
     "user": "growth_admin",
-    "password": "null",
+    "password": null,
     "database": "growth",
-    "multipleStatements": "true",
+    "multipleStatements": true,
     "connectionLimit": 25
   },
-  "nodemailer_setup_warn": "true",
+  "nodemailer_setup_warn": true,
   "nodemailer": {
-    "service": "null",
+    "service": null,
     "auth": {
-      "user": "null",
-      "pass": "null"
+      "user": null,
+      "pass": null
     }
   },
   "camera": {
@@ -32,13 +32,12 @@
     "overlay_date": false,
     "overlay_time": false,
     "overlay_black": false
-
   },
   "node_port": 26420,
   "salt_rounds": 10,
   "log_interval": 60000,
-  "relay_toggle_prevention": "null",
-  "jwt_secret": "null",
+  "relay_toggle_prevention": null,
+  "jwt_secret": null,
   "jwt_expiration_time": 86400,
   "script_directory": "./scripts",
   "data_directory": "./data"
