@@ -27,6 +27,15 @@ CREATE TABLE Outputs (
   outputTypeID INT NOT NULL,
   outputName VARCHAR(64) NOT NULL,
   outputDescription VARCHAR(128),
+  -- outputPin INT DEFAULT NULL,
+  -- outputPWMPin INT DEFAULT NULL,
+  -- outputPWMInversion TINYINT DEFAULT 0,
+  -- outputScheduleState INT DEFAULT NULL,
+  -- outputScheduleOutputValue INT DEFAULT NULL,
+  -- outputManualState INT DEFAULT NULL,
+  -- outputManualOutputValue INT DEFAULT NULL,
+  -- outputController VARCHAR(32) DEFAULT "SCHEDULE",
+  -- outputLastController VARCHAR(32) DEFAULT "SCHEDULE",
   Oenabled BOOLEAN NOT NULL DEFAULT 1,
   outputOrder INT DEFAULT 0,
   PRIMARY KEY (outputID),
@@ -745,7 +754,7 @@ DELIMITER $$ CREATE PROCEDURE `addPythonTimeEvent` (
 INSERT INTO PythonTimeEvents (dayID, triggerTime, pythonScript, createdBy)
 VALUES (
     p_dayID,
-    triggerTime,
+    p_triggerTime,
     p_pythonScript,
     p_createdBy
   );
