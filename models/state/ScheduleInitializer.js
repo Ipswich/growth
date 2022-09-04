@@ -1,7 +1,6 @@
-const dbcalls = require('../utility/database_calls')
 const SensorLogger = require('../events/SensorLogger')
 const utils = require('../utility/utils')
-const cameraEventHandler = require('../events/CameraEventHandler')
+const CameraEventHandler = require('../events/CameraEventHandler')
 const { simpleErrorPrintout } = require('../utility/printouts')
 
 const EVENT_TIMER = 1 * 1000 // 1 SECOND
@@ -15,16 +14,16 @@ module.exports = class ScheduleInitializer {
   static async initializeSchedule(state, config, web_data) {
     //Take initial reading to update database
     //Run events when ready, then set Interval.
-    state.events = await dbcalls.getEnabledEvents();
     await SensorLogger.addSensorReadings(state);
     // Handle camera things, if enabled.
-    initializeCamera(config, web_data);
+    CameraEventHandler
+    this._initializeCamera(config, web_data);
     // Set up future events
     setInterval(async function() {
       await SensorLogger.addSensorReadings(state);
     }, config.log_interval);
     setInterval(async function() {
-      await utils.scheduleMinder(state);
+      // await utils.scheduleMinder(state);
     }, EVENT_TIMER);
   }
 
@@ -34,13 +33,13 @@ module.exports = class ScheduleInitializer {
   static _initializeCamera = function(config, web_data) {
     if (config.camera.enable){
       try {
-        cameraEventHandler.takeImageBetween(config, web_data);
+        CameraEventHandler.takeImageBetween(config, web_data);
       } catch (e) {
         simpleErrorPrintout(e);
       } 
       setInterval(() => {
         try {
-          cameraEventHandler.takeImageBetween(config, web_data)
+          CameraEventHandler.takeImageBetween(config, web_data)
         } catch (e) {
           simpleErrorPrintout(e);
         }

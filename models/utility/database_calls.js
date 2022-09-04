@@ -9,7 +9,6 @@ var pool
  */
 const getPool = function(config) {
   if (pool) return pool
-  console.log(config.config)
   pool = mysql.createPool(config.database)
   return pool
 }

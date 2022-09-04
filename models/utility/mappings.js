@@ -40,7 +40,6 @@ module.exports = class Mappings {
    * @returns {[object]} A mapping of sensors to various data pins.
    */
   static mapOutputPins(config, outputs) {
-    console.log(outputs)
     var outputPins = config.board_pinout.OUTPUT_PINS
     var pwmPins = config.board_pinout.PWM_PINS
     //If relay toggle prevention is set in config, skip first output

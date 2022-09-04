@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authenticateLogin')
-const cameraEventHandler = require('../models/events/cameraEventHandler')
+const CameraEventHandler = require('../models/events/CameraEventHandler')
 const utils = require('../models/utility/utils')
 
 
@@ -26,7 +26,7 @@ router.get('/take_image', auth, async function(req, res, next) {
     res.status(404).send()
   } else {
     try {
-      cameraEventHandler.takeImage()
+      CameraEventHandler.takeImage()
       res.status(200).send()
     } catch (e) {
       res.status(500).send(e.message)
