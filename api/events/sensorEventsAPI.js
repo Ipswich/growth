@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authenticateLogin')
-const sensorEvent = require('../../models/SensorEvents');
+const sensorEvent = require('../../models/events/SensorEvents');
 
 router.post('/create', auth, async function(req, res, next) {
   try {
@@ -24,7 +24,6 @@ router.post('/create', auth, async function(req, res, next) {
 
 router.get('/get', auth, async function(req, res, next) {
   try {
-
     let result = sensorEvent.readAllAsync();
     res.status(200).send(result);
   } catch (e) {

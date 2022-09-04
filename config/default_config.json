@@ -18,11 +18,11 @@
     }
   },
   "camera": {
-    "enable": null,
+    "enable": "null",
     "interval": 300000,
     "active_hours": {
-      "start": null,
-      "stop": null
+      "start": "null",
+      "stop": "null"
     },
     "image_api_enable": false,
     "image_directory": "./images",

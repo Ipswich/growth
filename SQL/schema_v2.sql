@@ -222,7 +222,8 @@ CREATE TABLE TimeEvents (
   outputValue INT NOT NULL,
   ## outputValue = 0 is off,
   ## outputValue > 0 is on,
-  ## outputValue < 0 is random createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  ## outputValue < 0 is random,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (timeEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -413,6 +414,12 @@ DELIMITER $$ CREATE PROCEDURE `getRandomEvents` () READS SQL DATA
 SELECT *
 FROM RandomEvents;
 $$ DELIMITER;
+## Get Random events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getRandomEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM RandomEvents;
+WHERE dayID = p_dayID;
 ## Add new random event
 DELIMITER $$ CREATE PROCEDURE `addRandomEvent` (
   IN `p_dayID` INT,
@@ -485,6 +492,12 @@ DELIMITER $$ CREATE PROCEDURE `getRandomPythonEvents` () READS SQL DATA
 SELECT *
 FROM RandomPythonEvents;
 $$ DELIMITER;
+## Get RandomPython events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getRandomPythonEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM RandomPythonEvents;
+WHERE dayID = p_dayID;
 ## Add new random python event
 DELIMITER $$ CREATE PROCEDURE `addRandomPythonEvent` (
   IN `p_dayID` INT,
@@ -552,6 +565,12 @@ DELIMITER $$ CREATE PROCEDURE `getRecurringEvents` () READS SQL DATA
 SELECT *
 FROM RecurringEvents;
 $$ DELIMITER;
+## Get Recurring events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getRecurringEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM RecurringEvents;
+WHERE dayID = p_dayID;
 ## Add new recurring event
 DELIMITER $$ CREATE PROCEDURE `addRecurringEvent` (
   IN `p_dayID` INT,
@@ -624,6 +643,13 @@ DELIMITER $$ CREATE PROCEDURE `getRecurringPythonEvents` () READS SQL DATA
 SELECT *
 FROM RecurringPythonEvents;
 $$ DELIMITER;
+## Get RecurringPython events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getRecurringPythonEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM RecurringPythonEvents
+WHERE dayID = p_dayID;
+$$ DELIMITER;
 ## Add new recurring python event
 DELIMITER $$ CREATE PROCEDURE `addRecurringPythonEvent` (
   IN `p_dayID` INT,
@@ -692,6 +718,12 @@ DELIMITER $$ CREATE PROCEDURE `getTimeEvents` () READS SQL DATA
 SELECT *
 FROM TimeEvents;
 $$ DELIMITER;
+## Get time events by dayID
+DELIMITER $$ CREATE PROCEDURE `getTimeEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM TimeEvents
+WHERE dayID = p_dayID;
+$$ DELIMITER;
 ## Add new time event
 DELIMITER $$ CREATE PROCEDURE `addTimeEvent` (
   IN `p_dayID` INT,
@@ -709,7 +741,7 @@ INSERT INTO TimeEvents (
   )
 VALUES (
     p_dayID,
-    triggerTime,
+    p_triggerTime,
     p_outputID,
     p_outputValue,
     p_createdBy
@@ -744,6 +776,12 @@ DELIMITER $$ CREATE PROCEDURE `getPythonTimeEvents` () READS SQL DATA
 SELECT *
 FROM PythonTimeEvents;
 $$ DELIMITER;
+## Get PythonTime events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getPythonTimeEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM PythonTimeEvents
+WHERE dayID = p_dayID;
 ## Add new python time event
 DELIMITER $$ CREATE PROCEDURE `addPythonTimeEvent` (
   IN `p_dayID` INT,
@@ -782,6 +820,12 @@ DELIMITER $$ CREATE PROCEDURE `getSensorEvents` () READS SQL DATA
 SELECT *
 FROM SensorEvents;
 $$ DELIMITER;
+## Get Sensor events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getSensorEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM SensorEvents
+WHERE dayID = p_dayID;
 ## Add new sensor event
 DELIMITER $$ CREATE PROCEDURE `addSensorEvent` (
   IN `p_dayID` INT,
@@ -854,6 +898,12 @@ DELIMITER $$ CREATE PROCEDURE `getPythonSensorEvents` () READS SQL DATA
 SELECT *
 FROM PythonSensorEvents;
 $$ DELIMITER;
+## Get PythonSensor events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getPythonSensorEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM PythonSensorEvents
+WHERE dayID = p_dayID;
 ## Add new python sensor event
 DELIMITER $$ CREATE PROCEDURE `addPythonSensorEvent` (
   IN `p_dayID` INT,
@@ -921,6 +971,12 @@ DELIMITER $$ CREATE PROCEDURE `getEmailSensorEvents` () READS SQL DATA
 SELECT *
 FROM EmailSensorEvents;
 $$ DELIMITER;
+## Get EmailSensor events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getEmailSensorEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM EmailSensorEvents
+WHERE dayID = p_dayID;
 ## Add new email sensor event
 DELIMITER $$ CREATE PROCEDURE `addEmailSensorEvent` (
   IN `p_dayID` INT,
@@ -988,6 +1044,12 @@ DELIMITER $$ CREATE PROCEDURE `getBoundedEvents` () READS SQL DATA
 SELECT *
 FROM BoundedEvents;
 $$ DELIMITER;
+## Get BoundedEvents events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getBoundedEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM BoundedEvents
+WHERE dayID = p_dayID;
 ## Add new bounded event
 DELIMITER $$ CREATE PROCEDURE `addBoundedEvent` (
   IN `p_dayID` INT,
@@ -1050,6 +1112,12 @@ DELIMITER $$ CREATE PROCEDURE `getSunTrackerEvents` () READS SQL DATA
 SELECT *
 FROM SunTrackerEvents;
 $$ DELIMITER;
+## Get SunTracker events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getSunTrackerEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM SunTrackerEvents
+WHERE dayID = p_dayID;
 ## Add new suntracker event
 DELIMITER $$ CREATE PROCEDURE `addSunTrackerEvent` (
   IN `p_dayID` INT,
@@ -1105,11 +1173,6 @@ SET
     createdBy = p_createdBy
 WHERE sunTrackerEventID = p_sunTrackerEventID;
 $$ DELIMITER;
-## MISCELLANEOUS PROCEDURES 
-DELIMITER $$ CREATE PROCEDURE `getEventsByDay` (IN `p_dayID` INT) READS SQL DATA
-SELECT *
-FROM Days;
-$$ DELIMITER ;
 
 #############################################
 ############# STORED PROCEDURES #############

@@ -6,7 +6,6 @@ module.exports = class Days {
     let { weekday, createdBy } = obj;
     createdBy = null ?? 'NULL';
     await dbCalls.addDay(weekday, createdBy);
-    return this;
   }
 
   static async readAllAsync() {
@@ -17,11 +16,9 @@ module.exports = class Days {
     let { dayID, weekday, createdBy } = obj;
     createdBy = null ?? 'NULL';
     await dbCalls.updateDay(dayID, weekday, createdBy);
-    return this;
   }
 
   static async deleteAsync(eventID){
     await dbCalls.removeDay(eventID);
-    return this;
   }
 }

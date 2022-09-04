@@ -1,17 +1,18 @@
 let express = require('express');
 let router = express.Router();
-let html_generators = require('../custom_node_modules/utility_modules/html_generators.js');
+// let html_generators = require('../custom_node_modules/utility_modules/html_generators.js');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
   try {
-    //Get index data
-    let indexData = await html_generators.getIndexData(res, req);
-    //Clean up to conform to expected values for view engine
-    delete indexData.schedules;
-    delete indexData.currentConditions;
-    delete indexData.addEvent;
-    res.status(200).render('index', indexData);
+    res.status(200).send("200: Holy shit it works?")
+    // //Get index data
+    // let indexData = await html_generators.getIndexData(res, req);
+    // //Clean up to conform to expected values for view engine
+    // delete indexData.schedules;
+    // delete indexData.currentConditions;
+    // delete indexData.addEvent;
+    // res.status(200).render('index', indexData);
   } catch (e) {
     res.status(500).send('500: Server error')
   }

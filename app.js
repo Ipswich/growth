@@ -4,41 +4,36 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let app = express();
+let ConfigHelper = require('./models/utility/ConfigHelper')
 //Database connection
-let config_helper = require('./custom_node_modules/utility_modules/config_helper')
-let dbcalls = require('./custom_node_modules/utility_modules/database_calls')
+let dbcalls = require('./models/utility/database_calls')
 //Custom Modules for Events/Readings
-let OutputState = require('./custom_node_modules/state_modules/OutputState.js');
-let SensorState = require('./custom_node_modules/state_modules/SensorState.js');
-let systemInitializer = require('./custom_node_modules/initialization_modules/systemInitializer.js')
-const { debugPrintout } = require('./custom_node_modules/utility_modules/printouts');
+let OutputState = require('./models/state/OutputState.js');
+let SensorState = require('./models/state/SensorState.js');
+let SystemInitializer = require('./models/state/SystemInitializer.js')
+const { debugPrintout } = require('./models/utility/printouts');
 
 //Routes
 const indexRouter = require('./routes/index');
 const settingsRouter = require('./routes/settings');
-const addTimeEventRouter = require('./routes/addTimeEvent');
-const addSensorEventRouter = require('./routes/addSensorEvent');
-const addPeriodicEventRouter = require('./routes/addPeriodicEvent');
-const addManualEventRouter = require('./routes/addManualEvent');
-const getScheduleDataRouter = require('./routes/getScheduleData');
-const updateScheduleRouter = require('./routes/updateSchedule');
+// const addTimeEventRouter = require('./routes/addTimeEvent');
+// const addSensorEventRouter = require('./routes/addSensorEvent');
+// const addPeriodicEventRouter = require('./routes/addPeriodicEvent');
+// const addManualEventRouter = require('./routes/addManualEvent');
+// const getScheduleDataRouter = require('./routes/getScheduleData');
+// const updateScheduleRouter = require('./routes/updateSchedule');
 const addUserRouter = require('./routes/addUser');
 
 //API
-const getEnvironmentRouter = require('./api/getEnvironment')
+// const getEnvironmentRouter = require('./api/getEnvironment')
 const outputTypeRouter = require('./api/OutputType')
 const outputRouter = require('./api/Output')
 const sensorRouter = require('./api/Sensor')
 const loginRouter = require('./api/login');
 const stateRouter = require('./api/state');
 const serverRouter = require('./api/server');
-const imagesRouter = require('./api/images')
-
-
-
-//App setup - load config
-app.set('config', config_helper.getConfig());
-app.set('web_data', config_helper.getWebData());
+const imagesRouter = require('./api/images');
+const { config } = require('mysql-import');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -64,17 +59,17 @@ app.use('/js', express.static(path.join(__dirname, '/node_modules/chart.js/dist'
 
 //Routes for web pages
 app.use('/', indexRouter);
-app.use('/settings', settingsRouter);
-app.use('/addTimeEvent', addTimeEventRouter);
-app.use('/addSensorEvent', addSensorEventRouter);
-app.use('/addPeriodicEvent', addPeriodicEventRouter);
-app.use('/addManualEvent', addManualEventRouter);
-app.use('/getScheduleData', getScheduleDataRouter);
-app.use('/updateSchedule', updateScheduleRouter);
+// app.use('/settings', settingsRouter);
+// app.use('/addTimeEvent', addTimeEventRouter);
+// app.use('/addSensorEvent', addSensorEventRouter);
+// app.use('/addPeriodicEvent', addPeriodicEventRouter);
+// app.use('/addManualEvent', addManualEventRouter);
+// app.use('/getScheduleData', getScheduleDataRouter);
+// app.use('/updateSchedule', updateScheduleRouter);
 app.use('/addUser', addUserRouter);
 
 //Routes for API
-app.use('/api/getEnvironment', getEnvironmentRouter);
+// app.use('/api/getEnvironment', getEnvironmentRouter);
 app.use('/api/outputType', outputTypeRouter);
 app.use('/api/output', outputRouter);
 app.use('/api/sensor', sensorRouter);
@@ -82,7 +77,6 @@ app.use('/api/login', loginRouter);
 app.use('/api/state', stateRouter);
 app.use('/api/server', serverRouter);
 app.use('/api/images', imagesRouter);
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -98,28 +92,37 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
 let state = {};
 new Promise(async (resolve, reject) => {
   try {
-    await dbcalls.getPool()
+    ConfigHelper.reloadConfig()
+    ConfigHelper.reloadWebData()
+    ConfigHelper.reloadBoardPinout()
+    app.set('warnState', ConfigHelper.constructor.warnState);
+    let config = ConfigHelper.constructor.config
+    config.board_pinout = ConfigHelper.constructor.board_pinout
+    app.set('config', config);
+    app.set('web_data', ConfigHelper.constructor.web_data)
+    await dbcalls.getPool(app.get('config'))
     await dbcalls.testConnectivity()
     // Load output and sensor states, exit on error
-    state.outputState = await new OutputState();
-    state.sensorState = await new SensorState();
+    state.outputState = await new OutputState(app.get('config'));
+    state.sensorState = await new SensorState(app.get('config'));
     // Initialize the system based on those states
     state.warnState = app.get('warnState')
-    await systemInitializer.initialize(state);
+    await SystemInitializer.initialize(state, app.get('config'), app.get('web_data)'));
     // Store state in app
     app.set('state', state)
     resolve(state)
+    console.log("RUNNING!")
   } catch (e) {
     reject(e)
   }
-}).catch((e) => {
-  // If errors on startup, exit.
-  debugPrintout(e)
-  process.exit(-1)
 })
+// .catch((e) => {
+  // If errors on startup, exit.
+//   debugPrintout(e)
+//   process.exit(-1)
+// })
 
 module.exports = app;

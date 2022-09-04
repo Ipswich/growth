@@ -2,7 +2,7 @@ var bcrypt = require('bcrypt');
 var express = require('express');
 var mysql = require('mysql');
 var router = express.Router();
-const dbcalls = require('../custom_node_modules/utility_modules/database_calls.js')
+const dbcalls = require('../models/utility/database_calls.js')
 
 router.post('/', async function(req, res, next) {
   //Escape Data  

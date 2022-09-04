@@ -5,8 +5,8 @@
 */
 
 const debug = require('debug')('growth:server');
-const config_helper = require('../custom_node_modules/utility_modules/config_helper')
-const printouts = require('../custom_node_modules/utility_modules/printouts')
+const config_helper = require('../models/utility/ConfigHelper')
+const printouts = require('../models/utility/printouts')
 
 let server
 let port
@@ -21,8 +21,8 @@ new Promise(async (resolve, reject) => {
       }
       reject(e)
     })
+    config = config_helper.constructor.config
     let app = require('../app');
-    app.set('warnState', warnState)
     let http = require('http');
 
     /**
@@ -50,10 +50,11 @@ new Promise(async (resolve, reject) => {
   } catch (e) {
     reject(e)
   }
-}).catch((e) => {
-  printouts.errorPrintout(e)
-  process.exit(-1)
 })
+// .catch((e) => {
+//   printouts.errorPrintout(e)
+//   process.exit(-1)
+// })
 
 
 /**

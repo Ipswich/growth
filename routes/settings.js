@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var dbcalls = require('../custom_node_modules/utility_modules/database_calls.js');
-var utils = require('../custom_node_modules/utility_modules/utils.js');
+var dbcalls = require('../models/utility/database_calls.js');
+var utils = require('../models/utility/utils.js');
 
 router.get('/', async function(req, res, next) {
   try {

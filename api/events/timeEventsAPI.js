@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authenticateLogin')
-const timeEvents = require('../../models/TimeEvents');
+const timeEvents = require('../../models/events/TimeEvents');
 
 router.post('/create', auth, async function(req, res, next) {
   try {
@@ -20,8 +20,17 @@ router.post('/create', auth, async function(req, res, next) {
 
 router.get('/get', auth, async function(req, res, next) {
   try {
-
     let result = timeEvents.readAllAsync();
+    res.status(200).send(result);
+  } catch (e) {
+    res.status(500).send(e.message);
+  }
+})
+
+//Maybe move to day? /get/day:dayID might make more sense to me...
+router.get('/get/dayID:dayID', auth, async function(req, res, next) {
+  try {
+    let result = timeEvents.getByDayIDAsync(req.params.dayID);
     res.status(200).send(result);
   } catch (e) {
     res.status(500).send(e.message);

@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 const mysql = require('mysql');
-const dbcalls = require('../custom_node_modules/utility_modules/database_calls')
+const dbcalls = require('../models/utility/database_calls')
 
 module.exports = async function(req, res, next) {
   let config = req.app.get('config')

@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken')
 const router = express.Router();
 const auth = require('../middleware/authenticateLogin.js')
-const printouts = require('../custom_node_modules/utility_modules/printouts')
+const printouts = require('../models/utility/printouts')
 
 //Rebuild state
 router.post('/kill', auth, async function(req, res, next) {
