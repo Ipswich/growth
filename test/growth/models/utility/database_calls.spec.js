@@ -55,12 +55,12 @@ describe('database_calls.js tests', function() {
     })
   })
 
-  describe('addNewOutput() tests', function() {
+  describe('addOutput() tests', function() {
     it('should resolve with results', async function() {
       let test_result = [{ data : 1 }]
       const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.addNewOutput().then((results)=> {
+      await dbcalls.addOutput().then((results)=> {
         expect(results).to.be.deep.equal(test_result[0])
       }).catch(function() {
         assert.fail()
@@ -69,7 +69,7 @@ describe('database_calls.js tests', function() {
     it('should reject with error', async function() {         
       const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.addNewOutput().then(function() {
+      await dbcalls.addOutput().then(function() {
         assert.fail()
       }).catch(function(error) {
         expect(error).to.be.an('error')
@@ -77,12 +77,12 @@ describe('database_calls.js tests', function() {
     })
   })
 
-  describe('addNewOutputType() tests', function() {
+  describe('addSensor() tests', function() {
     it('should resolve with results', async function() {
       let test_result = [{ data : 1 }]
       const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.addNewOutputType().then((results)=> {
+      await dbcalls.addSensor().then((results)=> {
         expect(results).to.be.deep.equal(test_result[0])
       }).catch(function() {
         assert.fail()
@@ -91,7 +91,7 @@ describe('database_calls.js tests', function() {
     it('should reject with error', async function() {         
       const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.addNewOutputType().then(function() {
+      await dbcalls.addSensor().then(function() {
         assert.fail()
       }).catch(function(error) {
         expect(error).to.be.an('error')
@@ -99,13 +99,12 @@ describe('database_calls.js tests', function() {
     })
   })
 
-
-  describe('addNewSensor() tests', function() {
+  describe('addUser() tests', function() {
     it('should resolve with results', async function() {
       let test_result = [{ data : 1 }]
       const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.addNewSensor().then((results)=> {
+      await dbcalls.addUser().then((results)=> {
         expect(results).to.be.deep.equal(test_result[0])
       }).catch(function() {
         assert.fail()
@@ -114,51 +113,7 @@ describe('database_calls.js tests', function() {
     it('should reject with error', async function() {         
       const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.addNewSensor().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('addNewSensorType() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.addNewSensorType().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.addNewSensorType().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('addNewUser() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.addNewUser().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.addNewUser().then(function() {
+      await dbcalls.addUser().then(function() {
         assert.fail()
       }).catch(function(error) {
         expect(error).to.be.an('error')
@@ -188,12 +143,12 @@ describe('database_calls.js tests', function() {
     })
   })
 
-  describe('disableOutputType() tests', function() {
+  describe('removeSensor() tests', function() {
     it('should resolve with results', async function() {
       let test_result = [{ data : 1 }]
       const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.disableOutputType().then((results)=> {
+      await dbcalls.removeSensor().then((results)=> {
         expect(results).to.be.deep.equal(test_result[0])
       }).catch(function() {
         assert.fail()
@@ -202,7 +157,7 @@ describe('database_calls.js tests', function() {
     it('should reject with error', async function() {         
       const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.disableOutputType().then(function() {
+      await dbcalls.removeSensor().then(function() {
         assert.fail()
       }).catch(function(error) {
         expect(error).to.be.an('error')
@@ -210,12 +165,12 @@ describe('database_calls.js tests', function() {
     })
   })
 
-  describe('disableOutput() tests', function() {
+  describe('getOutputs() tests', function() {
     it('should resolve with results', async function() {
       let test_result = [{ data : 1 }]
       const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.disableOutput().then((results)=> {
+      await dbcalls.getOutputs().then((results)=> {
         expect(results).to.be.deep.equal(test_result[0])
       }).catch(function() {
         assert.fail()
@@ -224,117 +179,7 @@ describe('database_calls.js tests', function() {
     it('should reject with error', async function() {         
       const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.disableOutput().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('disableSensor() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.disableSensor().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.disableSensor().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('getAllOutputs() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getAllOutputs().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getAllOutputs().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('getAllOutputTypes() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getAllOutputTypes().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getAllOutputTypes().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('getAllSensors() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getAllSensors().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getAllSensors().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('getAllSensorTypes() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getAllSensorTypes().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getAllSensorTypes().then(function() {
+      await dbcalls.getOutputs().then(function() {
         assert.fail()
       }).catch(function(error) {
         expect(error).to.be.an('error')
@@ -364,12 +209,12 @@ describe('database_calls.js tests', function() {
     })
   })
 
-  describe('getEnabledOutputs() tests', function() {
+  describe('getOrderedOutputs() tests', function() {
     it('should resolve with results', async function() {
       let test_result = [{ data : 1 }]
       const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledOutputs().then((results)=> {
+      await dbcalls.getOrderedOutputs().then((results)=> {
         expect(results).to.be.deep.equal(test_result[0])
       }).catch(function() {
         assert.fail()
@@ -378,7 +223,7 @@ describe('database_calls.js tests', function() {
     it('should reject with error', async function() {         
       const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledOutputs().then(function() {
+      await dbcalls.getOrderedOutputs().then(function() {
         assert.fail()
       }).catch(function(error) {
         expect(error).to.be.an('error')
@@ -386,12 +231,12 @@ describe('database_calls.js tests', function() {
     })
   })
 
-  describe('getEnabledOrderedOutputs() tests', function() {
+  describe('getSensors() tests', function() {
     it('should resolve with results', async function() {
       let test_result = [{ data : 1 }]
       const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledOrderedOutputs().then((results)=> {
+      await dbcalls.getSensors().then((results)=> {
         expect(results).to.be.deep.equal(test_result[0])
       }).catch(function() {
         assert.fail()
@@ -400,117 +245,7 @@ describe('database_calls.js tests', function() {
     it('should reject with error', async function() {         
       const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledOrderedOutputs().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('getEnabledOutputTypes() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledOutputTypes().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledOutputTypes().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('getEnabledSensors() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledSensors().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledSensors().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('getEnabledSensorTypes() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledSensorTypes().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledSensorTypes().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('getEnabledSensorTypes() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledSensorTypes().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getEnabledSensorTypes().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-  
-  describe('getSensorDataByType() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getSensorDataByType().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.getSensorDataByType().then(function() {
+      await dbcalls.getSensors().then(function() {
         assert.fail()
       }).catch(function(error) {
         expect(error).to.be.an('error')
@@ -599,28 +334,6 @@ describe('database_calls.js tests', function() {
       const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
       sinon.stub(dbcalls, "getPool").resolves(connStub); 
       await dbcalls.updateSensorAddress().then(function() {
-        assert.fail()
-      }).catch(function(error) {
-        expect(error).to.be.an('error')
-      })
-    })
-  })
-
-  describe('updateOutputType() tests', function() {
-    it('should resolve with results', async function() {
-      let test_result = [{ data : 1 }]
-      const connStub = { query: sinon.stub().yields(undefined, test_result), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.updateOutputType().then((results)=> {
-        expect(results).to.be.deep.equal(test_result[0])
-      }).catch(function() {
-        assert.fail()
-      })
-    })
-    it('should reject with error', async function() {         
-      const connStub = { query: sinon.stub().yields(new Error("ERROR!")), release: sinon.stub() };            
-      sinon.stub(dbcalls, "getPool").resolves(connStub); 
-      await dbcalls.updateOutputType().then(function() {
         assert.fail()
       }).catch(function(error) {
         expect(error).to.be.an('error')

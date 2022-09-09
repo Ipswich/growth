@@ -6,8 +6,7 @@ const moment = require('moment');
 let triggeredScheduleMinder = new TriggeredScheduleMinder()
 
 module.exports = class TimeEvents {
-  static async createAsync(obj) {
-    let { dayID, triggerTime, outputID, outputValue, createdBy } = obj;
+  static async createAsync(dayID, triggerTime, outputID, outputValue, createdBy) {
     createdBy = null ?? 'NULL';
     await dbCalls.addTimeEvent(dayID, triggerTime, outputID, outputValue, createdBy);
     return this;
@@ -21,8 +20,7 @@ module.exports = class TimeEvents {
     return await dbCalls.getTimeEventsByDayID(dayID);
   }
 
-  static async updateAsync(obj){ 
-    let { timeEventID, dayID, triggerTime, outputID, outputValue, createdBy } = obj;
+  static async updateAsync(timeEventID, dayID, triggerTime, outputID, outputValue, createdBy){ 
     createdBy = null ?? 'NULL';
     await dbCalls.updateTimeEvent(timeEventID, dayID, triggerTime, outputID, outputValue, createdBy);
     return this;

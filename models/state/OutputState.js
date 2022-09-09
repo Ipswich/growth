@@ -1,4 +1,4 @@
-const mappings = require('../utility/mappings.js');
+const Mappings = require('../utility/Mappings.js');
 
 /**
  * Creates an output state object; this constructor gets a pinout mapping and
@@ -18,7 +18,7 @@ module.exports = class OutputState {
       //Get outputs
       let outputMappings
       try {
-        outputMappings = await mappings.getOutputMappings(config);
+        outputMappings = await Mappings.getOutputMappings(config);
       } catch (e) {
         throw e
       }
@@ -29,8 +29,6 @@ module.exports = class OutputState {
         this.data[i].outputType = outputMappings[i].outputType;
         this.data[i].outputName = outputMappings[i].outputName;
         this.data[i].outputDescription = outputMappings[i].outputDescription;
-        this.data[i].OEnabled = outputMappings[i].Oenabled;
-        this.data[i].OTenabled = outputMappings[i].OTenabled;
         this.data[i].outputOrder = outputMappings[i].outputOrder;
         this.data[i].scheduleState = "Output Off";
         this.data[i].scheduleOutputValue = 0;
@@ -123,10 +121,8 @@ module.exports = class OutputState {
       RowDataPacket.outputType = this.data[i].outputType
       RowDataPacket.outputName = this.data[i].outputName
       RowDataPacket.outputDescription = this.data[i].outputDescription
-      RowDataPacket.OEnabled = this.data[i].OEnabled
       RowDataPacket.outputPWM = this.data[i].outputPWM
       RowDataPacket.outputPWMInversion = this.data[i].outputPWMInversion
-      RowDataPacket.OTenabled = this.data[i].OTenabled
       RowDataPacket.outputOrder = this.data[i].outputOrder
       outputs.push(RowDataPacket)
     }

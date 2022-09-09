@@ -1,6 +1,6 @@
 const five = require("johnny-five");
 const initializeSensors = require('./SensorInitializer')
-const OutputInitializer = require('./OutputInitializer')
+const Outputs = require('../Outputs')
 const ScheduleInitializer = require('./ScheduleInitializer')
 const printouts = require('../utility/printouts')
 
@@ -21,7 +21,7 @@ module.exports = class SystemInitializer {
           printouts.simpleLogPrintout("Initializing sensors. . .");
           await initializeSensors.initializeSensors(state)
           printouts.simpleLogPrintout("Initializing outputs. . .");
-          OutputInitializer.initializeOutputs(state, config)
+          let outputDict = Outputs.createInitialState(config, board)
           printouts.simpleLogPrintout("Initializing schedule. . .")
           await ScheduleInitializer.initializeSchedule(state, config, web_data)
           printouts.simpleLogPrintout(". . .Done!");

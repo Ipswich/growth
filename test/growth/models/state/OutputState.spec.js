@@ -1,7 +1,7 @@
 const chai = require('chai')
 const sinon = require('sinon')
 const assert = chai.assert;
-const mappings = require('../../../../models/utility/mappings')
+const Mappings = require('../../../../models/utility/Mappings')
 const OutputState = require('../../../../models/state/OutputState');
 
 
@@ -188,8 +188,6 @@ describe('OutputState.js tests', function() {
         outputType: 'PWM Light',
         outputName: 'QB Growlight 1',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 1,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -209,8 +207,6 @@ describe('OutputState.js tests', function() {
         outputType: 'PWM Light',
         outputName: 'QB Growlight 2',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 2,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -230,8 +226,6 @@ describe('OutputState.js tests', function() {
         outputType: 'PWM Light',
         outputName: '660nm Growlight',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 3,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -251,8 +245,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Heat',
         outputName: 'Heater',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 4,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -272,8 +264,6 @@ describe('OutputState.js tests', function() {
         outputType: 'PWM Exhaust',
         outputName: 'Exhaust Fan',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 5,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -293,8 +283,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Circulation',
         outputName: 'Circulation Fan C1',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 6,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -314,8 +302,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Circulation',
         outputName: 'Circulation Fan W1',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 7,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -335,8 +321,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Circulation',
         outputName: 'Circulation Fan W2',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 8,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -356,8 +340,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Circulation',
         outputName: 'Circulation Fan F1',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 9,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -377,8 +359,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Water Valve',
         outputName: 'Water Valve',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 0,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -398,8 +378,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Light',
         outputName: 'UVC Lamp',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 0,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -419,8 +397,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Air Pump',
         outputName: 'Air Pump',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 0,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -440,8 +416,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Water Pump',
         outputName: 'Water Pump',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 0,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -460,7 +434,7 @@ describe('OutputState.js tests', function() {
   }
   let stub_mappings
   beforeEach(function() {
-    stub_mappings = sinon.stub(mappings, 'getOutputMappings').resolves(enabled_outputs_fixture)
+    stub_mappings = sinon.stub(Mappings, 'getOutputMappings').resolves(enabled_outputs_fixture)
   })
   afterEach(function() {
     stub_mappings.restore()
@@ -470,7 +444,6 @@ describe('OutputState.js tests', function() {
     it('should create an outputState object referencing the database', async function() {
       let actual = await new OutputState()
       assert.deepEqual(actual.data, expected_default.data)
-      assert.deepEqual(actual.eventMappings, expected_default.eventMappings)
     })
 
     it('should throw an error on creation', async function() {
@@ -493,21 +466,16 @@ describe('OutputState.js tests', function() {
           outputType: 'PWM Light',
           outputName: 'QB Growlight 1',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 1,
           outputPWMInversion: 1,
-          OTenabled: 1,
           outputOrder: 1
         },
         {
           outputID: 2,
           outputType: 'PWM Light',
           outputName: 'QB Growlight 2',
-          outputDescription: '',
-          OEnabled: 1,
-          outputPWM: 1,
+          outputDescription: '',          outputPWM: 1,
           outputPWMInversion: 1,
-          OTenabled: 1,
           outputOrder: 2
         },
         {
@@ -515,10 +483,8 @@ describe('OutputState.js tests', function() {
           outputType: 'PWM Light',
           outputName: '660nm Growlight',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 1,
           outputPWMInversion: 1,
-          OTenabled: 1,
           outputOrder: 3
         },
         {
@@ -526,10 +492,8 @@ describe('OutputState.js tests', function() {
           outputType: 'Heat',
           outputName: 'Heater',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 0,
           outputPWMInversion: 0,
-          OTenabled: 1,
           outputOrder: 4
         },
         {
@@ -537,10 +501,8 @@ describe('OutputState.js tests', function() {
           outputType: 'PWM Exhaust',
           outputName: 'Exhaust Fan',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 1,
           outputPWMInversion: 0,
-          OTenabled: 1,
           outputOrder: 5
         },
         {
@@ -548,10 +510,8 @@ describe('OutputState.js tests', function() {
           outputType: 'Circulation',
           outputName: 'Circulation Fan C1',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 0,
           outputPWMInversion: 0,
-          OTenabled: 1,
           outputOrder: 6
         },
         {
@@ -559,10 +519,8 @@ describe('OutputState.js tests', function() {
           outputType: 'Circulation',
           outputName: 'Circulation Fan W1',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 0,
           outputPWMInversion: 0,
-          OTenabled: 1,
           outputOrder: 7
         },
         {
@@ -570,10 +528,8 @@ describe('OutputState.js tests', function() {
           outputType: 'Circulation',
           outputName: 'Circulation Fan W2',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 0,
           outputPWMInversion: 0,
-          OTenabled: 1,
           outputOrder: 8
         },
         {
@@ -581,10 +537,8 @@ describe('OutputState.js tests', function() {
           outputType: 'Circulation',
           outputName: 'Circulation Fan F1',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 0,
           outputPWMInversion: 0,
-          OTenabled: 1,
           outputOrder: 9
         },
         {
@@ -592,10 +546,8 @@ describe('OutputState.js tests', function() {
           outputType: 'Water Valve',
           outputName: 'Water Valve',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 0,
           outputPWMInversion: 0,
-          OTenabled: 1,
           outputOrder: 0
         },
         {
@@ -603,10 +555,8 @@ describe('OutputState.js tests', function() {
           outputType: 'Light',
           outputName: 'UVC Lamp',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 0,
           outputPWMInversion: 0,
-          OTenabled: 1,
           outputOrder: 0
         },
         {
@@ -614,10 +564,8 @@ describe('OutputState.js tests', function() {
           outputType: 'Air Pump',
           outputName: 'Air Pump',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 0,
           outputPWMInversion: 0,
-          OTenabled: 1,
           outputOrder: 0
         },
         {
@@ -625,10 +573,8 @@ describe('OutputState.js tests', function() {
           outputType: 'Water Pump',
           outputName: 'Water Pump',
           outputDescription: '',
-          OEnabled: 1,
           outputPWM: 0,
           outputPWMInversion: 0,
-          OTenabled: 1,
           outputOrder: 0
         }
       ]
@@ -644,8 +590,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Heat',
         outputName: 'Heater',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 4,
         scheduleState: 'Output On',
         scheduleOutputValue: 33,
@@ -678,8 +622,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Heat',
         outputName: 'Heater',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 4,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -719,8 +661,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Heat',
         outputName: 'Heater',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 4,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -765,8 +705,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Heat',
         outputName: 'Heater',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 4,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,
@@ -810,8 +748,6 @@ describe('OutputState.js tests', function() {
         outputType: 'Heat',
         outputName: 'Heater',
         outputDescription: '',
-        OEnabled: 1,
-        OTenabled: 1,
         outputOrder: 4,
         scheduleState: 'Output Off',
         scheduleOutputValue: 0,

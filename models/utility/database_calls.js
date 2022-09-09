@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const {simpleLogPrintout, simpleErrorPrintout} = require('./printouts');
+const {simpleLogPrintout, simpleErrorPrintout} = require('./Printouts');
 
 var pool
 /**
@@ -38,49 +38,24 @@ module.exports.testConnectivity = testConnectivity
 
 /**
  * Adds a new output to the database.
- * @param {number} type Output type; must map to an existing output type.
  * @param {string} name Output name.
  * @param {string} description Description of the output. 
+ * @param {boolean} outputPWM Enable/Disable PWM.
+ * @param {number} outputPWMPin Pin number for device.
+ * @param {boolean} outputPWMInversion Invert or not PWM Scale.
  * @param {number} order Ascending logical ordering of the output; higher 
  * number is lower on the list, with 0 being last. Defaults to 0.
  * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is 
  * insert only.
  */
-module.exports.addNewOutput = async function(type, name, description, order = 0) {
+module.exports.addOutput = async function(name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order = 0) {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = 'CALL addNewOutput(' + type + ',' + name + ',' + description + ',' + order + ')'
+    let query = `CALL addOutput(${name}, ${type}, ${description}, ${outputPWM}, ${outputPWMPin}, ${outputPWMInversion}, ${order})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
-        simpleErrorPrintout("addNewOutput() failed, database error.");
-        reject(error);
-      } else {
-        resolve(results[0])
-      }
-    })
-  })
-}
-
-/**
- * Adds a new output type to the database.
- * @param {string} type Output type name.
- * @param {number} pwm 1 for PWM enabled, 0 for not.
- * @param {number} pwm_inversion 1 for inverted PWM, 0 for not. (100% low, vs 
- * 0% low).
- * @param {number} enabled 0 for false, 1 for true; enables or disables the 
- * output type. 
- * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
- * insert only.
- */
-module.exports.addNewOutputType = async function(type, pwm, pwm_inversion, enabled) {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {
-    let query = 'CALL addNewOutputType(' + type + ',' + pwm + ',' + pwm_inversion + ',' + enabled + ')'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("addNewOutputType() failed, database error.");
+        simpleErrorPrintout("addOutput() failed, database error.");
         reject(error);
       } else {
         resolve(results[0])
@@ -106,38 +81,14 @@ module.exports.addNewOutputType = async function(type, pwm, pwm_inversion, enabl
  * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
  * insert only. 
  */
-module.exports.addNewSensor = async function(model, type, location, units, hardwareID, sensorProtocol, sensorAddress = 'NULL') {
+module.exports.addSensor = async function(model, type, location, units, hardwareID, sensorProtocol, sensorAddress = 'NULL', sensorPin = 'NULL') {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = 'CALL addNewSensor(' + model + ',' + type + ',' + location + ',' + units + ',' + hardwareID + ',' + sensorProtocol + ',' + sensorAddress + ')'
+    let query = `CALL addSensor(${model}, ${type}, ${location}, ${units}, ${hardwareID}, ${sensorProtocol}, ${sensorAddress}, ${sensorPin})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
-        simpleErrorPrintout("addNewSensor() failed, database error.");
-        reject(error);
-      } else {
-        resolve(results[0])
-      }
-    })
-  })
-}
-
-/**
- * Adds a new sensorType to the database.
- * @param {string} type Descriptor of sensor data type (Temperature, Humidity, etc.)
- * @param {number} enabled 0 for false, 1 for true; enables or disables the 
- * sensor type. 
- * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
- * insert only. 
- */
-module.exports.addNewSensorType = async function(type, enabled) {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {
-    let query = 'CALL addNewSensorType(' + type + ',' + enabled + ')'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("addNewSensorType() failed, database error.");
+        simpleErrorPrintout("addSensor() failed, database error.");
         reject(error);
       } else {
         resolve(results[0])
@@ -154,14 +105,14 @@ module.exports.addNewSensorType = async function(type, enabled) {
  * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
  * insert only. 
  */
-module.exports.addNewUser = async function(username, hash, email) {
+module.exports.addUser = async function(username, hash, email) {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = 'CALL addNewUser(' + username + ',"' + hash + '",' + email + ')'
+    let query = `CALL addUser(${username} ,"${hash}", ${email})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
-        simpleErrorPrintout("addNewUser() failed, database error.");
+        simpleErrorPrintout("addUser() failed, database error.");
         reject(error);
       } else {
         resolve(results[0])
@@ -180,7 +131,7 @@ module.exports.addNewUser = async function(username, hash, email) {
 module.exports.addSensorReading = async function(sensorID, data) {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = 'CALL addSensorReading(' + sensorID + ',' + data + ')'
+    let query = `CALL addSensorReading(${sensorID}, ${data})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
@@ -194,83 +145,17 @@ module.exports.addSensorReading = async function(sensorID, data) {
 }
 
 /**
- * Disables an output type in the database.
- * @param {number} id Output type to disable.
- * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
- * update only. 
- */
-module.exports.disableOutputType = async function(id) {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {
-    let query = 'CALL disableOutputType(' + id + ')'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("disableOutputType() failed, database error.");
-        reject(error);
-      } else {
-        resolve(results[0])
-      }
-    })
-  })
-}
-
-/**
- * Disables an output in the database.
- * @param {number} id Output to disable.
- * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
- * update only. 
- */
-module.exports.disableOutput = async function(id) {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {
-    let query = 'CALL disableOutput(' + id + ')'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("disableOutput() failed, database error.");
-        reject(error);
-      } else {
-        resolve(results[0])
-      }
-    })
-  })
-}
-
-/**
- * Disables a sensor in the database.
- * @param {number} id Sensor to disable.
- * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
- * update only. 
- */
-module.exports.disableSensor = async function(id) {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {
-    let query = 'CALL disableSensor(' + id + ')'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("disableSensor() failed, database error.");
-        reject(error);
-      } else {
-        resolve(results[0])
-      }
-    })
-  })
-}
-
-/**
  * Selects all outputs from the database.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query.
  */
-module.exports.getAllOutputs = async function() {
+module.exports.getOutputs = async function() {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = 'CALL getAllOutputs()'
+    let query = 'CALL getOutputs()'
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
-        simpleErrorPrintout("getAllOutputs() failed, database error.");
+        simpleErrorPrintout("getOutputs() failed, database error.");
         reject(error);
       } else {
         resolve(results[0])
@@ -280,17 +165,18 @@ module.exports.getAllOutputs = async function() {
 }
 
 /**
- * Selects all output types from the database.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
+ * Selects an output state from the database.
+ * @param {number} id Output ID to grab.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query.
  */
-module.exports.getAllOutputTypes = async function() {
+module.exports.getOutputStateByID = async function(id) {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = 'CALL getAllOutputTypes()'
+    let query = `CALL getOutputStateByID(${id})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
-        simpleErrorPrintout("getAllOutputTypes() failed, database error.");
+        simpleErrorPrintout("getOutputStateByID() failed, database error.");
         reject(error);
       } else {
         resolve(results[0])
@@ -301,16 +187,16 @@ module.exports.getAllOutputTypes = async function() {
 
 /**
  * Selects all sensors from the database.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query.
  */
-module.exports.getAllSensors = async function() {
+module.exports.getSensors = async function() {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = 'CALL getAllSensors()'
+    let query = 'CALL getSensors()'
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
-        simpleErrorPrintout("getAllSensors() failed, database error.");
+        simpleErrorPrintout("getSensors() failed, database error.");
         reject(error);
       } else {
         resolve(results[0])
@@ -319,29 +205,10 @@ module.exports.getAllSensors = async function() {
   })
 }
 
-/**
- * Selects all sensor types from the database.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
- */
-module.exports.getAllSensorTypes = async function() {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {
-    let query = 'CALL getAllSensorTypes()'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("getAllSensorTypes() failed, database error.");
-        reject(error);
-      } else {
-        resolve(results[0])
-      }
-    })
-  })
-}
 
 /**
  * Selects all users from the database.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query.
  */
 module.exports.getAllUsers = async function() {
   let pool = await exports.getPool()
@@ -360,17 +227,17 @@ module.exports.getAllUsers = async function() {
 }
 
 /**
- * Selects enabled outputs from the database.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
+ * Selects ordered outputs from the database.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query.
  */
-module.exports.getEnabledOutputs = async function() {
+module.exports.getOrderedOutputs = async function() {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {    
-    let query = 'CALL getEnabledOutputs()'
+    let query = 'CALL getOrderedOutputs()'
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
-        simpleErrorPrintout("getEnabledOutputs() failed, database error.");
+        simpleErrorPrintout("getOrderedOutputs() failed, database error.");
         reject(error);
       } else {
         //(success)
@@ -380,116 +247,9 @@ module.exports.getEnabledOutputs = async function() {
   })
 }
 
-/**
- * Selects enabled outputs from the database, in ascending order with 0
- * last.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
- */
-module.exports.getEnabledOrderedOutputs = async function() {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {    
-    let query = 'CALL getEnabledOutputs()'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("getEnabledOrderedOutputs() failed, database error.");
-        reject(error);
-      } else {
-        //(success)
-        resolve(results[0])
-      }
-    })
-  })
-}
-
-/**
- * Selects enabled output types from the database.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
- */
-module.exports.getEnabledOutputTypes = async function() {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {    
-    let query = 'CALL getEnabledOutputTypes()'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("getEnabledOutputTypes() failed, database error.");
-        reject(error);
-      } else {
-        //(success)
-        resolve(results[0])
-      }
-    })
-  })
-}
-
-/**
- * Selects enabled sensors from the database.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
- */
-module.exports.getEnabledSensors = async function() {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {    
-    let query = 'CALL getEnabledSensors()'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("getEnabledSensors() failed, database error.");
-        reject(error);
-      } else {
-        //(success)
-        resolve(results[0])
-      }
-    })
-  })
-}
-
-/**
- * Selects enabled sensor types from the database.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
- */
-module.exports.getEnabledSensorTypes = async function() {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {    
-    let query = 'CALL getEnabledSensorTypes()'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("getEnabledSensorTypes() failed, database error.");
-        reject(error);
-      } else {
-        //(success)
-        resolve(results[0])
-      }
-    })
-  })
-}
-
-/**
- * Selects all data from the database for sensors with the passed type.
- * @param {string} type Type of sensor data to select; must map to an
- * existing sensor Type.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
- */
-module.exports.getSensorDataByType = async function(type) {
-  let pool = await exports.getPool()
-  return new Promise((resolve, reject) => {    
-    let query = 'CALL getSensorDataByType(' + type + ')'
-    pool.query(query, (error, results, fields) => {
-      //Error on problem
-      if(error) {
-        simpleErrorPrintout("getSensorDataByType() failed, database error.");
-        reject(error);
-      } else {
-        //(success)
-        resolve(results[0])
-      }
-    })
-  })
-}
 /**
  * Selects the last reading for each sensor from the database.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query.
  */
 module.exports.getSensorLastReadings = async function() {
   let pool = await exports.getPool()
@@ -511,12 +271,12 @@ module.exports.getSensorLastReadings = async function() {
 /**
  * Selects the data from all sensors that has been recorded in the last hours.
  * @param {number} hours Passed hours to select data for.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query.
  */
 module.exports.getSensorLastReadingsByHours = async function(hours) {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {    
-    let query = 'CALL getSensorLastReadingsByHours(' + hours + ')'
+    let query = `CALL getSensorLastReadingsByHours(${hours})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
@@ -533,12 +293,12 @@ module.exports.getSensorLastReadingsByHours = async function(hours) {
 /**
  * Select the passed username from the database.
  * @param {string} username User to select for.
- * @returns {Promise<[object]>} A promise that resovles with the results of the query.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query.
  */
 module.exports.getUser = async function(username) {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {    
-    let query = 'CALL getUser(' + username + ')'
+    let query = `CALL getUser(${username})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
@@ -560,10 +320,10 @@ module.exports.getUser = async function(username) {
  * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
  * update only.
  */
-module.exports.updateSensorAddress = async function(address, sensorID){
+module.exports.updateSensorAddress = async function(sensorID, address){
   let pool = await exports.getPool()
   return new Promise(resolve => {
-    let query = 'CALL updateSensorAddress(' + address + ', ' + sensorID + ')'
+    let query = `CALL updateSensorAddress(${sensorID}, ${address})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
@@ -577,23 +337,21 @@ module.exports.updateSensorAddress = async function(address, sensorID){
 }
 
 /**
- * Updates the passed output in the database with new data.
- * @param {number} id The ID of the output type to update.
- * @param {string} type Output type name.
- * @param {number} pwm 1 for PWM enabled, 0 for not.
- * @param {number} pwm_inversion 1 for inverted PWM, 0 for not. (100% low, vs 
- * 0% low).
+ * Updates a sensor pin in the database.
+ * @param {number} sensorID The sensor to update; must map to an existing
+ * @param {int} pin The new pin.
+ * sensor.
  * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
  * update only.
  */
-module.exports.updateOutputType = async function(id, type, pwm, pwm_inversion){
+module.exports.updateSensorPin = async function(sensorID, pin){
   let pool = await exports.getPool()
   return new Promise(resolve => {
-    let query = 'CALL updateOutputType(' + id + ', ' + type + ',' + pwm + ',' + pwm_inversion + ')'
+    let query = `CALL updateSensorPin(${sensorID}, ${pin})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
-        simpleErrorPrintout("updateOutputType() failed, database error.");          
+        simpleErrorPrintout("updateSensorPin() failed, database error.");          
         reject(error);
       } else {
         resolve(results[0])
@@ -605,22 +363,51 @@ module.exports.updateOutputType = async function(id, type, pwm, pwm_inversion){
 /**
  * Updates an output in the database.
  * @param {number} id The ID of the output to update.
- * @param {number} type Output type; must map to an existing output type.
  * @param {string} name Output name.
  * @param {string} description Description of the output. 
+ * @param {boolean} outputPWM Enable/Disable PWM.
+ * @param {number} outputPWMPin Pin number for device.
+ * @param {boolean} outputPWMInversion Invert or not PWM Scale.
  * @param {number} order Ascending logical ordering of the output; higher 
  * number is lower on the list, with 0 being last. Defaults to 0.
  * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
  * update only.
  */
-module.exports.updateOutput = async function(id, type, name, description, order){
+module.exports.updateOutput = async function(id, name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order = 0){
   let pool = await exports.getPool()
   return new Promise(resolve => {
-    let query = 'CALL updateOutput(' + id + ', ' + type + ',' + name + ',' + description + ',' + order + ')'
+    let query = `CALL updateOutput(${id}, ${name}, ${type}, ${description}, ${outputPWM}, ${outputPWMPin}, ${outputPWMInversion}, ${order})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
         simpleErrorPrintout("updateOutput() failed, database error.");          
+        reject(error);
+      } else {
+        resolve(results[0])
+      }
+    })
+  })
+}
+
+/**
+ * Updates an output's state in the database.
+ * @param {number} id
+ * @param {boolean} outputScheduleState 
+ * @param {number} outputScheduleValue 
+ * @param {boolean} outputManualState 
+ * @param {number} outputManualValue 
+ * @param {string} outputController 
+ * @param {string} outputLastController 
+ * @returns 
+ */
+module.exports.updateOutputState = async function(id, outputScheduleState, outputScheduleValue, outputManualState, outputManualValue, outputController, outputLastController){
+  let pool = await exports.getPool()
+  return new Promise(resolve => {
+    let query = `CALL updateOutputState(${id}, ${outputScheduleState}, ${outputScheduleValue}, ${outputManualState}, ${outputManualValue}, ${outputController}, ${outputLastController})`
+    pool.query(query, (error, results, fields) => {
+      //Error on problem.
+      if(error) {
+        simpleErrorPrintout("updateOutputState() failed, database error.");          
         reject(error);
       } else {
         resolve(results[0])
@@ -650,7 +437,7 @@ module.exports.updateOutput = async function(id, type, name, description, order)
 module.exports.updateSensor = async function(id, model, type, location, units, hardwareID, protocol, address){
   let pool = await exports.getPool()
   return new Promise(resolve => {
-    let query = 'CALL updateSensor(' + id + ', ' + model + ',' + type + ',' + location + ',' + units + ',' + hardwareID + ',' + protocol + ',' + address + ')'
+    let query = `CALL updateSensor(${id}, ${model}, ${type}, ${location}, ${units}, ${hardwareID}, ${protocol}, ${address}')`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
@@ -662,8 +449,6 @@ module.exports.updateSensor = async function(id, model, type, location, units, h
     })
   })
 }
-
-// ####### NEW STUFF #######
 
 /**
  * Gets all of the days in the database.
@@ -1139,6 +924,46 @@ module.exports.getTimeEventsByDayID = async function(dayID){
       //Error on problem.
       if(error) {
         simpleErrorPrintout("getTimeEventsByDayID() failed, database error.");          
+        reject(error);
+      } else {
+        resolve(results[0])
+      }
+    })
+  })
+}
+
+/**
+ * Deletes an output from the database.
+ * @param {number} outputID
+ */
+ module.exports.removeOutput = async function(outputID){
+  let pool = await exports.getPool()
+  return new Promise(resolve => {
+    let query = `CALL removeOutput(${outputID})`
+    pool.query(query, (error, results, fields) => {
+      //Error on problem.
+      if(error) {
+        simpleErrorPrintout("removeOutput() failed, database error.");          
+        reject(error);
+      } else {
+        resolve(results[0])
+      }
+    })
+  })
+}
+
+/**
+ * Deletes an sensor from the database.
+ * @param {number} sensorID
+ */
+ module.exports.removeSensor = async function(sensorID){
+  let pool = await exports.getPool()
+  return new Promise(resolve => {
+    let query = `CALL removeSensor(${sensorID})`
+    pool.query(query, (error, results, fields) => {
+      //Error on problem.
+      if(error) {
+        simpleErrorPrintout("removeSensor() failed, database error.");          
         reject(error);
       } else {
         resolve(results[0])

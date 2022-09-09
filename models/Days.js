@@ -1,4 +1,4 @@
-const dbCalls = require('../custom_node_modules/utility_modules/database_calls')
+const dbCalls = require('../utility/database_calls')
 
 module.exports = class Days {
 

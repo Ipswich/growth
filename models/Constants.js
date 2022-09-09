@@ -1,4 +1,4 @@
-{
+const Constants = {
   "eventTypes" : [
     "RandomEvents",
     "RandomPythonEvents",
@@ -13,14 +13,27 @@
     "SunTrackerEvents"
   ],
   "weekdays": {
-    "0x0000000" : "None",
-    "0x0000001" : "Monday",
-    "0x0000010" : "Tuesday",
-    "0x0000100" : "Wednesday",
-    "0x0001000" : "Thursday",
-    "0x0010000" : "Friday",
-    "0x0100000" : "Saturday",
-    "0x1000000" : "Sunday"
+    "None": "0x0000000",
+    "Monday": "0x0000001",
+    "Tuesday": "0x0000010",
+    "Wednesday": "0x0000100",
+    "Thursday": "0x0001000",
+    "Friday": "0x0010000",
+    "Saturday": "0x0100000",
+    "Sunday": "0x1000000"
+  },
+  "controllerStates":{
+    "MANUAL": "MANUAL",
+    "SCHEDULE": "SCHEDULE"
+  },
+  "outputStates":{
+    "ON": "1",
+    "OFF": "0"
+  },
+  "sensorProtocols":{
+    "ANALOG": "ANALOG",
+    "I2C" : "I2C",
+    "ONEWIRE" : "ONEWIRE"
   },
   "configuration_file_locations" : {
     "CONFIG_LOCATION" : "/config/config.json",
@@ -30,3 +43,4 @@
     "DEFAULT_WEB_DATA_LOCATION" : "/config/web-data-config-default.json"
   }
 }
+module.exports = Constants;
