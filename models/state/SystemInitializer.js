@@ -1,8 +1,8 @@
 const five = require("johnny-five");
 const Sensors = require('../Sensors')
 const Outputs = require('../Outputs')
-const ScheduleInitializer = require('../Schedule')
-const Printouts = require('../utility/Printouts')
+const Printouts = require('../utility/Printouts');
+const Schedule = require("../Schedule");
 
 module.exports = class SystemInitializer {
   static async initialize(state, config, web_data) {
@@ -20,11 +20,9 @@ module.exports = class SystemInitializer {
         try {  
           Printouts.simpleLogPrintout("Initializing sensors. . .");
           let sensorDict = await Sensors.createInitialState(config, board)
-          console.log(Object.keys(sensorDict))
           Printouts.simpleLogPrintout("Initializing outputs. . .");
           let outputDict = await Outputs.createInitialState(config, board)
-          Printouts.simpleLogPrintout("Initializing schedule. . .")
-          await ScheduleInitializer.initializeSchedule(state, config, web_data)
+          await Schedule.initializeSchedule(sensorDict, config, web_data)
           Printouts.simpleLogPrintout(". . .Done!");
           // If relay control exists, turn on relays
           if(state.relay_control){

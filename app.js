@@ -70,11 +70,11 @@ app.use('/addUser', addUserRouter);
 
 //Routes for API
 // app.use('/api/getEnvironment', getEnvironmentRouter);
-app.use('/api/outputType', outputTypeRouter);
-app.use('/api/output', outputRouter);
-app.use('/api/sensor', sensorRouter);
+// app.use('/api/outputType', outputTypeRouter);
+// app.use('/api/output', outputRouter);
+// app.use('/api/sensor', sensorRouter);
 app.use('/api/login', loginRouter);
-app.use('/api/state', stateRouter);
+// app.use('/api/state', stateRouter);
 app.use('/api/server', serverRouter);
 app.use('/api/images', imagesRouter);
 // catch 404 and forward to error handler
@@ -103,14 +103,14 @@ new Promise(async (resolve, reject) => {
     config.board_pinout = ConfigHelper.constructor.board_pinout
     app.set('config', config);
     app.set('web_data', ConfigHelper.constructor.web_data)
-    await dbcalls.getPool(app.get('config'))
+    await dbcalls.getPool(config)
     await dbcalls.testConnectivity()
     // Load output and sensor states, exit on error
     // state.outputState = await new OutputState(app.get('config'));
     // state.sensorState = await new SensorState(app.get('config'));
     // Initialize the system based on those states
     state.warnState = app.get('warnState')
-    await SystemInitializer.initialize(state, app.get('config'), app.get('web_data)'));
+    await SystemInitializer.initialize(state, config, app.get('web_data)'));
     // Store state in app
     app.set('state', state)
     resolve(state)
