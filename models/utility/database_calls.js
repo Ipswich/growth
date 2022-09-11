@@ -322,7 +322,7 @@ module.exports.getUser = async function(username) {
  */
 module.exports.updateSensorAddress = async function(sensorID, address){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL updateSensorAddress(${sensorID}, ${address})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
