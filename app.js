@@ -8,8 +8,6 @@ let ConfigHelper = require('./models/utility/ConfigHelper')
 //Database connection
 let dbcalls = require('./models/utility/database_calls')
 //Custom Modules for Events/Readings
-let OutputState = require('./models/state/OutputState.js');
-let SensorState = require('./models/state/SensorState.js');
 let SystemInitializer = require('./models/state/SystemInitializer.js')
 const { debugPrintout } = require('./models/utility/Printouts');
 
@@ -92,7 +90,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-let state = {};
 new Promise(async (resolve, reject) => {
   try {
     ConfigHelper.reloadConfig()
@@ -105,16 +102,10 @@ new Promise(async (resolve, reject) => {
     app.set('web_data', ConfigHelper.constructor.web_data)
     await dbcalls.getPool(config)
     await dbcalls.testConnectivity()
-    // Load output and sensor states, exit on error
-    // state.outputState = await new OutputState(app.get('config'));
-    // state.sensorState = await new SensorState(app.get('config'));
-    // Initialize the system based on those states
-    state.warnState = app.get('warnState')
-    await SystemInitializer.initialize(state, config, app.get('web_data)'));
+    let hardware = await SystemInitializer.initialize(config, app.get('web_data)'));
     // Store state in app
-    app.set('state', state)
-    resolve(state)
-    console.log("RUNNING!")
+    app.set('hardware', hardware)
+    resolve()
   } catch (e) {
     reject(e)
   }

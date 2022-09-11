@@ -183,7 +183,7 @@ module.exports = class Sensors {
             let obj = {controller: currentState.sensorModel}
 
             if(hardwareID == currentState.sensorHardwareID && currentState.sensorProtocol == 'I2C'){
-              obj.sensorAddress = currentState.sensorAddress
+              obj.address = parseInt(currentState.sensorAddress)
             } else if(hardwareID == currentState.sensorHardwareID) {
               obj.pin = currentState.sensorPin
             } else {
@@ -319,7 +319,6 @@ module.exports = class Sensors {
       }, 2000)
       if(obj != null) {
         obj.once('data', () => {
-          console.log(obj)
           try {
             switch (sensor.sensorType) {
               case 'Temperature':
