@@ -3,7 +3,7 @@ const moment = require('moment')
 const Printouts = require('../utility/Printouts')
 const utils = require('../utility/utils')
 
-module.exports = class CameraEventHandler {
+module.exports = class CameraEvents {
   /**
    * Takes an image using raspistill. Image is stored in the directory specified
    * in the config file.

@@ -1,7 +1,7 @@
 const five = require("johnny-five");
 const Sensors = require('../Sensors')
 const Outputs = require('../Outputs')
-const ScheduleInitializer = require('./ScheduleInitializer')
+const ScheduleInitializer = require('../Schedule')
 const Printouts = require('../utility/Printouts')
 
 module.exports = class SystemInitializer {

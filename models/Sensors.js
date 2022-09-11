@@ -296,5 +296,83 @@ module.exports = class Sensors {
       callback(DS18B20_Array) 
     }  
   }
+
+  /**
+   * Returns a promise that resolves with the data from the next "data" event
+   * on the sensor. Intended to be used as part of a forloop over each sensor;
+   * i refers to index of the sensorState.data array, NOT sensorID. This
+   * promise rejects automatically after 2s.
+   * @param {Number} i Index of sensor state data array.
+   * @returns {promise}) to a data object that contains identifying 
+   * information and a sensor reading.
+   */
+   static async getSensorVal(sensor) {
+    let obj = sensor.sensorObject;
+    let units = sensor.sensorUnits;
+    let data = {}
+    data.sensorType = sensor.sensorType;
+    data.sensorLocation = sensor.sensorLocation;
+    data.sensorID = sensor.sensorID;
+    data.readingTime = moment().format('HH:mm');
+    data.readingDate = moment().format('MM/DD/YYYY');
+    return new Promise((resolve, reject) => {
+      //Reject no matter what after 2s
+      setTimeout(() => {
+        reject(new Error("Timeout waiting for sensor data."))
+      }, 2000)
+      if(obj != null) {
+        obj.once('data', () => {
+          try {
+            switch (this.data[i].sensorType) {
+              case 'Temperature':
+                if (units == "°C" || units == "C") {
+                  data.val = obj.C;
+                } else if (units == "°F" || units == "F") {
+                  data.val = obj.F;
+                }
+                break;
+              case 'Humidity':
+                data.val = obj.RH;
+                break;
+              case 'Pressure':
+                data.val = obj.pressure;
+                break;
+              case 'CarbonDioxide':
+                data.val = -1;
+                break;
+              default:
+                data.val = -1;
+            }
+            resolve(data);
+          } catch (e) {
+            reject(e)
+          }
+        })
+      } else {
+        reject(new Error("No sensor object, could not fetch data!"))
+      }
+    });
+  }
+
+
+/**
+ * Iterates through the state object getting a reading from each sensor
+ * and adding it to the database. Updates the state object with the last
+ * reading of each sensor.
+ * @param {object} state Current state object
+ */
+static async addSensorReadings(sensors){
+  for(i in Object.keys(sensors)) {
+    try {
+      let data = await this.getSensorVal(i);
+      if (data.val == undefined){
+        throw ("Could not fetch data from sensor: {" + sensors[i].sensorType + ' @ ' + state.sensorState.data[i].sensorLocation + '}')
+      }
+      await dbcalls.addSensorReading(i, data.val)
+    } catch (e) {
+      Printouts.simpleErrorPrintout(e)
+    }
+  }
+}
 }
 
