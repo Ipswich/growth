@@ -1,5 +1,7 @@
+
+START TRANSACTION;
 -- DEFAULT VALUES --
-USE growth;
+USE `growth-test`;
 
 -- Add outputs
 CALL addOutput('QB Growlight 1', 'Light', '', 1, 1, 1, 0);
@@ -16,5 +18,9 @@ CALL addSensor('BME280', 'Temperature', 'Control Box', '°F', 1, 'I2C', '0x76', 
 CALL addSensor('BME280', 'Pressure', 'Control Box', 'kPa', 1, 'I2C', '0x76', NULL);
 CALL addSensor('BME280', 'Humidity', 'Control Box', '% rH', 1, 'I2C', '0x76', NULL);
 CALL addSensor('DS18B20', 'Temperature', 'Outside', '°F', 2, 'ONEWIRE', NULL, NULL);
+CALL addSensor('DS18B20', 'Temperature', 'Inside', '°F', 2, 'ONEWIRE', NULL, NULL);
 
 CALL addUser ('SYSTEM', 'SYSTEM', NULL);
+
+
+COMMIT;

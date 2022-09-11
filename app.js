@@ -11,7 +11,7 @@ let dbcalls = require('./models/utility/database_calls')
 let OutputState = require('./models/state/OutputState.js');
 let SensorState = require('./models/state/SensorState.js');
 let SystemInitializer = require('./models/state/SystemInitializer.js')
-const { debugPrintout } = require('./models/utility/printouts');
+const { debugPrintout } = require('./models/utility/Printouts');
 
 //Routes
 const indexRouter = require('./routes/index');
@@ -106,8 +106,8 @@ new Promise(async (resolve, reject) => {
     await dbcalls.getPool(app.get('config'))
     await dbcalls.testConnectivity()
     // Load output and sensor states, exit on error
-    state.outputState = await new OutputState(app.get('config'));
-    state.sensorState = await new SensorState(app.get('config'));
+    // state.outputState = await new OutputState(app.get('config'));
+    // state.sensorState = await new SensorState(app.get('config'));
     // Initialize the system based on those states
     state.warnState = app.get('warnState')
     await SystemInitializer.initialize(state, app.get('config'), app.get('web_data)'));

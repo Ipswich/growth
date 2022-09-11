@@ -38,6 +38,8 @@ module.exports = class Outputs {
   static async createInitialState(config, board){
     let mapperState = await this._mapPins(config)
     mapperState = this._assignRelayTogglePreventionOutput(board, mapperState)
+    // console.log(board.getMaxListeners())
+    // console.log(this._maxListenerCheck(mapperState))
     board.setMaxListeners(board.getMaxListeners() + this._maxListenerCheck(mapperState))
 
     //Set up outputs and bind to state object.
@@ -65,7 +67,7 @@ module.exports = class Outputs {
     let mapperState;
     try{
       mapperState = {
-        outputs: dbCalls.getOutputs(),
+        outputs: await dbCalls.getOutputs(),
         outputPins: config.board_pinout.OUTPUT_PINS,
         pwmPins: config.board_pinout.PWM_PINS
       }

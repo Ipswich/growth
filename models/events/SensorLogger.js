@@ -1,4 +1,4 @@
-const printouts = require('../utility/printouts')
+const Printouts = require('../utility/Printouts')
 const dbcalls = require('../utility/database_calls.js')
 
 /**
@@ -17,7 +17,7 @@ module.exports.addSensorReadings = async function addSensorReadings(state){
       state.sensorState.data[i].sensorLastReading = data.val
       await dbcalls.addSensorReading(data.sensorID, data.val)
     } catch (e) {
-      printouts.simpleErrorPrintout(e)
+      Printouts.simpleErrorPrintout(e)
     }
   }
 }

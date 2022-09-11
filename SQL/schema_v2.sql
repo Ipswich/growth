@@ -1,8 +1,8 @@
 START TRANSACTION;
 
-DROP DATABASE IF EXISTS `growth`;
-CREATE DATABASE `growth`;
-USE `growth`;
+DROP DATABASE IF EXISTS `growth-test`;
+CREATE DATABASE `growth-test`;
+USE `growth-test`;
 
 ## OLD SQL
 
@@ -366,44 +366,58 @@ CREATE TABLE SunTrackerEvents (
 #########################
 ####### DAYS #####
 ## Get all days
-DELIMITER $$ CREATE PROCEDURE `getDays` () READS SQL DATA
+DELIMITER $$ 
+CREATE PROCEDURE `getDays` () READS SQL DATA
 SELECT *
 FROM Days;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Add new day
-DELIMITER $$ CREATE PROCEDURE `addDay` (
+DELIMITER $$
+CREATE PROCEDURE `addDay` (
   IN `p_weekday` TINYINT,
   IN `p_createdBy` VARCHAR(32)
 ) MODIFIES SQL DATA
 INSERT INTO Days (weekday, createdBy)
 VALUES (p_weekday, p_createdBy);
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete day
-DELIMITER $$ CREATE PROCEDURE `removeDay` (IN `p_dayID` INT) MODIFIES SQL DATA
+DELIMITER $$ 
+CREATE PROCEDURE `removeDay` (IN `p_dayID` INT) MODIFIES SQL DATA
 DELETE FROM Days
 WHERE Days.dayID = p_dayID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update day
-DELIMITER $$ CREATE PROCEDURE `updateDay` (IN `p_dayID` INT, IN `p_weekday` TINYINT) MODIFIES SQL DATA
+DELIMITER $$ 
+CREATE PROCEDURE `updateDay` (IN `p_dayID` INT, IN `p_weekday` TINYINT) MODIFIES SQL DATA
 UPDATE Days
 SET weekday = p_weekday,
   createdDate = LOCALTIMESTAMP
 WHERE Days.dayID = p_dayID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### RANDOM EVENTS #####
 ## Get all random events
-DELIMITER $$ CREATE PROCEDURE `getRandomEvents` () READS SQL DATA
+DELIMITER $$ 
+CREATE PROCEDURE `getRandomEvents` () READS SQL DATA
 SELECT *
 FROM RandomEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get Random events by dayID
 DELIMITER $$ 
-CREATE PROCEDURE `getRandomEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+CREATE PROCEDURE `getRandomEventsByDayID` (IN `p_dayID` INT) 
+READS SQL DATA
 SELECT *
-FROM RandomEvents;
+FROM RandomEvents
 WHERE dayID = p_dayID;
+$$
+DELIMITER ;
 ## Add new random event
-DELIMITER $$ CREATE PROCEDURE `addRandomEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addRandomEvent` (
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -436,14 +450,18 @@ VALUES (
     p_minTimeout,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete random event
-DELIMITER $$ CREATE PROCEDURE `removeRandomEvent` (IN `p_randomEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removeRandomEvent` (IN `p_randomEventID` INT) MODIFIES SQL DATA
 DELETE FROM RandomEvents
 WHERE RandomEvents.randomEventID = p_randomEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## UPDATE random event
-DELIMITER $$ CREATE PROCEDURE `updateRandomEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updateRandomEvent` (
   IN `p_randomEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
@@ -467,21 +485,28 @@ SET
     minTimeout = p_minTimeout,
     createdBy = p_createdBy
 WHERE randomEventID = p_randomEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### RANDOM PYTHON EVENTS #####
 ## Get all random python events
-DELIMITER $$ CREATE PROCEDURE `getRandomPythonEvents` () READS SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getRandomPythonEvents` () READS SQL DATA
 SELECT *
 FROM RandomPythonEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get RandomPython events by dayID
 DELIMITER $$ 
-CREATE PROCEDURE `getRandomPythonEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+CREATE PROCEDURE `getRandomPythonEventsByDayID` (IN `p_dayID` INT) 
+READS SQL DATA
 SELECT *
-FROM RandomPythonEvents;
+FROM RandomPythonEvents
 WHERE dayID = p_dayID;
+$$
+DELIMITER ;
 ## Add new random python event
-DELIMITER $$ CREATE PROCEDURE `addRandomPythonEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addRandomPythonEvent` (
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -511,14 +536,18 @@ VALUES (
     p_minTimeout,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete random python event
-DELIMITER $$ CREATE PROCEDURE `removeRandomPythonEvent` (IN `p_randomPythonEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removeRandomPythonEvent` (IN `p_randomPythonEventID` INT) MODIFIES SQL DATA
 DELETE FROM RandomPythonEvents
 WHERE RandomPythonEvents.randomPythonEventID = p_randomPythonEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update random python event
-DELIMITER $$ CREATE PROCEDURE `updateRandomPythonEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updateRandomPythonEvent` (
   IN `p_randomPythonEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
@@ -540,21 +569,29 @@ SET
     minTimeout = p_minTimeout,
     createdBy = p_createdBy = p_createdBy
 WHERE randomEventID = p_randomEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### RECURRING EVENTS #####
 ## Get all recurring events
-DELIMITER $$ CREATE PROCEDURE `getRecurringEvents` () READS SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getRecurringEvents` ()
+READS SQL DATA
 SELECT *
 FROM RecurringEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get Recurring events by dayID
 DELIMITER $$ 
-CREATE PROCEDURE `getRecurringEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+CREATE PROCEDURE `getRecurringEventsByDayID` (IN `p_dayID` INT)
+READS SQL DATA
 SELECT *
-FROM RecurringEvents;
+FROM RecurringEvents
 WHERE dayID = p_dayID;
+$$
+DELIMITER ;
 ## Add new recurring event
-DELIMITER $$ CREATE PROCEDURE `addRecurringEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addRecurringEvent` (
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -587,14 +624,18 @@ VALUES (
     p_minTimeout,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete recurring event
-DELIMITER $$ CREATE PROCEDURE `removeRecurringEvent` (IN `p_randomEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removeRecurringEvent` (IN `p_randomEventID` INT) MODIFIES SQL DATA
 DELETE FROM RecurringEvents
 WHERE RandomEvents.randomEventID = p_randomEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update recurring event
-DELIMITER $$ CREATE PROCEDURE `updateRecurringEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updateRecurringEvent` (
   IN `p_randomEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
@@ -618,22 +659,27 @@ SET
     minTimeout = p_minTimeout,
     createdBy = p_createdBy
 WHERE randomEventID = p_randomEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### RECURRING PYTHON EVENTS #####
 ## Get all recurring python events
-DELIMITER $$ CREATE PROCEDURE `getRecurringPythonEvents` () READS SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getRecurringPythonEvents` () READS SQL DATA
 SELECT *
 FROM RecurringPythonEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get RecurringPython events by dayID
 DELIMITER $$ 
 CREATE PROCEDURE `getRecurringPythonEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
 SELECT *
 FROM RecurringPythonEvents
 WHERE dayID = p_dayID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Add new recurring python event
-DELIMITER $$ CREATE PROCEDURE `addRecurringPythonEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addRecurringPythonEvent` (
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -664,14 +710,18 @@ VALUES (
     p_minTimeout,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete recurring python event
-DELIMITER $$ CREATE PROCEDURE `removeRecurringPythonEvent` (IN `p_recurringPythonEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removeRecurringPythonEvent` (IN `p_recurringPythonEventID` INT) MODIFIES SQL DATA
 DELETE FROM RecurringPythonEvents
 WHERE RandomEvents.randomEventID = p_randomEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update recurring python event
-DELIMITER $$ CREATE PROCEDURE `updateRecurringPythonEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updateRecurringPythonEvent` (
   IN `p_recurringPythonEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
@@ -693,21 +743,27 @@ SET
     minTimeout = p_minTimeout,
     createdBy = p_createdBy
 WHERE randomEventID = p_randomEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### TIME EVENTS #####
 ## Get all time events
-DELIMITER $$ CREATE PROCEDURE `getTimeEvents` () READS SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getTimeEvents` () READS SQL DATA
 SELECT *
 FROM TimeEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get time events by dayID
-DELIMITER $$ CREATE PROCEDURE `getTimeEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getTimeEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
 SELECT *
 FROM TimeEvents
 WHERE dayID = p_dayID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Add new time event
-DELIMITER $$ CREATE PROCEDURE `addTimeEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addTimeEvent` (
   IN `p_dayID` INT,
   IN `p_triggerTime` TIME,
   IN `p_outputID` INT,
@@ -728,14 +784,18 @@ VALUES (
     p_outputValue,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete time event
-DELIMITER $$ CREATE PROCEDURE `removeTimeEvent` (IN `p_timeEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removeTimeEvent` (IN `p_timeEventID` INT) MODIFIES SQL DATA
 DELETE FROM TimeEvents
 WHERE TimeEvents.timeEventID = p_timeEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update time event
-DELIMITER $$ CREATE PROCEDURE `updateTimeEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updateTimeEvent` (
   IN `p_timeEventID` INT,
   IN `p_dayID` INT,
   IN `p_triggerTime` TIME,
@@ -751,21 +811,27 @@ SET
     outputValue = p_outputValue,
     createdBy = p_createdBy
 WHERE timeEventID = p_timeEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### PYTHON TIME EVENTS #####
 ## Get all time events
-DELIMITER $$ CREATE PROCEDURE `getPythonTimeEvents` () READS SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getPythonTimeEvents` () READS SQL DATA
 SELECT *
 FROM PythonTimeEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get PythonTime events by dayID
 DELIMITER $$ 
 CREATE PROCEDURE `getPythonTimeEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
 SELECT *
 FROM PythonTimeEvents
 WHERE dayID = p_dayID;
+$$
+DELIMITER ;
 ## Add new python time event
-DELIMITER $$ CREATE PROCEDURE `addPythonTimeEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addPythonTimeEvent` (
   IN `p_dayID` INT,
   IN `p_triggerTime` TIME,
   IN `p_pythonScript` VARCHAR(256),
@@ -778,14 +844,18 @@ VALUES (
     p_pythonScript,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete python time event
-DELIMITER $$ CREATE PROCEDURE `removePythonTimeEvent` (IN `p_timeEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removePythonTimeEvent` (IN `p_timeEventID` INT) MODIFIES SQL DATA
 DELETE FROM PythonTimeEvents
 WHERE PythonTimeEvents.pythonTimeEventID = p_pythonTimeEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update python time event
-DELIMITER $$ CREATE PROCEDURE `updatePythonTimeEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updatePythonTimeEvent` (
   IN `p_pythonTimeEventID` INT,
   IN `p_dayID` INT,
   IN `p_triggerTime` TIME,
@@ -795,21 +865,27 @@ DELIMITER $$ CREATE PROCEDURE `updatePythonTimeEvent` (
 UPDATE PythonTimeEvents
 SET dayID = p_dayID, triggerTime = p_triggerTime, pythonScript = p_pythonScript, createdBy = p_createdBy
 WHERE pythonTimeEventID = p_pythonTimeEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### SENSOR EVENTS #####
 ## Get all sensor events
-DELIMITER $$ CREATE PROCEDURE `getSensorEvents` () READS SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getSensorEvents` () READS SQL DATA
 SELECT *
 FROM SensorEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get Sensor events by dayID
 DELIMITER $$ 
 CREATE PROCEDURE `getSensorEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
 SELECT *
 FROM SensorEvents
 WHERE dayID = p_dayID;
+$$
+DELIMITER ;
 ## Add new sensor event
-DELIMITER $$ CREATE PROCEDURE `addSensorEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addSensorEvent` (
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -842,14 +918,18 @@ VALUES (
     p_triggerComparator,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete sensor event
-DELIMITER $$ CREATE PROCEDURE `removeSensorEvent` (IN `p_sensorEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removeSensorEvent` (IN `p_sensorEventID` INT) MODIFIES SQL DATA
 DELETE FROM SensorEvents
 WHERE SensorEvents.sensorEventID = p_sensorEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update sensor event
-DELIMITER $$ CREATE PROCEDURE `updateSensorEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updateSensorEvent` (
   IN `p_sensorEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
@@ -873,21 +953,27 @@ SET
     triggerComparator = p_triggerComparator,
     createdBy = p_createdBy
 WHERE sensorEventID = p_sensorEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### PYTHON SENSOR EVENTS #####
 ## Get all python sensor events
-DELIMITER $$ CREATE PROCEDURE `getPythonSensorEvents` () READS SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getPythonSensorEvents` () READS SQL DATA
 SELECT *
 FROM PythonSensorEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get PythonSensor events by dayID
 DELIMITER $$ 
 CREATE PROCEDURE `getPythonSensorEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
 SELECT *
 FROM PythonSensorEvents
 WHERE dayID = p_dayID;
+$$
+DELIMITER ;
 ## Add new python sensor event
-DELIMITER $$ CREATE PROCEDURE `addPythonSensorEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addPythonSensorEvent` (
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -917,14 +1003,18 @@ VALUES (
     p_triggerComparator,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete python sensor event
-DELIMITER $$ CREATE PROCEDURE `removePythonSensorEvent` (IN `p_pythonSensorEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removePythonSensorEvent` (IN `p_pythonSensorEventID` INT) MODIFIES SQL DATA
 DELETE FROM PythonSensorEvents
 WHERE PythonSensorEvents.sensorEventID = p_sensorEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update python sensor event
-DELIMITER $$ CREATE PROCEDURE `updatePythonSensorEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updatePythonSensorEvent` (
   IN `p_pythonSensorEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
@@ -946,21 +1036,27 @@ SET
     triggerComparator = p_triggerComparator,
     createdBy = p_createdBy
 WHERE sensorEventID = p_sensorEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### EMAIL SENSOR EVENTS #####
 ## Get all email sensor events
-DELIMITER $$ CREATE PROCEDURE `getEmailSensorEvents` () READS SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getEmailSensorEvents` () READS SQL DATA
 SELECT *
 FROM EmailSensorEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get EmailSensor events by dayID
 DELIMITER $$ 
 CREATE PROCEDURE `getEmailSensorEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
 SELECT *
 FROM EmailSensorEvents
 WHERE dayID = p_dayID;
+$$
+DELIMITER ;
 ## Add new email sensor event
-DELIMITER $$ CREATE PROCEDURE `addEmailSensorEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addEmailSensorEvent` (
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -990,14 +1086,18 @@ VALUES (
     p_triggerComparator,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete email sensor event
-DELIMITER $$ CREATE PROCEDURE `removeEmailSensorEvent` (IN `p_emailSensorEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removeEmailSensorEvent` (IN `p_emailSensorEventID` INT) MODIFIES SQL DATA
 DELETE FROM EmailSensorEvents
 WHERE EmailSensorEvents.sensorEventID = p_sensorEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update email sensor event
-DELIMITER $$ CREATE PROCEDURE `updateEmailSensorEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updateEmailSensorEvent` (
   IN `p_emailSensorEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
@@ -1019,21 +1119,27 @@ SET
     triggerComparator = p_triggerComparator,
     createdBy = p_createdBy
 WHERE sensorEventID = p_sensorEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### BOUNDED EVENTS #####
 ## Get all bounded events
-DELIMITER $$ CREATE PROCEDURE `getBoundedEvents` () READS SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getBoundedEvents` () READS SQL DATA
 SELECT *
 FROM BoundedEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get BoundedEvents events by dayID
 DELIMITER $$ 
 CREATE PROCEDURE `getBoundedEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
 SELECT *
 FROM BoundedEvents
 WHERE dayID = p_dayID;
+$$
+DELIMITER ;
 ## Add new bounded event
-DELIMITER $$ CREATE PROCEDURE `addBoundedEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addBoundedEvent` (
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -1060,14 +1166,18 @@ VALUES (
     p_outputValueEnd,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete bounded event
-DELIMITER $$ CREATE PROCEDURE `removeBoundedEvent` (IN `p_sensorEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removeBoundedEvent` (IN `p_sensorEventID` INT) MODIFIES SQL DATA
 DELETE FROM BoundedEvents
 WHERE BoundedEvents.boundedEventID = p_boundedEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update bounded event
-DELIMITER $$ CREATE PROCEDURE `updateBoundedEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updateBoundedEvent` (
   IN `p_sensorEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
@@ -1087,21 +1197,27 @@ SET
     outputValueEnd = p_outputValueEnd,
     createdBy = p_createdBy
 WHERE boundedEventID = p_boundedEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ####### SUNTRACKER EVENTS #####
 ## Get all suntracker events
-DELIMITER $$ CREATE PROCEDURE `getSunTrackerEvents` () READS SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `getSunTrackerEvents` () READS SQL DATA
 SELECT *
 FROM SunTrackerEvents;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Get SunTracker events by dayID
 DELIMITER $$ 
 CREATE PROCEDURE `getSunTrackerEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
 SELECT *
 FROM SunTrackerEvents
 WHERE dayID = p_dayID;
+$$
+DELIMITER ;
 ## Add new suntracker event
-DELIMITER $$ CREATE PROCEDURE `addSunTrackerEvent` (
+DELIMITER $$
+CREATE PROCEDURE `addSunTrackerEvent` (
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -1127,14 +1243,18 @@ VALUES (
     p_outputID,
     p_createdBy
   );
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Delete suntracker event
-DELIMITER $$ CREATE PROCEDURE `removeSunTrackerEvent` (IN `p_sensorEventID` INT) MODIFIES SQL DATA
+DELIMITER $$
+CREATE PROCEDURE `removeSunTrackerEvent` (IN `p_sensorEventID` INT) MODIFIES SQL DATA
 DELETE FROM SunTrackerEvents
 WHERE SunTrackerEvents.sunTrackerEventID = p_sunTrackerEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 ## Update suntracker event
-DELIMITER $$ CREATE PROCEDURE `updateSunTrackerEvent` (
+DELIMITER $$
+CREATE PROCEDURE `updateSunTrackerEvent` (
   IN `p_sensorEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
@@ -1154,7 +1274,8 @@ SET
     outputID = p_outputID,
     createdBy = p_createdBy
 WHERE sunTrackerEventID = p_sunTrackerEventID;
-$$ DELIMITER;
+$$
+DELIMITER ;
 
 #############################################
 ############# STORED PROCEDURES #############
@@ -1197,18 +1318,20 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `updateOutput`(IN `p_outputID` INT, IN `p_name` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_description` VARCHAR(128), IN `p_outputPWM` BOOLEAN, IN `p_outputPWMPin` INT, IN `p_outputPWMInversion` BOOLEAN, IN `p_order` INT)
 MODIFIES SQL DATA
-  UPDATE Outputs SET outputName = p_name, outputType = p_type, outputDescription = p_description, outputPWM = p_outputPWM, outputPWMPin = p_outputPWMPin, outputPWMInversion = p_outputPWMInversion, outputOrder = p_order WHERE outputID = p_outputID
+  UPDATE Outputs SET outputName = p_name, outputType = p_type, outputDescription = p_description, outputPWM = p_outputPWM, outputPWMPin = p_outputPWMPin, outputPWMInversion = p_outputPWMInversion, outputOrder = p_order 
+  WHERE outputID = p_outputID
   $$
 DELIMITER ;
 
 DELIMITER $$
 CREATE PROCEDURE `updateOutputState`(IN `p_outputID` INT, IN `p_outputScheduleState` BOOLEAN, IN `p_outputScheduleOutputValue` INT, IN `p_outputManualState` BOOLEAN, IN `p_outputManualOutputValue` INT, IN `p_outputController` VARCHAR(32), IN `p_outputLastController` VARCHAR(32))
 MODIFIES SQL DATA
-  UPDATE Outputs SET outputScheduleState = p_outputScheduleState, outputScheduleOutputValue = p_outputScheduleOutputValue, outputputManualState = p_outputManualState, outputManualOutputValue = p_outputManualOutputValue, outputController = p_outputController, outputLastController = p_outputLastController WHERE outputID = p_outputID
+  UPDATE Outputs SET outputScheduleState = p_outputScheduleState, outputScheduleOutputValue = p_outputScheduleOutputValue, outputputManualState = p_outputManualState, outputManualOutputValue = p_outputManualOutputValue, outputController = p_outputController, outputLastController = p_outputLastController 
+  WHERE outputID = p_outputID
   $$
 DELIMITER ;
 
-DELIMETER $$
+DELIMITER $$
 CREATE PROCEDURE `removeOutput`(IN `p_outputID` INT)
 MODIFIES SQL DATA
   DELETE FROM Outputs

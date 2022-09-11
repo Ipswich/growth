@@ -2,12 +2,12 @@ const express = require('express');
 const jwt = require('jsonwebtoken')
 const router = express.Router();
 const auth = require('../middleware/authenticateLogin.js')
-const printouts = require('../models/utility/printouts')
+const Printouts = require('../models/utility/Printouts')
 
 //Rebuild state
 router.post('/kill', auth, async function(req, res, next) {
   let username = jwt.decode(req.cookies.token).username
-  printouts.simpleLogPrintout("Server shutting down {" + username + "}.")
+  Printouts.simpleLogPrintout("Server shutting down {" + username + "}.")
   res.status(200).send()
   setTimeout(function() {
     process.exit(0);

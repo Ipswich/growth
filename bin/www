@@ -6,7 +6,7 @@
 
 const debug = require('debug')('growth:server');
 const config_helper = require('../models/utility/ConfigHelper')
-const printouts = require('../models/utility/printouts')
+const Printouts = require('../models/utility/Printouts')
 
 let server
 let port
@@ -15,9 +15,9 @@ new Promise(async (resolve, reject) => {
     await config_helper.initializeWebData()
     let config = await config_helper.initializeConfig()
     let warnState = await config_helper.configChecker(config).catch(() => {
-      printouts.simpleErrorPrintout("ERROR: Could not update config.")
+      Printouts.simpleErrorPrintout("ERROR: Could not update config.")
       if (e instanceof TypeError) {
-        printouts.simpleErrorPrintout('Config may be corrupted. Please fix or delete, then try again.')
+        Printouts.simpleErrorPrintout('Config may be corrupted. Please fix or delete, then try again.')
       }
       reject(e)
     })
@@ -52,7 +52,7 @@ new Promise(async (resolve, reject) => {
   }
 })
 // .catch((e) => {
-//   printouts.errorPrintout(e)
+//   Printouts.errorPrintout(e)
 //   process.exit(-1)
 // })
 

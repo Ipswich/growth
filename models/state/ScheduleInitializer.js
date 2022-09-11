@@ -1,7 +1,7 @@
 const SensorLogger = require('../events/SensorLogger')
 const utils = require('../utility/utils')
 const CameraEventHandler = require('../events/CameraEventHandler')
-const { simpleErrorPrintout } = require('../utility/printouts')
+const { simpleErrorPrintout } = require('../utility/Printouts')
 
 const EVENT_TIMER = 1 * 1000 // 1 SECOND
 

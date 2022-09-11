@@ -5,7 +5,7 @@ const dbCalls = require('./utility/database_calls')
 const Mappings = require('./utility/Mappings')
 const Printouts = require('./utility/Printouts')
 
-module.exports = class Outputs {
+module.exports = class Sensors {
   
   static sensors = undefined
 
@@ -168,23 +168,25 @@ module.exports = class Outputs {
       //can't really explain it.
       address_event.on('done', (DS18B20_Array) => {
         //Set up sensors and bind to state object.
-        console.log("DONE")
         DS18B20_Array = DS18B20_Array.map(e => e.toString())
         //###################Get max hardwareID 
         //###TODO: FIX ME
-        let hardwareID = Math.max.apply(Math, mapperState.sensors.map(function(sensor) { return sensor.sensorHardwareID; }))
-        let counter = 0
-        while (hardwareID > counter) {
-          let i = 0;
+        let hardwareIDList = []
+        for(let sensor in mapperState.sensors){
+          if (hardwareIDList.hardwareID != null && hardwareIDList.hardwareID != undefined){
+            hardwareIDList.push(sensor.hardwareID)
+          }
+        }
+        for (hardwareID in hardwareIDList) {
           //Loop through sensors to find ones with matching hardwareID
-          for(i; i < mapperState.sensors.length; i++){  
+          for(let i = 0; i < mapperState.sensors.length; i++){  
             let currentState = mapperState.sensors[i]  
             let sensor;
             let obj = {controller: currentState.sensorModel}
 
-            if(counter == currentState.sensorHardwareID && currentState.sensorProtocol == 'I2C'){
+            if(hardwareID == currentState.sensorHardwareID && currentState.sensorProtocol == 'I2C'){
               obj.sensorAddress = currentState.sensorAddress
-            } else if(counter == currentState.sensorHardwareID) {
+            } else if(hardwareID == currentState.sensorHardwareID) {
               obj.pin = currentState.sensorPin
             } else {
               continue
@@ -220,39 +222,12 @@ module.exports = class Outputs {
               }
               currentState.sensorObject = sensor;
             }
+
           }
         resolve(mapperState)
       });
       //Get addresses, calling event emitter thingy when done, which runs the top part of this function.
-      let DS18B20_Array = []
-      if (DS18B20_Count > 0) {    
-        console.log(five.Thermometer.Drivers.get()) 
-        five.Thermometer.Drivers.get(
-          board, "DS18B20", {
-            pin: DS18B20_Pin
-          }).on('initialized', function(addr){
-          console.log("INIT")
-          //If this address exists in database, do not include in list
-          let include = true;
-          // Look through each mapped sensor for DS18B20's with matching address
-          for (i = 0; i < mapperState.sensors.length; i++) {
-            if (mapperState.sensors[i].sensorModel == "DS18B20" && mapperState.sensors[i].sensorAddress == addr) {              
-              include = false;
-            }
-          }
-          // If it exists in the mapped sensors, add to list.
-          if (include){
-            DS18B20_Array.push(addr)
-          }
-          DS18B20_Count--
-          if (DS18B20_Count <= 0){        
-            callback(DS18B20_Array)
-          }
-        })
-        console.log("HERE")
-      } else {
-        callback(DS18B20_Array) 
-      }
+      this._getDS18B20Addresses(board, mapperState, DS18B20_Count, DS18B20_Pin, function(ret_val) {address_event.emit('done', ret_val)})
     })
   }
 
@@ -294,7 +269,32 @@ module.exports = class Outputs {
 
   // This could probably be turned into an async thing...
   static async _getDS18B20Addresses(board, mapperState, DS18B20_Count, DS18B20_Pin, callback) {
-
+    let DS18B20_Array = []
+    if (DS18B20_Count > 0) {            
+      five.Thermometer.Drivers.get(
+          board, "DS18B20", {
+            pin: DS18B20_Pin
+        }).on('initialized', function(addr){       
+        //If this address exists in database, do not include in list
+        let include = true;
+        // Look through each mapped sensor for DS18B20's with matching address
+        for (let i = 0; i < mapperState.sensors.length; i++) {
+          if (mapperState.sensors[i].sensorModel == "DS18B20" && mapperState.sensors[i].sensorAddress == addr) {              
+            include = false;
+          }
+        }
+        // If it exists in the mapped sensors, add to list.
+        if (include){
+          DS18B20_Array.push(addr)
+        }
+        DS18B20_Count--
+        if (DS18B20_Count <= 0){        
+          callback(DS18B20_Array)
+        }
+      })      
+    } else {
+      callback(DS18B20_Array) 
+    }  
   }
 }
 

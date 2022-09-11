@@ -1,6 +1,6 @@
 const fs = require('fs');
 const readline = require('readline')
-const {simpleLogPrintout, simpleErrorPrintout} = require('./printouts')
+const {simpleLogPrintout, simpleErrorPrintout} = require('./Printouts')
 
 
 module.exports = class ConfigHelper {

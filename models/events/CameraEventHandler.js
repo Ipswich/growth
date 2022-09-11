@@ -1,6 +1,6 @@
 const child_process = require('child_process')
 const moment = require('moment')
-const printouts = require('../utility/printouts')
+const Printouts = require('../utility/Printouts')
 const utils = require('../utility/utils')
 
 module.exports = class CameraEventHandler {
@@ -36,10 +36,10 @@ module.exports = class CameraEventHandler {
     let command = `raspistill -o ${output_file}${flag_string}${overlay_string}`
     child_process.exec(command, (error, stdout, stderr) => {
       if (error) {
-        printouts.simpleErrorPrintout(`Error taking image: ${error}`)
+        Printouts.simpleErrorPrintout(`Error taking image: ${error}`)
         return
       }
-      printouts.simpleLogPrintout(`Image saved: ${output_file}`)
+      Printouts.simpleLogPrintout(`Image saved: ${output_file}`)
     })
   }
 

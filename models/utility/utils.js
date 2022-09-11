@@ -2,7 +2,7 @@ const fs = require('fs')
 const fsPromises = require('fs/promises')
 const jwt = require('jsonwebtoken')
 const moment = require('moment')
-const printouts = require('./printouts')
+const printouts = require('./Printouts')
 
 module.exports = class Utilities {
   /**
