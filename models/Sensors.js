@@ -366,7 +366,7 @@ static async addSensorReadings(sensors){
     try {
       let data = await this.getSensorVal(i);
       if (data.val == undefined){
-        throw ("Could not fetch data from sensor: {" + sensors[i].sensorType + ' @ ' + state.sensorState.data[i].sensorLocation + '}')
+        throw ("Could not fetch data from sensor: {" + sensors[i].sensorType + ' @ ' + sensors[i].sensorLocation + '}')
       }
       await dbcalls.addSensorReading(i, data.val)
     } catch (e) {
