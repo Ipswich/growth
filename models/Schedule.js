@@ -1,5 +1,3 @@
-const SensorLogger = require('./events/SensorLogger')
-const utils = require('./utility/utils')
 const CameraEvents = require('./events/CameraEvents')
 const { simpleErrorPrintout } = require('./utility/Printouts')
 const Sensors = require('./Sensors')
