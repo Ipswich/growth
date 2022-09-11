@@ -362,7 +362,7 @@ module.exports = class Sensors {
  * @param {object} state Current state object
  */
 static async addSensorReadings(sensors){
-  for(i in Object.keys(sensors)) {
+  for(let i in Object.keys(sensors)) {
     try {
       let data = await this.getSensorVal(i);
       if (data.val == undefined){
