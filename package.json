@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "debug": "NODE_ENV='debug' node --trace-warnings ./bin/www",
+    "debug-web-only": "NODE_ENV='debug-web-only' node --trace-warnings ./bin/www",
     "test": "NODE_ENV='test' mocha --require ./test/setup.js --recursive --exit --timeout 20000"
   },
   "dependencies": {

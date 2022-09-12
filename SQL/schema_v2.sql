@@ -39,18 +39,18 @@ CREATE TABLE Outputs (
   outputID INT NOT NULL AUTO_INCREMENT,
   outputName VARCHAR(64) NOT NULL,
   outputType VARCHAR(32) DEFAULT NULL,
-  outputDescription VARCHAR(128),
+  outputDescription VARCHAR(128) DEFAULT NULL,
   outputPWM BOOLEAN NOT NULL DEFAULT 0,
   outputPin INT DEFAULT NULL,
   outputPWMPin INT DEFAULT NULL,
   outputPWMInversion BOOLEAN DEFAULT NULL,
-  outputScheduleState INT DEFAULT NULL,
+  outputScheduleState BOOLEAN DEFAULT NULL,
   outputScheduleOutputValue INT DEFAULT NULL,
-  outputManualState INT DEFAULT NULL,
+  outputManualState BOOLEAN DEFAULT NULL,
   outputManualOutputValue INT DEFAULT NULL,
   outputController VARCHAR(32) DEFAULT "SCHEDULE",
   outputLastController VARCHAR(32) DEFAULT "SCHEDULE",
-  outputUpdatedAt TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  outputUpdatedAt TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   outputOrder INT DEFAULT 0,
   PRIMARY KEY (outputID)
 );
@@ -60,7 +60,7 @@ CREATE TABLE Days (
   ## weekday: None = 0, Mon = 1, Tue = 2, Wed = 4, Thu = 8, Fri = 16, Sat = 32, Sun = 64, All = 127 (Bit math for days)
   weekday TINYINT UNSIGNED DEFAULT 127,
   createdBy VARCHAR(32) DEFAULT NULL,
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   PRIMARY KEY (dayID),
   FOREIGN KEY (createdBy) REFERENCES Users(username)
 );
@@ -107,7 +107,7 @@ CREATE TABLE RandomEvents (
   ## Negative values are random, not 0
   minTimeout INT CHECK(minTimeout >= 0),
   ## Greater than or equal to 0
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (randomEventID),
   FOREIGN KEY (outputID) REFERENCES Outputs(outputID),
@@ -127,7 +127,7 @@ CREATE TABLE RandomPythonEvents (
   ## Negative values are random, not 0
   minTimeout INT NOT NULL,
   ## Greater than or equal to 0
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (randomPythonEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -152,7 +152,7 @@ CREATE TABLE RecurringEvents (
   ## outputValue < 0 is random,
   timeoutTime TIMESTAMP NOT NULL,
   repeatTime TIMESTAMP NOT NULL,
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (recurringEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -179,7 +179,7 @@ CREATE TABLE RecurringPythonEvents (
   timeoutTime TIMESTAMP NOT NULL,
   repeatTime TIMESTAMP NOT NULL,
   pythonScript VARCHAR(256) NOT NULL,
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (recurringPythonEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -205,7 +205,7 @@ CREATE TABLE TimeEvents (
   ## outputValue = 0 is off,
   ## outputValue > 0 is on,
   ## outputValue < 0 is random,
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (timeEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -219,7 +219,7 @@ CREATE TABLE PythonTimeEvents (
   dayID INT NOT NULL,
   triggerTime TIMESTAMP NOT NULL,
   pythonScript VARCHAR(256),
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (pythonTimeEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -237,7 +237,7 @@ CREATE TABLE SensorEvents (
   sensorID INT NOT NULL,
   triggerValues JSON NOT NULL,
   triggerComparator VARCHAR(2) NOT NULL,
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (sensorEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -268,7 +268,7 @@ CREATE TABLE PythonSensorEvents (
   triggerValues JSON NOT NULL,
   triggerComparator VARCHAR(2) NOT NULL,
   pythonScript VARCHAR(256),
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (pythonSensorEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -296,7 +296,7 @@ CREATE TABLE EmailSensorEvents (
   sensorID INT NOT NULL,
   triggerValues JSON NOT NULL,
   triggerComparator VARCHAR(2) NOT NULL,
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (emailSensorEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -330,7 +330,7 @@ CREATE TABLE BoundedEvents (
   ## outputValueEnd = 0 is off,
   ## outputValueEnd > 0 is on,
   ## outputValueEnd < 0 is random 
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (boundedEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -346,7 +346,7 @@ CREATE TABLE SunTrackerEvents (
   stopTime TIME DEFAULT NULL,
   coordinates POINT NOT NULL,
   outputID INT NOT NULL,
-  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   createdBy VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (sunTrackerEventID),
   FOREIGN KEY (dayID) REFERENCES Days(dayID),
@@ -1308,6 +1308,14 @@ READS SQL DATA
 DELIMITER ;
 
 DELIMITER $$
+CREATE PROCEDURE `getOutputState`()
+READS SQL DATA
+  SELECT outputID, outputScheduleState, outputScheduleOutputValue, outputManualState, outputManualOutputValue, outputController, outputLastController
+  FROM Outputs
+  $$
+DELIMITER ;
+
+DELIMITER $$
 CREATE PROCEDURE `getOutputStateByID`(IN `p_outputID` INT)
 READS SQL DATA
   SELECT outputID, outputScheduleState, outputScheduleOutputValue, outputManualState, outputManualOutputValue, outputController, outputLastController
@@ -1324,9 +1332,33 @@ MODIFIES SQL DATA
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE `updateOutputState`(IN `p_outputID` INT, IN `p_outputScheduleState` BOOLEAN, IN `p_outputScheduleOutputValue` INT, IN `p_outputManualState` BOOLEAN, IN `p_outputManualOutputValue` INT, IN `p_outputController` VARCHAR(32), IN `p_outputLastController` VARCHAR(32))
+CREATE PROCEDURE `updateOutputController`(IN `p_outputID` INT, IN `p_outputController` VARCHAR(32))
 MODIFIES SQL DATA
-  UPDATE Outputs SET outputScheduleState = p_outputScheduleState, outputScheduleOutputValue = p_outputScheduleOutputValue, outputputManualState = p_outputManualState, outputManualOutputValue = p_outputManualOutputValue, outputController = p_outputController, outputLastController = p_outputLastController 
+  UPDATE Outputs SET outputController = p_outputController 
+  WHERE outputID = p_outputID
+  $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `updateOutputLastController`(IN `p_outputID` INT, IN `p_outputLastController` VARCHAR(32))
+MODIFIES SQL DATA
+  UPDATE Outputs SET outputLastController = p_outputLastController 
+  WHERE outputID = p_outputID
+  $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `updateOutputScheduleState`(IN `p_outputID` INT, IN `p_outputScheduleState` BOOLEAN, IN `p_outputScheduleOutputValue` INT)
+MODIFIES SQL DATA
+  UPDATE Outputs SET outputScheduleState = p_outputScheduleState, outputScheduleOutputValue = p_outputScheduleOutputValue
+  WHERE outputID = p_outputID
+  $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `updateOutputManualState`(IN `p_outputID` INT, IN `p_outputManualState` BOOLEAN, IN `p_outputManualOutputValue` INT)
+MODIFIES SQL DATA
+  UPDATE Outputs SET outputputManualState = p_outputManualState, outputManualOutputValue = p_outputManualOutputValue
   WHERE outputID = p_outputID
   $$
 DELIMITER ;

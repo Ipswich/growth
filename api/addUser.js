@@ -4,7 +4,7 @@ var mysql = require('mysql');
 var router = express.Router();
 const dbcalls = require('../models/utility/database_calls.js')
 
-router.post('/', async function(req, res, next) {
+router.post('/new', async function(req, res, next) {
   //Escape Data  
   let config = req.app.get('config')
   var sanitizedData = Object.assign({}, req.body);

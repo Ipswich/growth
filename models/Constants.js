@@ -43,4 +43,5 @@ const Constants = {
     "DEFAULT_WEB_DATA_LOCATION" : "/config/web-data-config-default.json"
   }
 }
+
 module.exports = Constants;

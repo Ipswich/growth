@@ -1,6 +1,7 @@
 const dbCalls = require('../utility/database_calls')
 const EventHandlerUtils = require('./EventHandlerUtils');
 const TriggeredScheduleMinder = require('./TriggeredScheduleMinder');
+const Outputs = require('../Outputs')
 const moment = require('moment');
 
 let triggeredScheduleMinder = new TriggeredScheduleMinder()
@@ -31,7 +32,7 @@ module.exports = class TimeEvents {
     return this;
   }
 
-  static async timeEventRunner(state, dayID) {
+  static async timeEventRunner(config, outputs, dayID) {
     const timeEvents = await this.getByDayIDAsync(dayID)
     //If no errors, get current timestamp
     const currentTime = moment().format('HH:mm:ss');
@@ -44,7 +45,7 @@ module.exports = class TimeEvents {
       let triggerTime = moment(timeEvent.triggerTime, "HH:mm:ss");
       //If trigger time matches time stamp trigger event.
       if(moment(currentTime, "HH:mm:ss").isSame(triggerTime, 'minute')) {
-        this.handleTimeEvent(state, timeEvent);
+        this._handleTimeEvent(config, outputs[timeEvent.outputID], await Outputs.readStateAsync(timeEvent.outputID), timeEvent);
         // Add to array of triggered schedule
         triggeredScheduleMinder.add_schedule({
           scheduleID: timeEvent.timeEventID,
@@ -56,22 +57,21 @@ module.exports = class TimeEvents {
   triggeredScheduleMinder.auto_remove_schedules();
   }
 
-  static async handleTimeEvent(state, timeEvent){
-    let output = state.outputState.getOutput(timeEvent.outputID);
+  static async _handleTimeEvent(config, output, outputState, timeEvent){
     let outputValue = timeEvent.outputValue;
 
     if (timeEvent.outputValue < 0){
       outputValue = Math.round((Math.random() * 100))
     }
     if(timeEvent.outputValue > 0) {
-      let toggle = EventHandlerUtils.filterOn(state, output, outputValue);
+      let toggle = EventHandlerUtils.filterOn(output, outputState, outputValue);
       if (toggle){
-        EventHandlerUtils.outputOn(state, output, outputValue)
+        Outputs.turnOn(config, timeEvent.outputID, outputValue, outputState)
       }
     } else {
-      let toggle = EventHandlerUtils.filterOff(state, output, outputValue);
+      let toggle = EventHandlerUtils.filterOff(output, outputState, outputValue);
       if (toggle){
-        EventHandlerUtils.outputOff(state, output, outputValue)
+        Outputs.turnOff(timeEvent.outputID, outputState)
       }
     }
   }

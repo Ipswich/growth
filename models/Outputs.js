@@ -19,16 +19,32 @@ module.exports = class Outputs {
     return await dbCalls.getOrderedOutputs();
   }
 
-  static async readStateByIDAsync(outputID){
+  static async readStateAsync(){
+    return await dbCalls.getOutputState();
+  }
+
+  static async readStateAsync(outputID){
     return await dbCalls.getOutputStateByID(outputID);
   }
 
-  static async updateAsync(id, name, description, outputPWM, outputPWMPin, outputPWMInversion, order){ 
-    await dbCalls.updateOutput(id, name, description, outputPWM, outputPWMPin, outputPWMInversion, order);
+  static async updateAsync(id, name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order){ 
+    await dbCalls.updateOutput(id, name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order);
   }
 
-  static async updateStateAsync(id, outputScheduleState, outputScheduleValue, outputManualState, outputManualValue, outputController, outputLastController) {
-    await dbCalls.updateOutputState(id, outputScheduleState, outputScheduleValue, outputManualState, outputManualValue, outputController, outputLastController);
+  static async updateManualStateAsync(id, outputManualState, outputManualValue) {
+    await dbCalls.updateOutputManualState(id, outputManualState, outputManualValue);
+  }
+  
+  static async updateScheduleStateAsync(id, outputScheduleState, outputScheduleValue) {
+    await dbCalls.updateOutputScheduleState(id, outputScheduleState, outputScheduleValue);
+  }
+  
+  static async updateControllerAsync(id, outputController) {
+    await dbCalls.updateOutputController(id, outputController);
+  }
+
+  static async updateLastControllerAsync(id, outputLastController) {
+    await dbCalls.updateOutputLastController(id, outputLastController);
   }
 
   static async deleteAsync(outputID){
@@ -56,6 +72,55 @@ module.exports = class Outputs {
     }
     Outputs.outputs = outputDict
     return outputDict
+  }
+
+  /**
+   * Turns on an output.
+   * @param {object} config configuration file
+   * @param {object} output output to turn on
+   * @param {number} outputValue PWM value (0 - 100)
+   * @param {object} outputState output to turn on's state
+   */
+   static turnOn(config, output, outputValue, outputState) {
+    if(output.outputPWMObject){
+      let maxPWM = config.board_pinout.MAX_PWM;
+      // Do math for PWM object
+      let value;
+      let base = maxPWM/100;
+      //If inversion set, use module.exports.ANALOG_RESOLUTION - PWM value
+      if (output.outputPWMInversion == 0) {
+        value = Math.round(base * outputValue);
+      } else {
+        value = maxPWM - Math.round(base * outputValue);
+      }
+      output.outputPWMObject.brightness(value);        
+      output.outputObject.close();
+      Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] ON @ " + outputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");      
+    } else {
+      Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
+      output.outputObject.close();
+    }
+    if(outputState.controllerType == 'Manual'){
+      this.updateManualState(output.outputID, Constants.outputStates.ON, outputValue);
+    } else {
+      this.updateScheduleState(output.outputID, Constants.outputStates.ON, outputValue);
+    }
+  }
+
+  
+  /**
+   * Turns off an output, logging the schedule. Helper function for triggerEvent.
+   * @param {object} output output to turn off
+   * @param {object} state current output's state
+   */
+   static turnOff(output, outputState) {
+    Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
+    output.outputObject.open();
+    if(controllerType == 'Manual'){
+      this.updateManualState(output.outputID, Constants.outputStates.OFF, 0);
+    } else {
+      this.updateScheduleState(output.outputID, Constants.outputStates.OFF, 0);
+    }
   }
 
   /**

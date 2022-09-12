@@ -4,8 +4,8 @@ const assert = chai.assert;
 
 const utils = require('../../../../models/utility/utils');
 const printouts = require('../../../../models/utility/printouts');
-
 const EventHandler = require('../../../../models/events/EventHandlerUtils');
+const Outputs = require('../../../../models/Outputs');
 
 
 describe("EventHandlerUtils.js tests", function() {
@@ -173,129 +173,129 @@ describe("EventHandlerUtils.js tests", function() {
   //   })
   // })
 
-  describe("outputOn() tests", function() {
-    let stub_close = sinon.stub()
-    let stub_brightness = sinon.stub()
-    let stub_setOutputManualState = sinon.stub()
-    let stub_setOutputScheduleState = sinon.stub()
-    afterEach(function() {
-      stub_close.resetHistory()
-      stub_brightness.resetHistory()
-      stub_setOutputManualState.resetHistory()
-      stub_setOutputScheduleState.resetHistory()
-    })
-    let dummy_state = {
-      outputState: {
-        setOutputManualState: stub_setOutputManualState,
-        setOutputScheduleState: stub_setOutputScheduleState
-      }
-    }
+  // describe("outputOn() tests", function() {
+  //   let stub_close = sinon.stub()
+  //   let stub_brightness = sinon.stub()
+  //   let stub_setOutputManualState = sinon.stub()
+  //   let stub_setOutputScheduleState = sinon.stub()
+  //   afterEach(function() {
+  //     stub_close.resetHistory()
+  //     stub_brightness.resetHistory()
+  //     stub_setOutputManualState.resetHistory()
+  //     stub_setOutputScheduleState.resetHistory()
+  //   })
+  //   let dummy_state = {
+  //     outputState: {
+  //       setOutputManualState: stub_setOutputManualState,
+  //       setOutputScheduleState: stub_setOutputScheduleState
+  //     }
+  //   }
 
-    it('should call close() and update manual state', function() {
-      let dummy_output = {
-        outputID: 1,
-        outputName: 'test',
-        outputController: 'test',
-        outputPWMPin: 1,
-        outputPWMInversion: 0,
-        outputPWMObject: null,
-        outputPin: 1,
-        outputObject: {
-          close: stub_close
-        }
-      }
-      EventHandler.outputOn(config, dummy_state, dummy_output, 30, 'Manual')
-      sinon.assert.calledOnce(stub_close)
-      sinon.assert.calledOnce(stub_setOutputManualState)
-    })
+  //   it('should call close() and update manual state', function() {
+  //     let dummy_output = {
+  //       outputID: 1,
+  //       outputName: 'test',
+  //       outputController: 'test',
+  //       outputPWMPin: 1,
+  //       outputPWMInversion: 0,
+  //       outputPWMObject: null,
+  //       outputPin: 1,
+  //       outputObject: {
+  //         close: stub_close
+  //       }
+  //     }
+  //     EventHandler.outputOn(config, dummy_state, dummy_output, 30, 'Manual')
+  //     sinon.assert.calledOnce(stub_close)
+  //     sinon.assert.calledOnce(stub_setOutputManualState)
+  //   })
 
-    it('should call brightness(), close() and update schedule state (standard PWM)', function() {
-      let dummy_output = {
-        outputID: 1,
-        outputName: 'test',
-        outputController: 'test',
-        outputPWMPin: 1,
-        outputPWMInversion: 0,
-        outputPWMObject: {brightness: stub_brightness},
-        outputPin: 1,
-        outputObject: {
-          close: stub_close
-        }
-      }
-      EventHandler.outputOn(config, dummy_state, dummy_output, 30, '')
-      sinon.assert.calledOnce(stub_brightness)
-      sinon.assert.calledWith(stub_brightness, Math.round(30 * (config.board_pinout.MAX_PWM/100)))
-      sinon.assert.calledOnce(stub_close)
-      sinon.assert.calledOnce(stub_setOutputScheduleState)
-    })
+  //   it('should call brightness(), close() and update schedule state (standard PWM)', function() {
+  //     let dummy_output = {
+  //       outputID: 1,
+  //       outputName: 'test',
+  //       outputController: 'test',
+  //       outputPWMPin: 1,
+  //       outputPWMInversion: 0,
+  //       outputPWMObject: {brightness: stub_brightness},
+  //       outputPin: 1,
+  //       outputObject: {
+  //         close: stub_close
+  //       }
+  //     }
+  //     EventHandler.outputOn(config, dummy_state, dummy_output, 30, '')
+  //     sinon.assert.calledOnce(stub_brightness)
+  //     sinon.assert.calledWith(stub_brightness, Math.round(30 * (config.board_pinout.MAX_PWM/100)))
+  //     sinon.assert.calledOnce(stub_close)
+  //     sinon.assert.calledOnce(stub_setOutputScheduleState)
+  //   })
 
-    it('should call brightness(), close() and update schedule state (inverted PWM)', function() {
-      let dummy_output = {
-        outputID: 1,
-        outputName: 'test',
-        outputController: 'test',
-        outputPWMPin: 1,
-        outputPWMInversion: 1,
-        outputPWMObject: {brightness: stub_brightness},
-        outputPin: 1,
-        outputObject: {
-          close: stub_close
-        }
-      }
-      EventHandler.outputOn(config, dummy_state, dummy_output, 30, '')
-      sinon.assert.calledWith(stub_brightness, config.board_pinout.MAX_PWM - Math.round(30 * (config.board_pinout.MAX_PWM/100)))
-      sinon.assert.calledOnce(stub_brightness)
-      sinon.assert.calledOnce(stub_close)
-      sinon.assert.calledOnce(stub_setOutputScheduleState)
-    })
-  })
+  //   it('should call brightness(), close() and update schedule state (inverted PWM)', function() {
+  //     let dummy_output = {
+  //       outputID: 1,
+  //       outputName: 'test',
+  //       outputController: 'test',
+  //       outputPWMPin: 1,
+  //       outputPWMInversion: 1,
+  //       outputPWMObject: {brightness: stub_brightness},
+  //       outputPin: 1,
+  //       outputObject: {
+  //         close: stub_close
+  //       }
+  //     }
+  //     EventHandler.outputOn(config, dummy_state, dummy_output, 30, '')
+  //     sinon.assert.calledWith(stub_brightness, config.board_pinout.MAX_PWM - Math.round(30 * (config.board_pinout.MAX_PWM/100)))
+  //     sinon.assert.calledOnce(stub_brightness)
+  //     sinon.assert.calledOnce(stub_close)
+  //     sinon.assert.calledOnce(stub_setOutputScheduleState)
+  //   })
+  // })
 
-  describe("_outputOff() tests", function() {
-    let stub_open = sinon.stub()
-    let stub_setOutputManualState = sinon.stub()
-    let stub_setOutputScheduleState = sinon.stub()
-    afterEach(function() {
-      stub_open.resetHistory()
-      stub_setOutputManualState.resetHistory()
-      stub_setOutputScheduleState.resetHistory()
-    })
-    let dummy_state = {
-      outputState: {
-        setOutputManualState: stub_setOutputManualState,
-        setOutputScheduleState: stub_setOutputScheduleState
-      }
-    }
+  // describe("_outputOff() tests", function() {
+  //   let stub_open = sinon.stub()
+  //   let stub_setOutputManualState = sinon.stub()
+  //   let stub_setOutputScheduleState = sinon.stub()
+  //   afterEach(function() {
+  //     stub_open.resetHistory()
+  //     stub_setOutputManualState.resetHistory()
+  //     stub_setOutputScheduleState.resetHistory()
+  //   })
+  //   let dummy_state = {
+  //     outputState: {
+  //       setOutputManualState: stub_setOutputManualState,
+  //       setOutputScheduleState: stub_setOutputScheduleState
+  //     }
+  //   }
 
-    it('should call close() and update manual state', function() {
-      let dummy_output = {
-        outputID: 1,
-        outputName: 'test',
-        outputController: 'test',
-        outputPin: 1,
-        outputObject: {
-          open: stub_open
-        }
-      }
-      EventHandler.outputOff(dummy_state, dummy_output, 30, 'Manual')
-      sinon.assert.calledOnce(stub_open)
-      sinon.assert.calledOnce(stub_setOutputManualState)
-    })
+  //   it('should call close() and update manual state', function() {
+  //     let dummy_output = {
+  //       outputID: 1,
+  //       outputName: 'test',
+  //       outputController: 'test',
+  //       outputPin: 1,
+  //       outputObject: {
+  //         open: stub_open
+  //       }
+  //     }
+  //     EventHandler.outputOff(dummy_state, dummy_output, 30, 'Manual')
+  //     sinon.assert.calledOnce(stub_open)
+  //     sinon.assert.calledOnce(stub_setOutputManualState)
+  //   })
 
-    it('should call close() and update schedule state', function() {
-      let dummy_output = {
-        outputID: 1,
-        outputName: 'test',
-        outputController: 'test',
-        outputPin: 1,
-        outputObject: {
-          open: stub_open
-        }
-      }
-      EventHandler.outputOff(dummy_state, dummy_output, 30, '')
-      sinon.assert.calledOnce(stub_open)
-      sinon.assert.calledOnce(stub_setOutputScheduleState)
-    })
-  })
+  //   it('should call close() and update schedule state', function() {
+  //     let dummy_output = {
+  //       outputID: 1,
+  //       outputName: 'test',
+  //       outputController: 'test',
+  //       outputPin: 1,
+  //       outputObject: {
+  //         open: stub_open
+  //       }
+  //     }
+  //     EventHandler.outputOff(dummy_state, dummy_output, 30, '')
+  //     sinon.assert.calledOnce(stub_open)
+  //     sinon.assert.calledOnce(stub_setOutputScheduleState)
+  //   })
+  // })
 
   // describe("_emailWarn() tests", function() {
   //   let dummy_state = {
@@ -420,36 +420,36 @@ describe("EventHandlerUtils.js tests", function() {
 
   // })
 
-  describe("turnOffOutput() tests", function() {
-    let set_stub = sinon.stub()
-    let dummy_state = {
-      outputState :{setOutputScheduleState: set_stub}
-    }
-    let open_stub = sinon.stub()
-    let dummy_output = {
-      scheduleState: '',
-      outputObject: {open: open_stub}
-    }
+  // describe("turnOffOutput() tests", function() {
+  //   let set_stub = sinon.stub()
+  //   let dummy_state = {
+  //     outputState :{setOutputScheduleState: set_stub}
+  //   }
+  //   let open_stub = sinon.stub()
+  //   let dummy_output = {
+  //     scheduleState: '',
+  //     outputObject: {open: open_stub}
+  //   }
 
-    it('should call open() on the passed object', function() {
-      set_stub.resetHistory()
-      open_stub.resetHistory()
-      EventHandler.turnOffOutput(dummy_state, dummy_output)      
-      sinon.assert.calledOnce(set_stub)
-      sinon.assert.calledOnce(open_stub)
-    })
+  //   it('should call open() on the passed object', function() {
+  //     set_stub.resetHistory()
+  //     open_stub.resetHistory()
+  //     EventHandler.turnOffOutput(dummy_state, dummy_output)      
+  //     sinon.assert.calledOnce(set_stub)
+  //     sinon.assert.calledOnce(open_stub)
+  //   })
 
-    it('should return early, not calling open()', function() {
-      set_stub.resetHistory()
-      open_stub.resetHistory()
-      dummy_output.scheduleState = 'Output Off'
+  //   it('should return early, not calling open()', function() {
+  //     set_stub.resetHistory()
+  //     open_stub.resetHistory()
+  //     dummy_output.scheduleState = 'Output Off'
       
-      EventHandler.turnOffOutput(dummy_state, dummy_output)
+  //     EventHandler.turnOffOutput(dummy_state, dummy_output)
 
-      sinon.assert.notCalled(set_stub)
-      sinon.assert.notCalled(open_stub)
-    })
-  })
+  //     sinon.assert.notCalled(set_stub)
+  //     sinon.assert.notCalled(open_stub)
+  //   })
+  // })
 
   /*
   describe("_runPythonResult() tests", function() {
@@ -625,23 +625,16 @@ describe("EventHandlerUtils.js tests", function() {
   // })
 
   describe('filterOn() tests', function() {
-    let setOutputScheduleState_stub = sinon.stub()
-    let setOutputManualState_stub = sinon.stub()
-    let setLastOutputController_stub = sinon.stub()
+    let updateScheduleState_stub = sinon.stub(Outputs, 'updateScheduleState')
+    let updateManualState_stub = sinon.stub(Outputs, 'updateManualState')
+    let updateLastController_stub = sinon.stub(Outputs, 'updateLastController')
 
     afterEach(function() {
-      setOutputScheduleState_stub.resetHistory()
-      setOutputManualState_stub.resetHistory()
-      setLastOutputController_stub.resetHistory()
+      updateScheduleState_stub.resetHistory()
+      updateManualState_stub.resetHistory()
+      updateLastController_stub.resetHistory()
     })
-
-    let dummy_state = {
-      outputState: {
-        setOutputScheduleState: setOutputScheduleState_stub,
-        setOutputManualState: setOutputManualState_stub,
-        setLastOutputController: setLastOutputController_stub
-      }
-    }
+      
     describe('manual controller tests', function() {
       it('should return false and update schedule state(schedule instruction)', function() {
         let dummy_output = {
@@ -792,7 +785,7 @@ describe("EventHandlerUtils.js tests", function() {
         outputPWMObject: false,
         manualOutputValue: 0
       }
-      assert.isFalse(EventHandler.filterOn(dummy_state, dummy_output, 1, ""))
+      assert.isFalse(EventHandler.filterOn(dummy_output, dummy_state, 1, ""))
       sinon.assert.calledOnce(setOutputScheduleState_stub)
     })
   })

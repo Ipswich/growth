@@ -39,6 +39,7 @@ module.exports.testConnectivity = testConnectivity
 /**
  * Adds a new output to the database.
  * @param {string} name Output name.
+ * @param {string} type Output type.
  * @param {string} description Description of the output. 
  * @param {boolean} outputPWM Enable/Disable PWM.
  * @param {number} outputPWMPin Pin number for device.
@@ -186,6 +187,26 @@ module.exports.getOutputStateByID = async function(id) {
 }
 
 /**
+ * Selects an output state from the database.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query.
+ */
+module.exports.getOutputState = async function() {
+  let pool = await exports.getPool()
+  return new Promise((resolve, reject) => {
+    let query = `CALL getOutputState()`
+    pool.query(query, (error, results, fields) => {
+      //Error on problem
+      if(error) {
+        simpleErrorPrintout("getOutputState() failed, database error.");
+        reject(error);
+      } else {
+        resolve(results[0])
+      }
+    })
+  })
+}
+
+/**
  * Selects all sensors from the database.
  * @returns {Promise<[object]>} A promise that resolves with the results of the query.
  */
@@ -306,6 +327,8 @@ module.exports.getUser = async function(username) {
         reject(error);
       } else {
         //(success)
+        console.log(query)
+        console.log(results)
         resolve(results[0])
       }
     })
@@ -346,7 +369,7 @@ module.exports.updateSensorAddress = async function(sensorID, address){
  */
 module.exports.updateSensorPin = async function(sensorID, pin){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL updateSensorPin(${sensorID}, ${pin})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -375,7 +398,7 @@ module.exports.updateSensorPin = async function(sensorID, pin){
  */
 module.exports.updateOutput = async function(id, name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order = 0){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL updateOutput(${id}, ${name}, ${type}, ${description}, ${outputPWM}, ${outputPWMPin}, ${outputPWMInversion}, ${order})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -394,20 +417,83 @@ module.exports.updateOutput = async function(id, name, type, description, output
  * @param {number} id
  * @param {boolean} outputScheduleState 
  * @param {number} outputScheduleValue 
- * @param {boolean} outputManualState 
- * @param {number} outputManualValue 
- * @param {string} outputController 
- * @param {string} outputLastController 
  * @returns 
  */
-module.exports.updateOutputState = async function(id, outputScheduleState, outputScheduleValue, outputManualState, outputManualValue, outputController, outputLastController){
+module.exports.updateOutputScheduleState = async function(id, outputScheduleState, outputScheduleValue){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
-    let query = `CALL updateOutputState(${id}, ${outputScheduleState}, ${outputScheduleValue}, ${outputManualState}, ${outputManualValue}, ${outputController}, ${outputLastController})`
+  return new Promise((resolve, reject) => {
+    let query = `CALL updateOutputScheduleState(${id}, ${outputScheduleState}, ${outputScheduleValue})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
-        simpleErrorPrintout("updateOutputState() failed, database error.");          
+        simpleErrorPrintout("updateOutputScheduleState() failed, database error.");          
+        reject(error);
+      } else {
+        resolve(results[0])
+      }
+    })
+  })
+}
+
+/**
+ * Updates an output's state in the database.
+ * @param {number} id
+ * @param {boolean} outputManualState 
+ * @param {number} outputManualValue 
+ * @returns 
+ */
+module.exports.updateOutputManualState = async function(id, outputManualState, outputManualValue){
+  let pool = await exports.getPool()
+  return new Promise((resolve, reject) => {
+    let query = `CALL updateOutputManualState(${id}, ${outputManualState}, ${outputManualValue})`
+    pool.query(query, (error, results, fields) => {
+      //Error on problem.
+      if(error) {
+        simpleErrorPrintout("updateOutputManualState() failed, database error.");          
+        reject(error);
+      } else {
+        resolve(results[0])
+      }
+    })
+  })
+}
+
+/**
+ * Updates an output's state in the database.
+ * @param {number} id
+ * @param {boolean} outputController 
+ * @returns 
+ */
+module.exports.updateOutputController = async function(id, outputController){
+  let pool = await exports.getPool()
+  return new Promise((resolve, reject) => {
+    let query = `CALL updateOutputController(${id}, ${outputController})`
+    pool.query(query, (error, results, fields) => {
+      //Error on problem.
+      if(error) {
+        simpleErrorPrintout("updateOutputController() failed, database error.");          
+        reject(error);
+      } else {
+        resolve(results[0])
+      }
+    })
+  })
+}
+
+/**
+ * Updates an output's state in the database.
+ * @param {number} id
+ * @param {boolean} outputLastController 
+ * @returns 
+ */
+module.exports.updateOutputLastController = async function(id, outputLastController){
+  let pool = await exports.getPool()
+  return new Promise((resolve, reject) => {
+    let query = `CALL updateOutputLastController(${id}, ${outputLastController})`
+    pool.query(query, (error, results, fields) => {
+      //Error on problem.
+      if(error) {
+        simpleErrorPrintout("updateOutputLastController() failed, database error.");          
         reject(error);
       } else {
         resolve(results[0])
@@ -434,10 +520,11 @@ module.exports.updateOutputState = async function(id, outputScheduleState, outpu
  * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
  * update only.
  */
-module.exports.updateSensor = async function(id, model, type, location, units, hardwareID, protocol, address){
+module.exports.updateSensor = async function(id, model, type, location, units, hardwareID, protocol, address, pin){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
-    let query = `CALL updateSensor(${id}, ${model}, ${type}, ${location}, ${units}, ${hardwareID}, ${protocol}, ${address}')`
+  return new Promise((resolve, reject) => {
+    let query = `CALL updateSensor(${id}, ${model}, ${type}, ${location}, ${units}, ${hardwareID}, ${protocol}, ${address}, ${pin})`
+    console.log(query)
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
@@ -456,7 +543,7 @@ module.exports.updateSensor = async function(id, model, type, location, units, h
  */
 module.exports.getDays = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getDays()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -477,7 +564,7 @@ module.exports.getDays = async function(){
  */
 module.exports.getEventsByDay = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getEventsByDay(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -498,7 +585,7 @@ module.exports.getEventsByDay = async function(dayID){
  */
 module.exports.getBoundedEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getBoundedEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -518,7 +605,7 @@ module.exports.getBoundedEvents = async function(){
  */
 module.exports.getBoundedEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getBoundedEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -538,7 +625,7 @@ module.exports.getBoundedEventsByDayID = async function(dayID){
  */
 module.exports.getEmailSensorEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getEmailSensorEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -558,7 +645,7 @@ module.exports.getEmailSensorEvents = async function(){
  */
 module.exports.getEmailSensorEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getEmailSensorEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -578,7 +665,7 @@ module.exports.getEmailSensorEventsByDayID = async function(dayID){
  */
 module.exports.getPythonSensorEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getPythonSensorEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -598,7 +685,7 @@ module.exports.getPythonSensorEvents = async function(){
  */
 module.exports.getPythonSensorEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getPythonSensorEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -618,7 +705,7 @@ module.exports.getPythonSensorEventsByDayID = async function(dayID){
  */
 module.exports.getPythonTimeEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getPythonTimeEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -638,7 +725,7 @@ module.exports.getPythonTimeEvents = async function(){
  */
 module.exports.getPythonTimeEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getPythonTimeEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -658,7 +745,7 @@ module.exports.getPythonTimeEventsByDayID = async function(dayID){
  */
 module.exports.getRandomEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getRandomEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -678,7 +765,7 @@ module.exports.getRandomEvents = async function(){
  */
 module.exports.getRandomEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getRandomEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -698,7 +785,7 @@ module.exports.getRandomEventsByDayID = async function(dayID){
  */
 module.exports.getRandomPythonEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getRandomPythonEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -718,7 +805,7 @@ module.exports.getRandomPythonEvents = async function(){
  */
  module.exports.getRandomPythonEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getRandomPythonEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -738,7 +825,7 @@ module.exports.getRandomPythonEvents = async function(){
  */
 module.exports.getRecurringEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getRecurringEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -758,7 +845,7 @@ module.exports.getRecurringEvents = async function(){
  */
  module.exports.getRecurringEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getRecurringEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -778,7 +865,7 @@ module.exports.getRecurringEvents = async function(){
  */
 module.exports.getRecurringPythonEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getRecurringPythonEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -798,7 +885,7 @@ module.exports.getRecurringPythonEvents = async function(){
  */
  module.exports.getRecurringPythonEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getRecurringPythonEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -818,7 +905,7 @@ module.exports.getRecurringPythonEvents = async function(){
  */
 module.exports.getSensorEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getSensorEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -838,7 +925,7 @@ module.exports.getSensorEvents = async function(){
  */
  module.exports.getSensorEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getSensorEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -858,7 +945,7 @@ module.exports.getSensorEvents = async function(){
  */
 module.exports.getSunTrackerEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getSunTrackerEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -878,7 +965,7 @@ module.exports.getSunTrackerEvents = async function(){
  */
  module.exports.getSunTrackerEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getSunTrackerEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -898,7 +985,7 @@ module.exports.getSunTrackerEvents = async function(){
  */
 module.exports.getTimeEvents = async function(){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = 'CALL getTimeEvents()'
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -918,7 +1005,7 @@ module.exports.getTimeEvents = async function(){
  */
 module.exports.getTimeEventsByDayID = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL getTimeEventsByDayID(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -938,7 +1025,7 @@ module.exports.getTimeEventsByDayID = async function(dayID){
  */
  module.exports.removeOutput = async function(outputID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeOutput(${outputID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -958,7 +1045,7 @@ module.exports.getTimeEventsByDayID = async function(dayID){
  */
  module.exports.removeSensor = async function(sensorID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeSensor(${sensorID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -978,7 +1065,7 @@ module.exports.getTimeEventsByDayID = async function(dayID){
  */
 module.exports.removeDay = async function(dayID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeDay(${dayID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -998,7 +1085,7 @@ module.exports.removeDay = async function(dayID){
  */
 module.exports.removeEmailSensorEvent = async function(emailSensorEventID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeEmailSensorEvent(${emailSensorEventID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -1018,7 +1105,7 @@ module.exports.removeEmailSensorEvent = async function(emailSensorEventID){
  */
 module.exports.removePythonSensorEvent = async function(pythonSensorEventID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removePythonSensorEvent(${pythonSensorEventID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -1038,7 +1125,7 @@ module.exports.removePythonSensorEvent = async function(pythonSensorEventID){
  */
 module.exports.removePythonTimeEvent = async function(pythonTimeEventID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removePythonTimeEvent(${pythonTimeEventID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -1058,7 +1145,7 @@ module.exports.removePythonTimeEvent = async function(pythonTimeEventID){
  */
 module.exports.removeRandomEvent = async function(randomEventID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeRandomEvent(${randomEventID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -1078,7 +1165,7 @@ module.exports.removeRandomEvent = async function(randomEventID){
  */
 module.exports.removeRandomPythonEvent = async function(randomPythonEventID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeRandomPythonEvent(${randomPythonEventID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -1098,7 +1185,7 @@ module.exports.removeRandomPythonEvent = async function(randomPythonEventID){
  */
 module.exports.removeRecurringEvent = async function(recurringEventID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeRecurringEvent(${recurringEventID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -1118,7 +1205,7 @@ module.exports.removeRecurringEvent = async function(recurringEventID){
  */
 module.exports.removeRecurringPythonEvent = async function(recurringPythonEventID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeRecurringPythonEvent(${recurringPythonEventID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -1138,7 +1225,7 @@ module.exports.removeRecurringPythonEvent = async function(recurringPythonEventI
  */
 module.exports.removeSensorEvent = async function(sensorEventID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeSensorEvent(${sensorEventID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -1158,7 +1245,7 @@ module.exports.removeSensorEvent = async function(sensorEventID){
  */
 module.exports.removeSunTrackerEvent = async function(sunTrackerEventID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeSunTrackerEvent(${sunTrackerEventID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
@@ -1178,7 +1265,7 @@ module.exports.removeSunTrackerEvent = async function(sunTrackerEventID){
  */
 module.exports.removeTimeEvent = async function(timeEventID){
   let pool = await exports.getPool()
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let query = `CALL removeTimeEvent(${timeEventID})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.

@@ -21,6 +21,8 @@ CALL addSensor('DS18B20', 'Temperature', 'Outside', '°F', 2, 'ONEWIRE', NULL, N
 CALL addSensor('DS18B20', 'Temperature', 'Inside', '°F', 2, 'ONEWIRE', NULL, NULL);
 
 CALL addUser ('SYSTEM', 'SYSTEM', NULL);
+CALL addUser ('admin', '$2b$10$KDSExpDtZd1HXxCZemfxxeZlRCqXD1ZhDPNkIBxjeaYZyaxMUVi9m', NULL);
+
 
 
 COMMIT;

@@ -1,72 +1,8 @@
-const utils = require('../../models/utility/utils.js')
-const printouts = require('../../models/utility/printouts')
-const mappings = require('../../models/utility/mappings')
+const Printouts = require('../../models/utility/Printouts')
+const Outputs = require('../Outputs.js');
+const Constants = require('../Constants')
 
 module.exports = class EventHandlerUtils {
-
-  //TODO
-  static getOutputByEventID(state, eventID){
-    //Iterate through output mappings to get output
-    let output;
-    for(let i = 0; i < state.outputState.getOutputState().length; i++){
-      //if current output ID matches passed schedule output ID
-      if (state.outputState.getOutputState()[i].outputID == eventID){
-        //set output to that output and end forloop
-        output = state.outputState.getOutputState()[i];
-        break;
-      } 
-    }
-    return output;
-  }
-
-  /**
-   * Turns on an output.
-   * @param {object} state current state
-   * @param {object} output output to turn on
-   * @param {number} outputValue PWM value (0 - 100)
-   * @param {string} controllerType Schedule or Manual
-   */
-  static outputOn(config, state, output, outputValue, controllerType = "Schedule") {
-    if(output.outputPWMObject){
-      let maxPWM = config.board_pinout.MAX_PWM;
-      // Do math for PWM object
-      let value;
-      let base = maxPWM/100;
-      //If inversion set, use module.exports.ANALOG_RESOLUTION - PWM value
-      if (output.outputPWMInversion == 0) {
-        value = Math.round(base * outputValue);
-      } else {
-        value = maxPWM - Math.round(base * outputValue);
-      }
-      output.outputPWMObject.brightness(value);        
-      output.outputObject.close();
-      printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON @ " + outputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");      
-    } else {
-      printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
-      output.outputObject.close();
-    }
-    if(controllerType == 'Manual'){
-      state.outputState.setOutputManualState(output.outputID, "Output On", outputValue);
-    } else {
-      state.outputState.setOutputScheduleState(output.outputID, "Output On", outputValue);
-    }
-  }
-
-  /**
-   * Turns off an output, logging the schedule. Helper function for triggerEvent.
-   * @param {object} state current state
-   * @param {object} output output to turn off
-   * @param {object} event
-   */
-  static outputOff(state, output, outputValue, controllerType = "Schedule") {
-    printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
-    output.outputObject.open();
-    if(controllerType == 'Manual'){
-      state.outputState.setOutputManualState(output.outputID, "Output Off", outputValue);
-    } else {
-      state.outputState.setOutputScheduleState(output.outputID, "Output Off", outputValue);
-    }
-  }
 
   /**
    * Gracefully turns of a given output and updates its state. If the output is
@@ -74,58 +10,59 @@ module.exports = class EventHandlerUtils {
    * @param {object} state current state
    * @param {object} output the output to turn off
    */
-  static turnOffOutput(state, output){
-    // if state is already set to off, return
-    if (output.scheduleState == 'Output Off') {
-      return;
-    }
-    //Otherwise, update state and log and do stuff
-    printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
-    output.outputObject.open();
-    state.outputState.setOutputScheduleState(output.outputID, "Output Off", 0);
-  }
+  // static turnOffOutput(state, output){
+  //   // if state is already set to off, return
+  //   if (output.scheduleState == 'Output Off') {
+  //     return;
+  //   }
+  //   //Otherwise, update state and log and do stuff
+  //   Printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
+  //   output.outputObject.open();
+  //   Outputs.updateScheduleState(output.outputID, Constants.outputStates.OFF, 0);
+  // }
 
   /**
    * Used to filter whether an event should be turned ON or not; used to ensure
    * manual ons do not interfere with other running events, and vice versa. 
-   * @param {object} state
    * @param {object} output
+   * @param {object} outputState 
    * @param {object} outputValue 
-   * @param {object} controllerType
+   * @param {string} controllerType schedule's new controller type
    * @returns {boolean} true if the output should be turned on, false otherwise.
    */
-  static filterOn(state, output, outputValue, controllerType = "Schedule") {
-    if(output.outputController == "Manual") {
+  static async filterOn(output, outputState, outputValue, controllerType = Constants.controllerStates.SCHEDULE) {
+    console.log(arguments)
+    if(outputState.outputController == "Manual") {
       //if last state was set to on output value hasn't changed, return  
       if(controllerType != "Manual") {
         //If output controller is manual but schedule type is not, update schedule state
-        state.outputState.setOutputScheduleState(output.outputID, "Output On", outputValue);
-        printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SCHEDULE IN MANUAL STATE")
+        Outputs.updateScheduleState(output.outputID, Constants.outputStates.ON, outputValue);
+        Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SCHEDULE IN MANUAL STATE")
         return false;
       }
-      if(output.lastOutputController == 'Schedule' && output.scheduleState == "Output On") {
+      if(outputState.lastOutputController == 'Schedule' && outputState.scheduleState == Constants.outputStates.ON) {
         //Change of controller - update last output controller, state
-        state.outputState.setLastOutputController(output.outputID, output.outputController)          
+        Outputs.updateLastController(output.outputID, output.outputController)          
         if(output.outputPWMObject) {
-          if(output.scheduleOutputValue == outputValue) {
-            state.outputState.setOutputManualState(output.outputID, "Output On", outputValue);
-            printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+          if(outputState.scheduleOutputValue == outputValue) {
+            Outputs.updateManualState(output.outputID, Constants.outputStates.ON, outputValue);
+            Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
             return false;
           }
         } else {
-          state.outputState.setOutputManualState(output.outputID, "Output On", outputValue);
-          printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+          Outputs.updateManualState(output.outputID, Constants.outputStates.ON, outputValue);
+          Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
           return false;
         }
       }
-      if(output.lastOutputController == 'Manual' && output.manualState == "Output On") {
+      if(outputState.lastOutputController == 'Manual' && outputState.manualState == Constants.outputStates.ON) {
         if(output.outputPWMObject) {
-          if(output.manualOutputValue == outputValue) {          
-            printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+          if(outputState.manualOutputValue == outputValue) {          
+            Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
             return false;
           }
         } else {
-          printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+          Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
           return false;
         }
       } 
@@ -133,33 +70,33 @@ module.exports = class EventHandlerUtils {
       //OutputController == Schedule
       //If output controller is NOT manual and schedule type is manual, return
       if(controllerType == "Manual") {
-        state.outputState.setOutputManualState(output.outputID, "Output On", outputValue);
-        printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, MANUAL IN SCHEDULE STATE")
+        Outputs.updateManualState(output.outputID, Constants.outputStates.ON, outputValue);
+        Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, MANUAL IN SCHEDULE STATE")
         return false;
       }
-      if(output.lastOutputController == 'Schedule' && output.scheduleState == "Output On") {
+      if(outputState.lastOutputController == 'Schedule' && outputState.scheduleState == Constants.outputStates.ON) {
         if(output.outputPWMObject) {
-          if(output.scheduleOutputValue == outputValue) {          
-            printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+          if(outputState.scheduleOutputValue == outputValue) {          
+            Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
             return false;
           }
         } else {
-          printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+          Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
           return false;
         }
       }
-      if(output.lastOutputController == 'Manual' && output.manualState == "Output On") {
+      if(outputState.lastOutputController == 'Manual' && outputState.manualState == Constants.outputStates.ON) {
         //Change of controller - update last output controller, state
-        state.outputState.setLastOutputController(output.outputID, output.outputController)
+        Outputs.updateLastController(output.outputID, output.outputController)
         if(output.outputPWMObject) {
-          if(output.manualOutputValue == outputValue) {              
-            state.outputState.setOutputScheduleState(output.outputID, "Output On", outputValue);
-            printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+          if(outputState.manualOutputValue == outputValue) {              
+            Outputs.updateScheduleState(output.outputID, Constants.outputStates.ON, outputValue);
+            Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
             return false;
           }
         } else {
-          state.outputState.setOutputScheduleState(output.outputID, "Output On", outputValue);
-          printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+          Outputs.updateScheduleState(output.outputID, Constants.outputStates.ON, outputValue);
+          Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
           return false;
         }
       }   
@@ -170,41 +107,40 @@ module.exports = class EventHandlerUtils {
   /**
    * Used to filter whether an event should be turned OFF or not; used to ensure
    * manual offs do not interfere with other running events, and vice versa. 
-   * @param {object} state
    * @param {object} output
-   * @param {object} controllerType
+   * @param {object} outputState
    * @returns true if the event should be turned off, false otherwise.
    */
-  static filterOff(state, output, controllerType = "Schedule") {
+  static filterOff(output, outputState, controllerType = Constants.controllerStates.SCHEDULE) {
     //If currently in manual control
-    if(output.outputController == "Manual"){
-      if(controllerType != "Manual"){          
+    if(outputState.outputController == Constants.controllerStates.MANUAL){
+      if(controllerType != Constants.controllerStates.MANUAL){          
         // If output controller is manual, and schedule type is NOT manual, return
-        state.outputState.setOutputScheduleState(output.outputID, "Output Off"); 
-        printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SCHEDULE IN MANUAL STATE")
+        Outputs.updateScheduleState(output.outputID, Constants.outputStates.OFF); 
+        Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SCHEDULE IN MANUAL STATE")
         return false;
       } 
       //if old state was set to off, return        
-      if(output.lastOutputController == 'Schedule' && output.scheduleState == "Output Off") {
-        state.outputState.setOutputManualState(output.outputID, "Output Off");
-        printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+      if(outputState.lastOutputController == 'Schedule' && outputState.scheduleState == Constants.outputStates.OFF) {
+        Outputs.updateManualState(output.outputID, Constants.outputStates.OFF);
+        Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
         return false;
       }
-      if(output.lastOutputController == 'Manual' && output.manualState == "Output Off"){
-        printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+      if(outputState.lastOutputController == 'Manual' && outputState.manualState == Constants.outputStates.OFF){
+        Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
         return false;
       }     
     // Else we're in schedule control
     } else {
       // If output controller is NOT manual, and schedule type is manual, return
-      if(controllerType == "Manual"){          
-        state.outputState.setOutputManualState(output.outputID, "Output Off");
-        printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] OFF - SKIPPED, MANUAL IN SCHEDULE STATE")
+      if(controllerType == Constants.controllerStates.MANUAL){          
+        Outputs.updateManualState(output.outputID, Constants.outputStates.OFF);
+        Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] OFF - SKIPPED, MANUAL IN SCHEDULE STATE")
         return false;
       }
       //if old state was set to off, return        
-      if(output.lastOutputController == 'Schedule' && output.scheduleState == "Output Off") {
-        printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] OFF - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+      if(outputState.lastOutputController == 'Schedule' && outputState.scheduleState == Constants.outputStates.OFF) {
+        Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] OFF - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
         return false;
       }
     }
@@ -270,25 +206,25 @@ module.exports = class EventHandlerUtils {
 //       }
 //       try {
 //         let python = child_process.spawn('python3', input_file);      
-//         printouts.simpleLogPrintout("Running python script: " + file)
+//         Printouts.simpleLogPrintout("Running python script: " + file)
 //         python.stdout.on('data', function (data) {
-//           printouts.simpleLogPrintout("PYTHON: " + data.toString())
+//           Printouts.simpleLogPrintout("PYTHON: " + data.toString())
 //         });
 //         python.stderr.on('data', function (data) {
-//           printouts.simpleErrorPrintout("PYTHON ERROR: " + data.toString())
+//           Printouts.simpleErrorPrintout("PYTHON ERROR: " + data.toString())
 //         })
 //         python.on('close', (code) => {
 //           // If code not 3, do nothing.
 //           if (code != 3) {
-//             printouts.simpleLogPrintout(file + " exited, code: " + code) 
+//             Printouts.simpleLogPrintout(file + " exited, code: " + code) 
 //           // Else, read output file and do stuff.
 //           } else {
-//             printouts.simpleLogPrintout(file + " exited, code: " + code + " - reading script output file, " + fileName + ".txt" + ".")          
+//             Printouts.simpleLogPrintout(file + " exited, code: " + code + " - reading script output file, " + fileName + ".txt" + ".")          
 //             module.exports._runPythonResult(output, schedule, state, fileName)
 //           }
 //         });
 //       } catch (e) {
-//         printouts.simpleErrorPrintout("Error opening python file: " + e)
+//         Printouts.simpleErrorPrintout("Error opening python file: " + e)
 //       }
 //       break;
 //   }
@@ -337,14 +273,14 @@ module.exports = class EventHandlerUtils {
 //   let return_val = true
 //   await transporter.sendMail(mailOptions)
 //   .then((info) => {
-//     printouts.simpleLogPrintout("Warning sent to " + schedule.email + ".")
+//     Printouts.simpleLogPrintout("Warning sent to " + schedule.email + ".")
 //     dbcalls.logScheduledEvent(schedule.scheduleID).catch(() => {
-//       printouts.simpleErrorPrintout("Could not log EMAIL event.")
+//       Printouts.simpleErrorPrintout("Could not log EMAIL event.")
 //     });
 //   })
 //   .catch((error) => {
 //     return_val = false
-//     printouts.simpleLogPrintout("Error sending mail: " + error)
+//     Printouts.simpleLogPrintout("Error sending mail: " + error)
 //   })
 //   return return_val
 // }
@@ -363,7 +299,7 @@ module.exports = class EventHandlerUtils {
 //   let ret_val = false
 //   await fs.readFile(config.script_directory + '/' + fileName + ".txt", "utf8", (err, data) => {
 //     if(err) {
-//       printouts.debugPrintout("Error reading output file: " + err)
+//       Printouts.debugPrintout("Error reading output file: " + err)
 //       return;
 //     } else {
 //       let parsed_data
@@ -379,7 +315,7 @@ module.exports = class EventHandlerUtils {
 //         }
 //       } catch (e) {
 //         // Unsuccessful, return early.
-//         printouts.debugPrintout("Error reading output file: " + e)
+//         Printouts.debugPrintout("Error reading output file: " + e)
 //         return;
 //       }
 //       //Turn on Output based on python output
@@ -431,9 +367,9 @@ module.exports = class EventHandlerUtils {
 //         value = 255 - Math.round(base * output.scheduleOutputValue);
 //       }
 //       output.outputPWMObject.brightness(value);
-//       printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] ON @ " + output.scheduleOutputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");
+//       Printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] ON @ " + output.scheduleOutputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");
 //     } else {
-//       printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
+//       Printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
 //     }
 //     output.outputObject.close()
 //   } else {
@@ -441,10 +377,10 @@ module.exports = class EventHandlerUtils {
 //     if(output.manualState == output.scheduleState){
 //       return false
 //     }
-//     printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");    
+//     Printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");    
 //     output.outputObject.open()    
 //   }    
-//   outputState.setLastOutputController(outputID, output.outputController)
+//   outputState.updateLastController(outputID, output.outputController)
 //   return true
 // }
 

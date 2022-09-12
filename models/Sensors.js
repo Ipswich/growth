@@ -18,8 +18,8 @@ module.exports = class Sensors {
     return await dbCalls.getSensors();
   }
 
-  static async updateAsync(id, model, type, location, units, hardwareID, sensorProtocol, sensorAddress){ 
-    await dbCalls.updateSensor(id, model, type, location, units, hardwareID, sensorProtocol, sensorAddress);
+  static async updateAsync(id, model, type, location, units, hardwareID, sensorProtocol, sensorAddress, sensorPin){ 
+    await dbCalls.updateSensor(id, model, type, location, units, hardwareID, sensorProtocol, sensorAddress, sensorPin);
   }
 
   static async updateAddressAsync(sensorID, address){
@@ -143,7 +143,9 @@ module.exports = class Sensors {
       let id = sensor.sensorID;
       let data = {};
       for(let key in sensor){
-        data[key] = sensor[key]
+        if (key != "sensorID"){
+          data[key] = sensor[key]
+        }
       }
       return {[id]: data}
     }))
@@ -165,17 +167,18 @@ module.exports = class Sensors {
       //going on there that has made it ... frustrating... to try to promisify the
       //events and stuff. Ultimately this was the only way I could make it work,
       //can't really explain it.
-      address_event.on('done', async (DS18B20_Array) => {
+      address_event.on('done', (DS18B20_Array) => {
         //Set up sensors and bind to state object.
         DS18B20_Array = DS18B20_Array.map(e => e.toString())
+        //###################Get max hardwareID 
+        //###TODO: FIX ME
         let hardwareIDList = []
-        for(let sensor of mapperState.sensors){
-          if (sensor.sensorHardwareID != null && sensor.sensorHardwareID != undefined){
-            hardwareIDList.push(sensor.sensorHardwareID)
+        for(let sensor in mapperState.sensors){
+          if (hardwareIDList.hardwareID != null && hardwareIDList.hardwareID != undefined){
+            hardwareIDList.push(sensor.hardwareID)
           }
         }
-        hardwareIDList = [...new Set(hardwareIDList)]
-        for (let hardwareID of hardwareIDList) {
+        for (hardwareID in hardwareIDList) {
           //Loop through sensors to find ones with matching hardwareID
           for(let i = 0; i < mapperState.sensors.length; i++){  
             let currentState = mapperState.sensors[i]  
@@ -183,7 +186,7 @@ module.exports = class Sensors {
             let obj = {controller: currentState.sensorModel}
 
             if(hardwareID == currentState.sensorHardwareID && currentState.sensorProtocol == 'I2C'){
-              obj.address = parseInt(currentState.sensorAddress)
+              obj.sensorAddress = currentState.sensorAddress
             } else if(hardwareID == currentState.sensorHardwareID) {
               obj.pin = currentState.sensorPin
             } else {
@@ -192,11 +195,11 @@ module.exports = class Sensors {
 
             // Create sensor based on type
             try {
-              switch (currentState.sensorType.toLowerCase()) {
+              switch (currentState.sensorType.toLowercase()) {
                 case 'temperature':
                   // If DS18B20, go through array of addresses
                   if(currentState.sensorModel == "DS18B20"){
-                    [ sensor, DS18B20_Array ] = await this._createDS18B20(currentState, DS18B20_Pin, DS18B20_Array, obj)
+                    [ sensor, DS18B20_Array ] = this._createDS18B20(currentState, DS18B20_Array, obj)
                   } else {
                     //Otherwise normal temperature sensor
                     sensor = new five.Thermometer(obj)
@@ -220,6 +223,7 @@ module.exports = class Sensors {
               }
               currentState.sensorObject = sensor;
             }
+
           }
         resolve(mapperState)
       });
@@ -228,16 +232,16 @@ module.exports = class Sensors {
     })
   }
 
-  static async _createDS18B20(currentState, DS18B20_Pin, DS18B20_Array, obj){
-    return new Promise((resolve, reject) => {
+  static async _createDS18B20(currentState, DS18B20_Array, obj){
+    return new Promise(resolve, reject => {
       let address = currentState.sensorAddress
       // If address is null, pull from bottom of array and update sensor
       if (address == null) {
         address = DS18B20_Array[0]
-        dbCalls.updateSensorAddress(currentState.sensorID, address).catch((e) => {
+        dbCalls.updateSensorAddress(address, currentState.sensorID).catch((e) => {
           Printouts.errorPrintout("Could not update DS18B20 address! Database failure.")
           reject(e)
-        })                 
+        })                    
       }
       //Remove address from array
       const index = DS18B20_Array.indexOf(address);
@@ -247,7 +251,7 @@ module.exports = class Sensors {
       obj.pin = DS18B20_Pin
       address = Number(address)
       obj.address = address
-      let sensor = new five.Thermometer(obj)
+      sensor = new five.Thermometer(obj)
       resolve([ sensor, DS18B20_Array ])
     })
   }
@@ -265,7 +269,7 @@ module.exports = class Sensors {
   }
 
   // This could probably be turned into an async thing...
-  static _getDS18B20Addresses(board, mapperState, DS18B20_Count, DS18B20_Pin, callback) {
+  static async _getDS18B20Addresses(board, mapperState, DS18B20_Count, DS18B20_Pin, callback) {
     let DS18B20_Array = []
     if (DS18B20_Count > 0) {            
       five.Thermometer.Drivers.get(
@@ -285,7 +289,7 @@ module.exports = class Sensors {
           DS18B20_Array.push(addr)
         }
         DS18B20_Count--
-        if (DS18B20_Count <= 0){  
+        if (DS18B20_Count <= 0){        
           callback(DS18B20_Array)
         }
       })      
@@ -299,7 +303,7 @@ module.exports = class Sensors {
    * on the sensor. Intended to be used as part of a forloop over each sensor;
    * i refers to index of the sensorState.data array, NOT sensorID. This
    * promise rejects automatically after 2s.
-   * @param {object} sensor sensor to get data from.
+   * @param {Number} i Index of sensor state data array.
    * @returns {promise}) to a data object that contains identifying 
    * information and a sensor reading.
    */
@@ -320,7 +324,7 @@ module.exports = class Sensors {
       if(obj != null) {
         obj.once('data', () => {
           try {
-            switch (sensor.sensorType) {
+            switch (this.data[i].sensorType) {
               case 'Temperature':
                 if (units == "°C" || units == "C") {
                   data.val = obj.C;
@@ -359,13 +363,13 @@ module.exports = class Sensors {
  * @param {object} state Current state object
  */
 static async addSensorReadings(sensors){
-  for(let i of Object.keys(sensors)) {
+  for(let i in Object.keys(sensors)) {
     try {
-      let data = await this.getSensorVal(sensors[i]);
+      let data = await this.getSensorVal(i);
       if (data.val == undefined){
         throw ("Could not fetch data from sensor: {" + sensors[i].sensorType + ' @ ' + sensors[i].sensorLocation + '}')
       }
-      await dbCalls.addSensorReading(i, data.val)
+      await dbcalls.addSensorReading(i, data.val)
     } catch (e) {
       Printouts.simpleErrorPrintout(e)
     }

@@ -8,30 +8,17 @@ let ConfigHelper = require('./models/utility/ConfigHelper')
 //Database connection
 let dbcalls = require('./models/utility/database_calls')
 //Custom Modules for Events/Readings
-let SystemInitializer = require('./models/state/SystemInitializer.js')
-const { debugPrintout } = require('./models/utility/Printouts');
-
-//Routes
-const indexRouter = require('./routes/index');
-const settingsRouter = require('./routes/settings');
-// const addTimeEventRouter = require('./routes/addTimeEvent');
-// const addSensorEventRouter = require('./routes/addSensorEvent');
-// const addPeriodicEventRouter = require('./routes/addPeriodicEvent');
-// const addManualEventRouter = require('./routes/addManualEvent');
-// const getScheduleDataRouter = require('./routes/getScheduleData');
-// const updateScheduleRouter = require('./routes/updateSchedule');
-const addUserRouter = require('./routes/addUser');
+let SystemInitializer = require('./models/SystemInitializer.js')
+const Printouts = require('./models/utility/Printouts');
 
 //API
-// const getEnvironmentRouter = require('./api/getEnvironment')
-const outputTypeRouter = require('./api/OutputType')
-const outputRouter = require('./api/Output')
-const sensorRouter = require('./api/Sensor')
+const indexRouter = require('./api/index');
+const addUserRouter = require('./api/addUser');
+const outputsRouter = require('./api/Outputs')
+const sensorsRouter = require('./api/Sensors')
 const loginRouter = require('./api/login');
-const stateRouter = require('./api/state');
 const serverRouter = require('./api/server');
 const imagesRouter = require('./api/images');
-const { config } = require('mysql-import');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -55,24 +42,15 @@ app.use('/js', express.static(path.join(__dirname, '/node_modules/@popperjs/core
 app.use('/js', express.static(path.join(__dirname, '/node_modules/jquery/dist')));
 app.use('/js', express.static(path.join(__dirname, '/node_modules/chart.js/dist')));
 
-//Routes for web pages
-app.use('/', indexRouter);
-// app.use('/settings', settingsRouter);
-// app.use('/addTimeEvent', addTimeEventRouter);
-// app.use('/addSensorEvent', addSensorEventRouter);
-// app.use('/addPeriodicEvent', addPeriodicEventRouter);
-// app.use('/addManualEvent', addManualEventRouter);
-// app.use('/getScheduleData', getScheduleDataRouter);
-// app.use('/updateSchedule', updateScheduleRouter);
-app.use('/addUser', addUserRouter);
 
 //Routes for API
-// app.use('/api/getEnvironment', getEnvironmentRouter);
-// app.use('/api/outputType', outputTypeRouter);
-// app.use('/api/output', outputRouter);
-// app.use('/api/sensor', sensorRouter);
+app.use('/', indexRouter);
+app.use('/api/', indexRouter);
+
+app.use('/api/user', addUserRouter);
+app.use('/api/outputs', outputsRouter);
+app.use('/api/sensors', sensorsRouter);
 app.use('/api/login', loginRouter);
-// app.use('/api/state', stateRouter);
 app.use('/api/server', serverRouter);
 app.use('/api/images', imagesRouter);
 // catch 404 and forward to error handler
@@ -95,20 +73,28 @@ new Promise(async (resolve, reject) => {
     ConfigHelper.reloadConfig()
     ConfigHelper.reloadWebData()
     ConfigHelper.reloadBoardPinout()
-    app.set('warnState', ConfigHelper.constructor.warnState);
     let config = ConfigHelper.constructor.config
     config.board_pinout = ConfigHelper.constructor.board_pinout
+    let web_data = ConfigHelper.constructor.web_data
+    app.set('warnState', ConfigHelper.constructor.warnState);
     app.set('config', config);
     app.set('web_data', ConfigHelper.constructor.web_data)
     await dbcalls.getPool(config)
     await dbcalls.testConnectivity()
-    let hardware = await SystemInitializer.initialize(config, app.get('web_data)'));
-    // Store state in app
-    app.set('hardware', hardware)
-    resolve()
+    // Create growth system
+    if (process.env.NODE_ENV == "debug-web-only"){
+      resolve();
+    } else {
+      let hardware = await SystemInitializer.initialize(config, web_data);
+      // Store state in app
+      app.set('hardware', hardware)
+      resolve()
+    }
   } catch (e) {
     reject(e)
   }
+}).then(() => {
+  Printouts.simpleLogPrintout('Service is live!')
 })
 // .catch((e) => {
   // If errors on startup, exit.

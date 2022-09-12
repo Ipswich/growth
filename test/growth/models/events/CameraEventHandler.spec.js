@@ -4,7 +4,7 @@ const child_process = require('child_process')
 const sinon = require('sinon')
 
 const CameraEvents = require('../../../../models/events/CameraEvents')      
-const printouts = require('../../../../models/utility/printouts')
+const Printouts = require('../../../../models/utility/Printouts')
 const utils = require('../../../../models/utility/utils')
 
 describe('CameraEvents.js tests', function() {
@@ -31,7 +31,7 @@ describe('CameraEvents.js tests', function() {
 
       it('should call exec() and print on success', async function (){
         let stub = sinon.stub(child_process, 'exec').yields(null, null, null)
-        let stub_log = sinon.stub(printouts, 'simpleLogPrintout')
+        let stub_log = sinon.stub(Printouts, 'simpleLogPrintout')
         CameraEvents.takeImage(config, web_data)
         sinon.assert.calledOnce(stub_log)
         stub.restore()
@@ -39,7 +39,7 @@ describe('CameraEvents.js tests', function() {
       
       it('should call exec() and print an error', async function() {
         let stub = sinon.stub(child_process, 'exec').yields('ERROR', null, null)
-        let stub_error = sinon.stub(printouts, 'simpleErrorPrintout')
+        let stub_error = sinon.stub(Printouts, 'simpleErrorPrintout')
         CameraEvents.takeImage(config, web_data)
         sinon.assert.calledOnce(stub_error)
         stub.restore()
