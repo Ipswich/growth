@@ -1290,7 +1290,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getManualEvents` () READS SQL DATA
 SELECT *
-FROM Manual;
+FROM ManualEvents;
 $$
 DELIMITER ;
 ## Get Manual events by dayID

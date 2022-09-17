@@ -14,7 +14,7 @@ module.exports = class SystemInitializer {
         // debug: false
       }
       board = new five.Board(board_object);
-      board.once("ready", async function() { 
+      board.once("ready", async function() {
         try {  
           Printouts.simpleLogPrintout("Initializing sensors. . .");
           let sensorDict = await Sensors.createInitialState(config, board)

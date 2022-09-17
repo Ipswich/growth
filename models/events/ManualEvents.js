@@ -46,13 +46,13 @@ module.exports = class ManualEvents {
       this._handleManualEvent(config, outputs[manualEvent.outputID], await Outputs.readStateAsync(timeEvent.outputID), timeEvent);
       manualOutputs.push(manualEvent.outputID)
       // Add to array of triggered schedule
-      triggeredScheduleMinder.add_schedule({
+      this.triggeredScheduleMinder.add_schedule({
         scheduleID: manualEvent.manualEventID,
         timeout: moment().add(1, 'm')
       })    
     };
-  // Clean up all schedules from minder
-  triggeredScheduleMinder.auto_remove_schedules();
+    // Clean up all schedules from minder
+    this.triggeredScheduleMinder.auto_remove_schedules();
   return manualOutputs
   }
 

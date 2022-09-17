@@ -167,78 +167,75 @@ module.exports = class Sensors {
       //going on there that has made it ... frustrating... to try to promisify the
       //events and stuff. Ultimately this was the only way I could make it work,
       //can't really explain it.
-      address_event.on('done', (DS18B20_Array) => {
+      address_event.on('done', async (DS18B20_Array) => {
         //Set up sensors and bind to state object.
         DS18B20_Array = DS18B20_Array.map(e => e.toString())
         //###################Get max hardwareID 
         //###TODO: FIX ME
         let hardwareIDList = []
-        for(let sensor in mapperState.sensors){
-          if (hardwareIDList.hardwareID != null && hardwareIDList.hardwareID != undefined){
-            hardwareIDList.push(sensor.hardwareID)
+        for(const sensor of mapperState.sensors){
+          if (!hardwareIDList.includes(sensor.sensorHardwareID)){
+            hardwareIDList.push(parseInt(sensor.sensorHardwareID))
           }
         }
-        for (hardwareID in hardwareIDList) {
+        for (const hardwareID of hardwareIDList) {
           //Loop through sensors to find ones with matching hardwareID
-          for(let i = 0; i < mapperState.sensors.length; i++){  
-            let currentState = mapperState.sensors[i]  
-            let sensor;
-            let obj = {controller: currentState.sensorModel}
+          for(const sensor of mapperState.sensors){
+            let obj = {controller: sensor.sensorModel}
 
-            if(hardwareID == currentState.sensorHardwareID && currentState.sensorProtocol == 'I2C'){
-              obj.sensorAddress = currentState.sensorAddress
-            } else if(hardwareID == currentState.sensorHardwareID) {
-              obj.pin = currentState.sensorPin
+            if(hardwareID == sensor.sensorHardwareID && sensor.sensorProtocol == 'I2C'){
+              obj.address = parseInt(sensor.sensorAddress)
+            } else if(hardwareID == sensor.sensorHardwareID) {
+              obj.pin = sensor.sensorPin
             } else {
               continue
             }
-
+            
             // Create sensor based on type
             try {
-              switch (currentState.sensorType.toLowercase()) {
+              switch (sensor.sensorType.toLowerCase()) {
                 case 'temperature':
                   // If DS18B20, go through array of addresses
-                  if(currentState.sensorModel == "DS18B20"){
-                    [ sensor, DS18B20_Array ] = this._createDS18B20(currentState, DS18B20_Array, obj)
+                  if(sensor.sensorModel == "DS18B20"){
+                    [ sensor.sensorObject, DS18B20_Array ] = await this._createDS18B20(sensor, DS18B20_Array, DS18B20_Pin, obj)
                   } else {
                     //Otherwise normal temperature sensor
-                    sensor = new five.Thermometer(obj)
+                    sensor.sensorObject = new five.Thermometer(obj)
                   } 
                   break;
                 case 'humidity':
-                  sensor = new five.Hygrometer(obj)
+                  sensor.sensorObject = new five.Hygrometer(obj)
                   break;
                 case 'pressure':
-                  sensor = new five.Barometer(obj)
+                  sensor.sensorObject = new five.Barometer(obj)
                   break;
                 case 'carbondioxide':
-                  sensor = -1;
+                  sensor.sensorObject = -1;
                   break;
                 default:
-                  sensor = -1;
+                  sensor.sensorObject = -1;
+                  break;
                 }
               } catch (e) {
                 Printouts.errorPrintout("Arduino out of sensor pins! Could not attach all sensors, please check your board config.")
                 reject(e)
               }
-              currentState.sensorObject = sensor;
             }
-
           }
         resolve(mapperState)
       });
       //Get addresses, calling event emitter thingy when done, which runs the top part of this function.
-      this._getDS18B20Addresses(board, mapperState, DS18B20_Count, DS18B20_Pin, function(ret_val) {address_event.emit('done', ret_val)})
+      await this._getDS18B20Addresses(board, mapperState, DS18B20_Count, DS18B20_Pin, function(ret_val) {address_event.emit('done', ret_val)})
     })
   }
 
-  static async _createDS18B20(currentState, DS18B20_Array, obj){
-    return new Promise(resolve, reject => {
-      let address = currentState.sensorAddress
+  static async _createDS18B20(sensor, DS18B20_Array, DS18B20_Pin, obj){
+    return new Promise(async (resolve, reject) => {
+      let address = sensor.sensorAddress
       // If address is null, pull from bottom of array and update sensor
-      if (address == null) {
+      if (address == null || address == undefined) {
         address = DS18B20_Array[0]
-        dbCalls.updateSensorAddress(address, currentState.sensorID).catch((e) => {
+        await dbCalls.updateSensorAddress(sensor.sensorID, address).catch((e) => {
           Printouts.errorPrintout("Could not update DS18B20 address! Database failure.")
           reject(e)
         })                    
@@ -251,8 +248,8 @@ module.exports = class Sensors {
       obj.pin = DS18B20_Pin
       address = Number(address)
       obj.address = address
-      sensor = new five.Thermometer(obj)
-      resolve([ sensor, DS18B20_Array ])
+      let sensorObject = new five.Thermometer(obj)
+      resolve([ sensorObject, DS18B20_Array ])
     })
   }
 
@@ -300,12 +297,7 @@ module.exports = class Sensors {
 
   /**
    * Returns a promise that resolves with the data from the next "data" event
-   * on the sensor. Intended to be used as part of a forloop over each sensor;
-   * i refers to index of the sensorState.data array, NOT sensorID. This
-   * promise rejects automatically after 2s.
-   * @param {Number} i Index of sensor state data array.
-   * @returns {promise}) to a data object that contains identifying 
-   * information and a sensor reading.
+   * on the sensor.
    */
    static async getSensorVal(sensor) {
     let obj = sensor.sensorObject;
@@ -322,23 +314,23 @@ module.exports = class Sensors {
         reject(new Error("Timeout waiting for sensor data."))
       }, 2000)
       if(obj != null) {
-        obj.once('data', () => {
+        obj.once("data", function() {
           try {
-            switch (this.data[i].sensorType) {
-              case 'Temperature':
+            switch (sensor.sensorType.toLowerCase()) {
+              case 'temperature':
                 if (units == "°C" || units == "C") {
                   data.val = obj.C;
                 } else if (units == "°F" || units == "F") {
                   data.val = obj.F;
                 }
                 break;
-              case 'Humidity':
+              case 'humidity':
                 data.val = obj.RH;
                 break;
-              case 'Pressure':
+              case 'pressure':
                 data.val = obj.pressure;
                 break;
-              case 'CarbonDioxide':
+              case 'carbondioxide':
                 data.val = -1;
                 break;
               default:
@@ -356,24 +348,24 @@ module.exports = class Sensors {
   }
 
 
-/**
- * Iterates through the state object getting a reading from each sensor
- * and adding it to the database. Updates the state object with the last
- * reading of each sensor.
- * @param {object} state Current state object
- */
-static async addSensorReadings(sensors){
-  for(let i in Object.keys(sensors)) {
-    try {
-      let data = await this.getSensorVal(i);
-      if (data.val == undefined){
-        throw ("Could not fetch data from sensor: {" + sensors[i].sensorType + ' @ ' + sensors[i].sensorLocation + '}')
+  /**
+   * Iterates through the state object getting a reading from each sensor
+   * and adding it to the database. Updates the state object with the last
+   * reading of each sensor.
+   * @param {object} state Current state object
+   */
+  static async addSensorReadings(sensors){
+    for(const sensorID of Object.keys(sensors)) {
+      try {
+        let data = await this.getSensorVal(sensors[sensorID]);
+        if (data.val == undefined){
+          throw ("Could not fetch data from sensor: {" + sensors[sensorID].sensorType + ' @ ' + sensors[sensorID].sensorLocation + '}')
+        }
+        await dbCalls.addSensorReading(sensorID, data.val)
+      } catch (e) {
+        Printouts.simpleErrorPrintout(e)
       }
-      await dbCalls.addSensorReading(i, data.val)
-    } catch (e) {
-      Printouts.simpleErrorPrintout(e)
     }
   }
-}
 }
 

@@ -32,11 +32,11 @@ module.exports = class Schedule {
       let manualOutputs = await ManualEvents.manualEventRunner(config, outputs, 1);
       await TimeEvents.timeEventRunner(config, outputs, manualOutputs, 1);
       await SensorEvents.sensorEventRunner(config, outputs, manualOutputs, 1);
-      await this.scheduleMinder(state);
+      await Schedule._scheduleMinder(outputs);
     }, EVENT_TIMER);
 
     // Handle camera things, if enabled.
-    this._initializeCamera(config, web_data);
+    this._cameraEventRunner(config, web_data);
   }
 
   /**
@@ -64,16 +64,16 @@ module.exports = class Schedule {
    * schedules that reference them. Manually controlled outputs are untouched,
    * but outputScheduleState is updated if needed.
    */
-  static async _scheduleMinder(outputs, schedulesObject) {
+  static async _scheduleMinder(outputs) {
     let schedulesObject = Object.assign({}, 
       await TimeEvents.getAllAsync(), 
       await SensorEvents.getAllAsync(),
       await ManualEvents.getAllAsync()
     );
-    for(i = 0; i < outputs.length; i++){
+    for(let i = 0; i < outputs.length; i++){
       let present = false
       for(const key in Object.keys(schedulesObject)){        
-        for(j = 0; j < schedulesObject[key].length; j++){
+        for(let j = 0; j < schedulesObject[key].length; j++){
           if (outputs[i].outputID == schedulesObject[key][j].outputID){
             present = true;
             break;
@@ -91,5 +91,4 @@ module.exports = class Schedule {
       }
     }
   }
-
 }

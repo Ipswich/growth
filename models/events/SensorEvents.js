@@ -31,7 +31,7 @@ module.exports = class SensorEvents{
     await dbCalls.removeSensorEvent(eventID);
   }
 
-  static async sensorEventRunner(config, outputs, dayID){
+  static async sensorEventRunner(config, outputs, manualOutputs, dayID){
     const sensorEvents = await this.getByDayIDAsync(dayID);
 
     for(const sensorEvent in sensorEvents){

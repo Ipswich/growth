@@ -48,14 +48,14 @@ module.exports = class TimeEvents {
       if(moment(currentTime, "HH:mm:ss").isSame(triggerTime, 'minute')) {
         this._handleTimeEvent(config, outputs[timeEvent.outputID], await Outputs.readStateAsync(timeEvent.outputID), timeEvent, manualOutputs);
         // Add to array of triggered schedule
-        triggeredScheduleMinder.add_schedule({
+        this.triggeredScheduleMinder.add_schedule({
           scheduleID: timeEvent.timeEventID,
           timeout: moment().add(1, 'm')
         })
       }
     };
-  // Clean up all schedules from minder
-  triggeredScheduleMinder.auto_remove_schedules();
+    // Clean up all schedules from minder
+    this.triggeredScheduleMinder.auto_remove_schedules();
   }
 
   static _handleTimeEvent(config, output, outputState, timeEvent, manualOutputs){
