@@ -327,8 +327,6 @@ module.exports.getUser = async function(username) {
         reject(error);
       } else {
         //(success)
-        console.log(query)
-        console.log(results)
         resolve(results[0])
       }
     })
@@ -524,7 +522,6 @@ module.exports.updateSensor = async function(id, model, type, location, units, h
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
     let query = `CALL updateSensor(${id}, ${model}, ${type}, ${location}, ${units}, ${hardwareID}, ${protocol}, ${address}, ${pin})`
-    console.log(query)
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
@@ -1147,6 +1144,7 @@ module.exports.removeManualEvent = async function(manualEventID){
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
     let query = `CALL removeManualEvent(${manualEventID})`
+    console.log(query)
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {

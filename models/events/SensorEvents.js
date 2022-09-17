@@ -10,7 +10,6 @@ module.exports = class SensorEvents{
   static triggeredScheduleMinder = new TriggeredScheduleMinder()
 
   static async createAsync(dayID, startTime, stopTime, outputID, sensorID, triggerValues, triggerComparator, createdBy) {
-    createdBy = null ?? 'NULL';
     await dbCalls.addSensorEvent(dayID, startTime, stopTime, outputID, sensorID, triggerValues, triggerComparator, createdBy);
   }
 
@@ -23,7 +22,6 @@ module.exports = class SensorEvents{
   }
 
   static async updateAsync(sensorEventID, dayID, startTime, stopTime, outputID, sensorID, triggerValues, triggerComparator, createdBy){     
-    createdBy = null ?? 'NULL';
     await dbCalls.updateSensorEvent(sensorEventID, dayID, startTime, stopTime, outputID, sensorID, triggerValues, triggerComparator, createdBy);
   }
 

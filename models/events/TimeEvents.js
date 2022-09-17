@@ -9,7 +9,6 @@ module.exports = class TimeEvents {
   static triggeredScheduleMinder = new TriggeredScheduleMinder()
   
   static async createAsync(dayID, triggerTime, outputID, outputValue, createdBy) {
-    createdBy = null ?? 'NULL';
     await dbCalls.addTimeEvent(dayID, triggerTime, outputID, outputValue, createdBy);
     return this;
   }
@@ -23,7 +22,6 @@ module.exports = class TimeEvents {
   }
 
   static async updateAsync(timeEventID, dayID, triggerTime, outputID, outputValue, createdBy){ 
-    createdBy = null ?? 'NULL';
     await dbCalls.updateTimeEvent(timeEventID, dayID, triggerTime, outputID, outputValue, createdBy);
     return this;
   }

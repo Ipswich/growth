@@ -9,8 +9,7 @@ const Constants = require('../Constants');
 module.exports = class ManualEvents {
   static triggeredScheduleMinder = new TriggeredScheduleMinder()
   
-  static async createAsync(dayID, outputID, outputValue, createdBy) {
-    createdBy = null ?? 'NULL';
+  static async createAsync(dayID, outputID, outputValue, createdBy = 'NULL') {
     await dbCalls.addManualEvent(dayID, outputID, outputValue, createdBy);
     return this;
   }
@@ -23,8 +22,7 @@ module.exports = class ManualEvents {
     return await dbCalls.getManualEventsByDayID(dayID);
   }
 
-  static async updateAsync(manualEventID, dayID, outputID, outputValue, createdBy){ 
-    createdBy = null ?? 'NULL';
+  static async updateAsync(manualEventID, dayID, outputID, outputValue, createdBy = 'NULL'){ 
     await dbCalls.updateManualEvent(manualEventID, dayID, outputID, outputValue, createdBy);
     return this;
   }

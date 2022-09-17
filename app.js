@@ -20,6 +20,7 @@ const loginRouter = require('./api/login');
 const serverRouter = require('./api/server');
 const imagesRouter = require('./api/images');
 
+const manualEventsRouter = require('./api/events/manualEventsAPI')
 const timeEventsRouter = require('./api/events/timeEventsAPI')
 const sensorEventsRouter = require('./api/events/sensorEventsAPI')
 const daysRouter = require('./api/dayAPI');
@@ -59,6 +60,7 @@ app.use('/api/server', serverRouter);
 app.use('/api/images', imagesRouter);
 
 app.use('/api/days', daysRouter);
+app.use('/api/events', manualEventsRouter);
 app.use('/api/events', timeEventsRouter);
 app.use('/api/events', sensorEventsRouter);
 // catch 404 and forward to error handler

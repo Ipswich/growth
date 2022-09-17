@@ -2,8 +2,7 @@ const dbCalls = require('./utility/database_calls')
 
 module.exports = class Days {
 
-  static async createAsync(weekday, createdBy) {
-    createdBy = null ?? 'NULL';
+  static async createAsync(weekday, createdBy = 'NULL') {
     await dbCalls.addDay(weekday, createdBy);
   }
 
@@ -11,8 +10,7 @@ module.exports = class Days {
     return await dbCalls.getDays();
   }
 
-  static async updateAsync(dayID, weekday, createdBy){ 
-    createdBy = null ?? 'NULL';
+  static async updateAsync(dayID, weekday, createdBy = 'NULL'){ 
     await dbCalls.updateDay(dayID, weekday, createdBy);
   }
 

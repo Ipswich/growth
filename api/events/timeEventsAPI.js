@@ -18,7 +18,7 @@ router.post('/timeEvents', auth, async function(req, res, next) {
     let triggerTime = sanitizedData.triggerTime;
     let outputID = sanitizedData.outputID;
     let outputValue = sanitizedData.outputValue;
-    let createdBy = sanitizedData.username;
+    let createdBy = `'${res.locals.username}'`
     await TimeEvents.createAsync(dayID, triggerTime, outputID, outputValue, createdBy);
     res.status(200).send();
   } catch (e) {
@@ -54,12 +54,12 @@ router.put('/timeEvents', auth, async function(req, res, next) {
         sanitizedData[key] = mysql.escape(sanitizedData[key])
       }
     }
-    let timeEventID = sanitizedData.timeEventID
+    let timeEventID = sanitizedData.eventID
     let dayID = sanitizedData.dayID;
     let triggerTime = sanitizedData.triggerTime;
     let outputID = sanitizedData.outputID;
     let outputValue = sanitizedData.outputValue;
-    let createdBy = sanitizedData.username;
+    let createdBy = `'${res.locals.username}'`
     await TimeEvents.updateAsync(timeEventID, dayID, triggerTime, outputID, outputValue, createdBy);
     res.status(200).send();
   } catch (e) {
@@ -69,7 +69,7 @@ router.put('/timeEvents', auth, async function(req, res, next) {
 
 router.delete('/timeEvents', auth, async function(req, res, next) {
   try {
-    await TimeEvents.deleteAsync(mysql.escape(req.body.dayID));
+    await TimeEvents.deleteAsync(mysql.escape(req.body.eventID));
     res.status(200).send();
   } catch (e) {
     res.status(500).send(e.message);

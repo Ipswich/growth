@@ -14,10 +14,9 @@ router.post('/', auth, async function(req, res, next) {
         sanitizedData[key] = mysql.escape(sanitizedData[key])
       }
     }  
-    let sql_data = {};
-    sql_data.weekday = parseInt(sanitizedData.weekday.slice(1,-1), 2);
-    sql_data.createdBy = sanitizedData.createdBy;
-    await Days.createAsync(sql_data.weekday, sql_data.createdBy);
+    let weekday = parseInt(sanitizedData.weekday.slice(1,-1), 2);
+    let createdBy = `'${res.locals.username}'`
+    await Days.createAsync(weekday, createdBy);
     res.status(200).send();
   } catch (e) {
     res.status(500).send(e.message);
@@ -55,7 +54,7 @@ router.put('/', auth, async function(req, res, next) {
     } 
     let dayID = sanitizedData.dayID
     let weekday = parseInt(sanitizedData.weekday.slice(1,-1), 2);
-    let createdBy = sanitizedData.createdBy;
+    let createdBy = `'${res.locals.username}'`
     await Days.updateAsync(dayID, weekday, createdBy);
     res.status(200).send();
   } catch (e) {

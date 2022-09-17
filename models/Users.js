@@ -4,7 +4,6 @@ module.exports = class Users {
 
   static async createAsync(obj) {
     let { username, hash, email } = obj;
-    createdBy = null ?? 'NULL';
     await dbCalls.addUser(username, hash, email);;
   }
 

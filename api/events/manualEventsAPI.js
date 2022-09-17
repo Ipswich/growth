@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/authenticateLogin')
+const Manual = require('../../models/events/ManualEvents');
 const mysql = require('mysql');
-const SensorEvents = require('../../models/events/SensorEvents');
 
-router.post('/sensorEvents', auth, async function(req, res, next) {
+router.post('/manualEvents', auth, async function(req, res, next) {
   try {
     let sanitizedData = Object.assign({}, req.body);
     for (const key in sanitizedData){
@@ -15,30 +15,35 @@ router.post('/sensorEvents', auth, async function(req, res, next) {
       }
     } 
     let dayID = sanitizedData.dayID;
-    let startTime = sanitizedData.startTime;
-    let stopTime = sanitizedData.stopTime;
     let outputID = sanitizedData.outputID;
-    let sensorID = sanitizedData.sensorID;
-    let triggerValues = sanitizedData.triggerValues;
-    let triggerComparator = sanitizedData.triggerComparator;
+    let outputValue = sanitizedData.outputValue;
     let createdBy = `'${res.locals.username}'`
-    await SensorEvents.createAsync(dayID, startTime, stopTime, outputID, sensorID, triggerValues, triggerComparator, createdBy);
+    await Manual.createAsync(dayID, outputID, outputValue, createdBy);
     res.status(200).send();
   } catch (e) {
     res.status(500).send(e.message);
   }
 })
 
-router.get('/sensorEvents', auth, async function(req, res, next) {
+router.get('/manualEvents', auth, async function(req, res, next) {
   try {
-    let result = await SensorEvents.getAllAsync();
+    let result = await Manual.getAllAsync();
     res.status(200).send(result);
   } catch (e) {
     res.status(500).send(e.message);
   }
 })
 
-router.put('/sensorEvents', auth, async function(req, res, next) {
+router.get('/manualEvents/:dayID', auth, async function(req, res, next) {
+  try {
+    let result = await Manual.getByDayIDAsync(mysql.escape(req.params.dayID));
+    res.status(200).send(result);
+  } catch (e) {
+    res.status(500).send(e.message);
+  }
+})
+
+router.put('/manualEvents', auth, async function(req, res, next) {
   try {
     let sanitizedData = Object.assign({}, req.body);
     for (const key in sanitizedData){
@@ -47,26 +52,22 @@ router.put('/sensorEvents', auth, async function(req, res, next) {
       } else {
         sanitizedData[key] = mysql.escape(sanitizedData[key])
       }
-    } 
-    let sensorEventID = sanitizedData.eventID;
+    }
+    let manualEventID = sanitizedData.manualEventID
     let dayID = sanitizedData.dayID;
-    let startTime = sanitizedData.startTime;
-    let stopTime = sanitizedData.stopTime;
     let outputID = sanitizedData.outputID;
-    let sensorID = sanitizedData.sensorID;
-    let triggerValues = sanitizedData.triggerValues;
-    let triggerComparator = sanitizedData.triggerComparator;
+    let outputValue = sanitizedData.outputValue;
     let createdBy = `'${res.locals.username}'`
-    await SensorEvents.updateAsync(sensorEventID, dayID, startTime, stopTime, outputID, sensorID, triggerValues, triggerComparator, createdBy);
+    await Manual.updateAsync(manualEventID, dayID, outputID, outputValue, createdBy);
     res.status(200).send();
   } catch (e) {
     res.status(500).send(e.message);
   }
 })
 
-router.delete('/sensorEvents', auth, async function(req, res, next) {
+router.delete('/manualEvents', auth, async function(req, res, next) {
   try {
-    await SensorEvents.deleteAsync(mysql.escape(req.body.eventID));
+    await Manual.deleteAsync(mysql.escape(req.body.eventID));
     res.status(200).send();
   } catch (e) {
     res.status(500).send(e.message);
