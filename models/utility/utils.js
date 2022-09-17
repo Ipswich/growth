@@ -2,6 +2,10 @@ const fs = require('fs')
 const fsPromises = require('fs/promises')
 const jwt = require('jsonwebtoken')
 const moment = require('moment')
+const Constants = require('../Constants')
+const ManualEvents = require('../events/ManualEvents')
+const SensorEvents = require('../events/SensorEvents')
+const TimeEvents = require('../events/TimeEvents')
 const printouts = require('./Printouts')
 
 module.exports = class Utilities {
@@ -72,31 +76,6 @@ module.exports = class Utilities {
     string = "'" + destructed[2] + "-" + destructed[0] + "-" + destructed[1] + "'"
     return string;
   }
-
-  /**
-   * "Minds" the schedule. Ensures that outputs are turned off if there are no
-   * schedules that reference them. Manually controlled outputs are untouched,
-   * but outputScheduleState is updated if needed.
-   * @param {object} state the curent state
-   */
-  // static async scheduleMinder(state) {
-  //   let schedules = await Days.readAllAsync()
-  //   let outputs = state.outputState.getOutputState()
-  //   for(i = 0; i < outputs.length; i++){
-  //     let present = false
-  //     for(j = 0; j < schedules.length; j++){
-  //       if (outputs[i].outputID == schedules[j].outputID){
-  //         present = true
-  //       }
-  //     }
-  //     if (present != true){
-  //       if(outputs[i].outputController != 'Manual') {
-  //         eventTriggers.turnOffOutput(state, outputs[i])
-  //       }
-  //       state.outputState.setOutputScheduleState(outputs[i].outputID, "Output Off", 0);
-  //     }
-  //   }
-  // }
 
   /**
    * Checks a request to see if the attached cookie contains a valid JWT token.

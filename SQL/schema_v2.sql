@@ -233,7 +233,6 @@ CREATE TABLE SensorEvents (
   startTime TIME DEFAULT NULL,
   stopTime TIME DEFAULT NULL,
   outputID INT NOT NULL,
-  outputValue INT NOT NULL,
   sensorID INT NOT NULL,
   triggerValues JSON NOT NULL,
   triggerComparator VARCHAR(2) NOT NULL,
@@ -363,6 +362,20 @@ CREATE TABLE SunTrackerEvents (
     )
   )
 );
+
+CREATE TABLE ManualEvents (
+  manualEventID INT NOT NULL AUTO_INCREMENT,
+  dayID INT NOT NULL,
+  outputID INT NOT NULL,
+  outputValue INT NOT NULL,
+  createdDate TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
+  createdBy VARCHAR(32) DEFAULT NULL,
+  PRIMARY KEY (manualEventID),
+  FOREIGN KEY (dayID) REFERENCES Days(dayID),
+  FOREIGN KEY (outputID) REFERENCES Outputs(outputID),
+  FOREIGN KEY (createdBy) REFERENCES Users(username)
+);
+
 #########################
 ####### DAYS #####
 ## Get all days
@@ -391,10 +404,10 @@ $$
 DELIMITER ;
 ## Update day
 DELIMITER $$ 
-CREATE PROCEDURE `updateDay` (IN `p_dayID` INT, IN `p_weekday` TINYINT) MODIFIES SQL DATA
+CREATE PROCEDURE `updateDay` (IN `p_dayID` INT, IN `p_weekday` TINYINT, IN `p_createdBy` VARCHAR(32)) MODIFIES SQL DATA
 UPDATE Days
 SET weekday = p_weekday,
-  createdDate = LOCALTIMESTAMP
+  createdDate = LOCALTIMESTAMP, createdBy = p_createdBy
 WHERE Days.dayID = p_dayID;
 $$
 DELIMITER ;
@@ -890,7 +903,6 @@ CREATE PROCEDURE `addSensorEvent` (
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
   IN `p_outputID` INT,
-  IN `p_outputValue` INT,
   IN `p_sensorID` INT,
   IN `p_triggerValues` JSON,
   IN `p_triggerComparator` VARCHAR(2),
@@ -901,7 +913,6 @@ INSERT INTO SensorEvents (
     startTime,
     stopTime,
     outputID,
-    outputValue,
     sensorID,
     triggerValues,
     triggerComparator,
@@ -912,7 +923,6 @@ VALUES (
     p_startTime,
     p_stopTime,
     p_outputID,
-    p_outputValue,
     p_sensorID,
     p_triggerValues,
     p_triggerComparator,
@@ -935,7 +945,6 @@ CREATE PROCEDURE `updateSensorEvent` (
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
   IN `p_outputID` INT,
-  IN `p_outputValue` INT,
   IN `p_sensorID` INT,
   IN `p_triggerValues` JSON,
   IN `p_triggerComparator` VARCHAR(2),
@@ -947,7 +956,6 @@ SET
     startTime = p_startTime,
     stopTime = p_stopTime,
     outputID = p_outputID,
-    outputValue = p_outputValue,
     sensorID = p_sensorID,
     triggerValues = p_triggerValues,
     triggerComparator = p_triggerComparator,
@@ -1009,7 +1017,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `removePythonSensorEvent` (IN `p_pythonSensorEventID` INT) MODIFIES SQL DATA
 DELETE FROM PythonSensorEvents
-WHERE PythonSensorEvents.sensorEventID = p_sensorEventID;
+WHERE PythonSensorEvents.pythonSensorEventID = p_pythonSensorEventID;
 $$
 DELIMITER ;
 ## Update python sensor event
@@ -1035,7 +1043,7 @@ SET
     triggerValues = p_triggerValues,
     triggerComparator = p_triggerComparator,
     createdBy = p_createdBy
-WHERE sensorEventID = p_sensorEventID;
+WHERE pythonSensorEventID = p_pythonSensorEventID;
 $$
 DELIMITER ;
 ####### EMAIL SENSOR EVENTS #####
@@ -1092,7 +1100,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `removeEmailSensorEvent` (IN `p_emailSensorEventID` INT) MODIFIES SQL DATA
 DELETE FROM EmailSensorEvents
-WHERE EmailSensorEvents.sensorEventID = p_sensorEventID;
+WHERE EmailSensorEvents.emailSensorEventID = p_emailSensorEventID;
 $$
 DELIMITER ;
 ## Update email sensor event
@@ -1118,7 +1126,7 @@ SET
     triggerValues = p_triggerValues,
     triggerComparator = p_triggerComparator,
     createdBy = p_createdBy
-WHERE sensorEventID = p_sensorEventID;
+WHERE emailSensorEventID = p_emailSensorEventID;
 $$
 DELIMITER ;
 ####### BOUNDED EVENTS #####
@@ -1170,7 +1178,7 @@ $$
 DELIMITER ;
 ## Delete bounded event
 DELIMITER $$
-CREATE PROCEDURE `removeBoundedEvent` (IN `p_sensorEventID` INT) MODIFIES SQL DATA
+CREATE PROCEDURE `removeBoundedEvent` (IN `p_boundedEventID` INT) MODIFIES SQL DATA
 DELETE FROM BoundedEvents
 WHERE BoundedEvents.boundedEventID = p_boundedEventID;
 $$
@@ -1178,7 +1186,7 @@ DELIMITER ;
 ## Update bounded event
 DELIMITER $$
 CREATE PROCEDURE `updateBoundedEvent` (
-  IN `p_sensorEventID` INT,
+  IN `p_boundedEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -1247,7 +1255,7 @@ $$
 DELIMITER ;
 ## Delete suntracker event
 DELIMITER $$
-CREATE PROCEDURE `removeSunTrackerEvent` (IN `p_sensorEventID` INT) MODIFIES SQL DATA
+CREATE PROCEDURE `removeSunTrackerEvent` (IN `p_sunTrackerEventID` INT) MODIFIES SQL DATA
 DELETE FROM SunTrackerEvents
 WHERE SunTrackerEvents.sunTrackerEventID = p_sunTrackerEventID;
 $$
@@ -1255,7 +1263,7 @@ DELIMITER ;
 ## Update suntracker event
 DELIMITER $$
 CREATE PROCEDURE `updateSunTrackerEvent` (
-  IN `p_sensorEventID` INT,
+  IN `p_sunTrackerEventID` INT,
   IN `p_dayID` INT,
   IN `p_startTime` TIME,
   IN `p_stopTime` TIME,
@@ -1274,6 +1282,70 @@ SET
     outputID = p_outputID,
     createdBy = p_createdBy
 WHERE sunTrackerEventID = p_sunTrackerEventID;
+$$
+DELIMITER ;
+
+####### MANUAL EVENTS #####
+## Get all Manual events
+DELIMITER $$
+CREATE PROCEDURE `getManualEvents` () READS SQL DATA
+SELECT *
+FROM Manual;
+$$
+DELIMITER ;
+## Get Manual events by dayID
+DELIMITER $$ 
+CREATE PROCEDURE `getManualEventsByDayID` (IN `p_dayID` INT) MODIFIES SQL DATA
+SELECT *
+FROM ManualEvents
+WHERE dayID = p_dayID;
+$$
+DELIMITER ;
+## Add new Manual event
+DELIMITER $$
+CREATE PROCEDURE `addManualEvent` (
+  IN `p_dayID` INT,
+  IN `p_outputID` INT,
+  IN `p_outputValue` INT,
+  IN `p_createdBy` VARCHAR(32)
+) MODIFIES SQL DATA
+INSERT INTO ManualEvents (
+    dayID,
+    outputID,
+    outputValue,
+    createdBy
+  )
+VALUES (
+    p_dayID,
+    p_outputID,
+    p_outputValue,
+    p_createdBy
+  );
+$$
+DELIMITER ;
+## Delete Manual event
+DELIMITER $$
+CREATE PROCEDURE `removeManualEvent` (IN `p_manualEventID` INT) MODIFIES SQL DATA
+DELETE FROM ManualEvents
+WHERE manualEventID = p_manualEventID;
+$$
+DELIMITER ;
+## Update Manual event
+DELIMITER $$
+CREATE PROCEDURE `updateManualEvent` (
+  IN `p_manualEventID` INT,
+  IN `p_dayID` INT,
+  IN `p_outputID` INT,
+  IN `p_outputValue` INT,
+  IN `p_createdBy` VARCHAR(32)
+) MODIFIES SQL DATA
+UPDATE ManualEvents
+SET
+    dayID = p_dayID,
+    outputID = p_outputID,
+    outputValue = p_outputValue,
+    createdBy = p_createdBy
+WHERE manualEventID = p_manualEventID;
 $$
 DELIMITER ;
 

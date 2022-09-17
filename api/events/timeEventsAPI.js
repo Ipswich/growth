@@ -1,61 +1,75 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/authenticateLogin')
-const timeEvents = require('../../models/events/TimeEvents');
+const auth = require('../../middleware/authenticateLogin')
+const TimeEvents = require('../../models/events/TimeEvents');
+const mysql = require('mysql');
 
-router.post('/create', auth, async function(req, res, next) {
+router.post('/timeEvents', auth, async function(req, res, next) {
   try {
-    let sql_data = {};
-    sql_data.dayID = req.body.dayID;
-    sql_data.triggerTime = req.body.triggerTime;
-    sql_data.outputID = req.body.outputID;
-    sql_data.outputValue = req.body.outputValue;
-    sql_data.createdBy = res.locals.username;
-    timeEvents.createAsync(sql_data);
+    let sanitizedData = Object.assign({}, req.body);
+    for (const key in sanitizedData){
+      if (sanitizedData[key] == '' || sanitizedData[key] == undefined){
+        sanitizedData[key] = null
+      } else {
+        sanitizedData[key] = mysql.escape(sanitizedData[key])
+      }
+    } 
+    let dayID = sanitizedData.dayID;
+    let triggerTime = sanitizedData.triggerTime;
+    let outputID = sanitizedData.outputID;
+    let outputValue = sanitizedData.outputValue;
+    let createdBy = sanitizedData.username;
+    await TimeEvents.createAsync(dayID, triggerTime, outputID, outputValue, createdBy);
     res.status(200).send();
   } catch (e) {
     res.status(500).send(e.message);
   }
 })
 
-router.get('/get', auth, async function(req, res, next) {
+router.get('/timeEvents', auth, async function(req, res, next) {
   try {
-    let result = timeEvents.readAllAsync();
+    let result = await TimeEvents.getAllAsync();
     res.status(200).send(result);
   } catch (e) {
     res.status(500).send(e.message);
   }
 })
 
-//Maybe move to day? /get/day:dayID might make more sense to me...
-router.get('/get/dayID:dayID', auth, async function(req, res, next) {
+router.get('/timeEvents/:dayID', auth, async function(req, res, next) {
   try {
-    let result = timeEvents.getByDayIDAsync(req.params.dayID);
+    let result = await TimeEvents.getByDayIDAsync(mysql.escape(req.params.dayID));
     res.status(200).send(result);
   } catch (e) {
     res.status(500).send(e.message);
   }
 })
 
-router.put('/update', auth, async function(req, res, next) {
+router.put('/timeEvents', auth, async function(req, res, next) {
   try {
-    let sql_data = {};
-    sql_data.timeEventID = req.body.timeEventID;
-    sql_data.dayID = req.body.dayID;
-    sql_data.triggerTime = req.body.triggerTime;
-    sql_data.outputID = req.body.outputID;
-    sql_data.outputValue = req.body.outputValue;
-    sql_data.createdBy = res.locals.username;
-    timeEvents.updateAsync(sql_data);
+    let sanitizedData = Object.assign({}, req.body);
+    for (const key in sanitizedData){
+      if (sanitizedData[key] == '' || sanitizedData[key] == undefined){
+        sanitizedData[key] = null
+      } else {
+        sanitizedData[key] = mysql.escape(sanitizedData[key])
+      }
+    }
+    let timeEventID = sanitizedData.timeEventID
+    let dayID = sanitizedData.dayID;
+    let triggerTime = sanitizedData.triggerTime;
+    let outputID = sanitizedData.outputID;
+    let outputValue = sanitizedData.outputValue;
+    let createdBy = sanitizedData.username;
+    await TimeEvents.updateAsync(timeEventID, dayID, triggerTime, outputID, outputValue, createdBy);
     res.status(200).send();
   } catch (e) {
     res.status(500).send(e.message);
   }
 })
 
-router.delete('/delete', auth, async function(req, res, next) {
+router.delete('/timeEvents', auth, async function(req, res, next) {
   try {
-    timeEvents.deleteAsync(req.body.dayID);
+    await TimeEvents.deleteAsync(mysql.escape(req.body.dayID));
     res.status(200).send();
   } catch (e) {
     res.status(500).send(e.message);

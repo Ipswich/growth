@@ -30,8 +30,7 @@ module.exports = class EventHandlerUtils {
    * @param {string} controllerType schedule's new controller type
    * @returns {boolean} true if the output should be turned on, false otherwise.
    */
-  static async filterOn(output, outputState, outputValue, controllerType = Constants.controllerStates.SCHEDULE) {
-    console.log(arguments)
+  static async filterOn(output, outputState, outputValue, controllerType = Constants.outputControllers.SCHEDULE) {
     if(outputState.outputController == "Manual") {
       //if last state was set to on output value hasn't changed, return  
       if(controllerType != "Manual") {
@@ -111,10 +110,10 @@ module.exports = class EventHandlerUtils {
    * @param {object} outputState
    * @returns true if the event should be turned off, false otherwise.
    */
-  static filterOff(output, outputState, controllerType = Constants.controllerStates.SCHEDULE) {
+  static filterOff(output, outputState, controllerType = Constants.outputControllers.SCHEDULE) {
     //If currently in manual control
-    if(outputState.outputController == Constants.controllerStates.MANUAL){
-      if(controllerType != Constants.controllerStates.MANUAL){          
+    if(outputState.outputController == Constants.outputControllers.MANUAL){
+      if(controllerType != Constants.outputControllers.MANUAL){          
         // If output controller is manual, and schedule type is NOT manual, return
         Outputs.updateScheduleState(output.outputID, Constants.outputStates.OFF); 
         Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SCHEDULE IN MANUAL STATE")
@@ -133,7 +132,7 @@ module.exports = class EventHandlerUtils {
     // Else we're in schedule control
     } else {
       // If output controller is NOT manual, and schedule type is manual, return
-      if(controllerType == Constants.controllerStates.MANUAL){          
+      if(controllerType == Constants.outputControllers.MANUAL){          
         Outputs.updateManualState(output.outputID, Constants.outputStates.OFF);
         Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] OFF - SKIPPED, MANUAL IN SCHEDULE STATE")
         return false;
@@ -343,44 +342,4 @@ module.exports = class EventHandlerUtils {
 // module.exports._runPythonResult = _runPythonResult
 
 
-// /**
-//  * Resumes a schedule when passed from manual back to schedule.
-//  * @param {object} outputState outputState object (part of state)
-//  * @param {number} outputID the output ID of the object to be controlled.
-//  * @returns {boolean} true if state changed, false otherwise.
-//  */
-// function resumeSchedule(outputState, outputID){
-//   let output = outputState.getOutput(outputID)
-//   if (output.scheduleState == 'Output On') {
-//     //If no state change, return
-//     if(output.manualState == output.scheduleState && output.manualOutputValue == output.scheduleOutputValue){
-//       return false
-//     }
-//     if(output.outputPWMObject){
-//       // Do math for PWM object (255 bit)
-//       let value;
-//       let base = 255/100;
-//       //If inversion set, use 255 - PWM value
-//       if (output.outputPWMInversion == 0) {
-//         value = Math.round(base * output.scheduleOutputValue);
-//       } else {
-//         value = 255 - Math.round(base * output.scheduleOutputValue);
-//       }
-//       output.outputPWMObject.brightness(value);
-//       Printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] ON @ " + output.scheduleOutputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");
-//     } else {
-//       Printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
-//     }
-//     output.outputObject.close()
-//   } else {
-//     //If no state change, return
-//     if(output.manualState == output.scheduleState){
-//       return false
-//     }
-//     Printouts.debugPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");    
-//     output.outputObject.open()    
-//   }    
-//   outputState.updateLastController(outputID, output.outputController)
-//   return true
-// }
 

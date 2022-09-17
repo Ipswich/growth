@@ -20,6 +20,10 @@ const loginRouter = require('./api/login');
 const serverRouter = require('./api/server');
 const imagesRouter = require('./api/images');
 
+const timeEventsRouter = require('./api/events/timeEventsAPI')
+const sensorEventsRouter = require('./api/events/sensorEventsAPI')
+const daysRouter = require('./api/dayAPI');
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -53,6 +57,10 @@ app.use('/api/sensors', sensorsRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/server', serverRouter);
 app.use('/api/images', imagesRouter);
+
+app.use('/api/days', daysRouter);
+app.use('/api/events', timeEventsRouter);
+app.use('/api/events', sensorEventsRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

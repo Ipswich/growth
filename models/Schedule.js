@@ -2,6 +2,10 @@ const CameraEvents = require('./events/CameraEvents')
 const { simpleErrorPrintout } = require('./utility/Printouts')
 const Sensors = require('./Sensors')
 const TimeEvents = require('./events/TimeEvents')
+const SensorEvents = require('./events/SensorEvents')
+const ManualEvents = require('./events/ManualEvents')
+const Outputs = require('./Outputs')
+const Constants = require('./Constants')
 
 const EVENT_TIMER = 1 * 1000 // 1 SECOND
 
@@ -14,18 +18,23 @@ module.exports = class Schedule {
    * @param {object} outputs
    */
   static async initializeSchedule(config, web_data, sensors, outputs) {
-    //Take initial reading to update database
-    //Run events when ready, then set Interval.
+    // Sensor data logging
     await Sensors.addSensorReadings(sensors);
-    await TimeEvents.timeEventRunner(config, outputs, 1);
-    // Set up future events
     setInterval(async function() {
       await Sensors.addSensorReadings(sensors);
-      await TimeEvents.timeEventRunner(config, outputs, 1);
     }, config.log_interval);
+
+    // Event running
+    let manualOutputs = await ManualEvents.manualEventRunner(config, outputs, 1);
+    await TimeEvents.timeEventRunner(config, outputs, manualOutputs, 1);
+    await SensorEvents.sensorEventRunner(config, outputs, manualOutputs, 1);
     setInterval(async function() {
-      // await utils.scheduleMinder(state);
+      let manualOutputs = await ManualEvents.manualEventRunner(config, outputs, 1);
+      await TimeEvents.timeEventRunner(config, outputs, manualOutputs, 1);
+      await SensorEvents.sensorEventRunner(config, outputs, manualOutputs, 1);
+      await this.scheduleMinder(state);
     }, EVENT_TIMER);
+
     // Handle camera things, if enabled.
     this._initializeCamera(config, web_data);
   }
@@ -33,7 +42,7 @@ module.exports = class Schedule {
   /**
    * abstracted logic for camera pieces
    */
-  static _initializeCamera = function(config, web_data) {
+  static _cameraEventRunner = function(config, web_data) {
     if (config.camera.enable){
       try {
         CameraEvents.takeImageBetween(config, web_data);
@@ -49,4 +58,38 @@ module.exports = class Schedule {
       }, config.camera.interval);
     }
   }
+
+  /**
+   * "Minds" the schedule. Ensures that outputs are turned off if there are no
+   * schedules that reference them. Manually controlled outputs are untouched,
+   * but outputScheduleState is updated if needed.
+   */
+  static async _scheduleMinder(outputs, schedulesObject) {
+    let schedulesObject = Object.assign({}, 
+      await TimeEvents.getAllAsync(), 
+      await SensorEvents.getAllAsync(),
+      await ManualEvents.getAllAsync()
+    );
+    for(i = 0; i < outputs.length; i++){
+      let present = false
+      for(const key in Object.keys(schedulesObject)){        
+        for(j = 0; j < schedulesObject[key].length; j++){
+          if (outputs[i].outputID == schedulesObject[key][j].outputID){
+            present = true;
+            break;
+          }
+        }
+        if(present) {
+          break;
+        }
+      }
+      if (present != true){
+        if(outputs[i].outputController != Constants.outputControllers.MANUAL) {
+          Outputs.turnOff(outputs[i], await Outputs.readStateAsync(outputs[i].outputID));
+        }
+        Outputs.updateScheduleStateAsync(outputs[i].outputID, Constants.outputStates.OFF, 0);
+      }
+    }
+  }
+
 }

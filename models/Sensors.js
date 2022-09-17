@@ -369,7 +369,7 @@ static async addSensorReadings(sensors){
       if (data.val == undefined){
         throw ("Could not fetch data from sensor: {" + sensors[i].sensorType + ' @ ' + sensors[i].sensorLocation + '}')
       }
-      await dbcalls.addSensorReading(i, data.val)
+      await dbCalls.addSensorReading(i, data.val)
     } catch (e) {
       Printouts.simpleErrorPrintout(e)
     }

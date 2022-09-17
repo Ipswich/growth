@@ -659,6 +659,46 @@ module.exports.getEmailSensorEventsByDayID = async function(dayID){
   })
 }
 
+
+/**
+ * Gets all of the manual sensor events in the database.
+ * @returns All of the manual sensor events in the database.
+ */
+module.exports.getManualEvents = async function(){
+ return new Promise((resolve, reject) => {
+   let query = `CALL getManualEvents()`
+   pool.query(query, (error, results, fields) => {
+     //Error on problem
+     if(error) {
+       simpleErrorPrintout("getManualEvents() failed, database error.");
+       reject(error);
+     } else {
+       resolve(results[0])
+     }
+   })
+ })
+}
+
+/**
+ * Gets all of the manual sensor events in the database.
+ * @returns All of the manual sensor events in the database.
+ */
+module.exports.getManualEventsByDayID = async function(dayID){
+ return new Promise((resolve, reject) => {
+   let query = `CALL getManualEventsByDayID(${dayID})`
+   pool.query(query, (error, results, fields) => {
+     //Error on problem
+     if(error) {
+       simpleErrorPrintout("getManualEventsByDayID() failed, database error.");
+       reject(error);
+     } else {
+       resolve(results[0])
+     }
+   })
+ })
+}
+
+
 /**
  * Gets all of the python sensor events in the database.
  * @returns All of the python sensor events in the database.
@@ -1100,6 +1140,26 @@ module.exports.removeEmailSensorEvent = async function(emailSensorEventID){
 }
 
 /**
+ * Deletes a manual event from the database.
+ * @param {number} manualEventID
+ */
+module.exports.removeManualEvent = async function(manualEventID){
+  let pool = await exports.getPool()
+  return new Promise((resolve, reject) => {
+    let query = `CALL removeManualEvent(${manualEventID})`
+    pool.query(query, (error, results, fields) => {
+      //Error on problem.
+      if(error) {
+        simpleErrorPrintout("removeManualEvent() failed, database error.");          
+        reject(error);
+      } else {
+        resolve(results[0])
+      }
+    })
+  })
+}
+
+/**
  * Deletes a python sensor event from the database.
  * @param {number} pythonSensorEventID
  */
@@ -1381,6 +1441,28 @@ module.exports.addEmailSensorEvent = async function(dayID, startTime, stopTime, 
 }
 
 /**
+*  Adds a manual event to the database.
+* @param {number} dayID
+* @param {number} outputID 
+* @param {number} outputValue 
+* @param {string} createdBy 
+*/
+module.exports.addManualEvent = async function(dayID, outputID, outputValue, createdBy){
+ return new Promise((resolve, reject) => {
+   let query = `CALL addManualEvent(${dayID}, ${outputID}, ${outputValue}, ${createdBy})`
+   pool.query(query, (error, results, fields) => {
+     //Error on problem
+     if(error) {
+       simpleErrorPrintout("addManualEvent() failed, database error.");
+       reject(error);
+     } else {
+       resolve(results[0])
+     }
+   })
+ })
+}
+
+/**
  * Adds a python time event to the database.
  * @param {number} dayID 
  * @param {string} triggerTime 
@@ -1520,9 +1602,9 @@ module.exports.addRecurringPythonEvent = async function(dayID, startTime, stopTi
  * @param {string} triggerComparator 
  * @param {string} createdBy 
  */
-module.exports.addSensorEvent = async function(dayID, startTime, stopTime, outputID, outputValue, sensorID, triggerValues, triggerComparator, createdBy){
+module.exports.addSensorEvent = async function(dayID, startTime, stopTime, outputID, sensorID, triggerValues, triggerComparator, createdBy){
   return new Promise((resolve, reject) => {
-    let query = `CALL addSensorEvent(${dayID}, ${startTime}, ${stopTime}, ${outputID}, ${outputValue}, ${sensorID}, ${triggerValues}, ${triggerComparator}, ${createdBy})`
+    let query = `CALL addSensorEvent(${dayID}, ${startTime}, ${stopTime}, ${outputID}, ${sensorID}, ${triggerValues}, ${triggerComparator}, ${createdBy})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
@@ -1569,7 +1651,7 @@ module.exports.addSunTrackerEvent = async function(dayID, startTime, stopTime, c
  */
 module.exports.addTimeEvent = async function(dayID, triggerTime, outputID, outputValue, createdBy){
   return new Promise((resolve, reject) => {
-    let query = `CALL addTimeEvent(${dayID}, ${triggerTime}, ${outputID}, ${outputValue}, $${createdBy})`
+    let query = `CALL addTimeEvent(${dayID}, ${triggerTime}, ${outputID}, ${outputValue}, ${createdBy})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
@@ -1658,6 +1740,30 @@ module.exports.updateEmailSensorEvent = async function(emailSensorEventID, dayID
     })
   })
 }
+
+/**
+*  Updates a manual event to the database.
+* @param {number} manualEventID
+* @param {number} dayID
+* @param {number} outputID 
+* @param {number} outputValue 
+* @param {string} createdBy 
+*/
+module.exports.updateManualEvent = async function(manualEventID, dayID, outputID, outputValue, createdBy){
+ return new Promise((resolve, reject) => {
+   let query = `CALL updateManualEvent(${manualEventID}, ${dayID}, ${outputID}, ${outputValue}, ${createdBy})`
+   pool.query(query, (error, results, fields) => {
+     //Error on problem
+     if(error) {
+       simpleErrorPrintout("updateManualEvent() failed, database error.");
+       reject(error);
+     } else {
+       resolve(results[0])
+     }
+   })
+ })
+}
+
 
 /**
  * Adds a python sensor event to the database.
@@ -1835,9 +1941,9 @@ module.exports.updateRecurringPythonEvent = async function(recurringPythonEventI
  * @param {string} triggerComparator 
  * @param {string} createdBy 
  */
-module.exports.updateSensorEvent = async function(sensorEventID, dayID, startTime, stopTime, outputID, outputValue, sensorID, triggerValues, triggerComparator, createdBy){
+module.exports.updateSensorEvent = async function(sensorEventID, dayID, startTime, stopTime, outputID, sensorID, triggerValues, triggerComparator, createdBy){
   return new Promise((resolve, reject) => {
-    let query = `CALL updateSensorEvent(${sensorEventID}, ${dayID}, ${startTime}, ${stopTime}, ${outputID}, ${outputValue}, ${sensorID}, ${triggerValues}, ${triggerComparator}, ${createdBy})`
+    let query = `CALL updateSensorEvent(${sensorEventID}, ${dayID}, ${startTime}, ${stopTime}, ${outputID}, ${sensorID}, ${triggerValues}, ${triggerComparator}, ${createdBy})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
@@ -1886,7 +1992,10 @@ module.exports.updateSunTrackerEvent = async function(sunTrackerEventID, dayID, 
  */
 module.exports.updateTimeEvent = async function(timeEventID, dayID, triggerTime, outputID, outputValue, createdBy){
   return new Promise((resolve, reject) => {
-    let query = `CALL updateTimeEvent(${timeEventID}, ${dayID}, ${triggerTime}, ${outputID}, ${outputValue}, $${createdBy})`
+    if (outputValue > 100){
+      outputValue = 100
+    }
+    let query = `CALL updateTimeEvent(${timeEventID}, ${dayID}, ${triggerTime}, ${outputID}, ${outputValue}, ${createdBy})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {

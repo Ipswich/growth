@@ -1,4 +1,5 @@
 const five = require('johnny-five')
+const Constants = require('./Constants')
 const dbCalls = require('./utility/database_calls')
 const Mappings = require('./utility/Mappings')
 const Printouts = require('./utility/Printouts')
@@ -80,8 +81,9 @@ module.exports = class Outputs {
    * @param {object} output output to turn on
    * @param {number} outputValue PWM value (0 - 100)
    * @param {object} outputState output to turn on's state
+   * @param {boolean} stateOnly update state only
    */
-   static turnOn(config, output, outputValue, outputState) {
+   static turnOn(config, output, outputValue, outputState, stateOnly) {
     if(output.outputPWMObject){
       let maxPWM = config.board_pinout.MAX_PWM;
       // Do math for PWM object
@@ -93,17 +95,21 @@ module.exports = class Outputs {
       } else {
         value = maxPWM - Math.round(base * outputValue);
       }
-      output.outputPWMObject.brightness(value);        
-      output.outputObject.close();
-      Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] ON @ " + outputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");      
+      if (!stateOnly){
+        output.outputPWMObject.brightness(value);        
+        output.outputObject.close();
+        Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] ON @ " + outputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");      
+      }
     } else {
-      Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
-      output.outputObject.close();
+      if(!stateOnly){
+        Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
+        output.outputObject.close();
+      }
     }
-    if(outputState.controllerType == 'Manual'){
-      this.updateManualState(output.outputID, Constants.outputStates.ON, outputValue);
+    if(outputState.outputController == Constants.outputControllers.MANUAL){
+      this.updateManualStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
     } else {
-      this.updateScheduleState(output.outputID, Constants.outputStates.ON, outputValue);
+      this.updateScheduleStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
     }
   }
 
@@ -111,15 +117,16 @@ module.exports = class Outputs {
   /**
    * Turns off an output, logging the schedule. Helper function for triggerEvent.
    * @param {object} output output to turn off
-   * @param {object} state current output's state
    */
-   static turnOff(output, outputState) {
+   static turnOff(output, outputState, stateOnly) {
     Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
-    output.outputObject.open();
-    if(controllerType == 'Manual'){
-      this.updateManualState(output.outputID, Constants.outputStates.OFF, 0);
+    if (!stateOnly){
+      output.outputObject.open();
+    }
+    if(outputState.outputController == Constants.outputControllers.MANUAL){
+      this.updateManualStateAsync(output.outputID, Constants.outputStates.OFF, 0);
     } else {
-      this.updateScheduleState(output.outputID, Constants.outputStates.OFF, 0);
+      this.updateScheduleStateAsync(output.outputID, Constants.outputStates.OFF, 0);
     }
   }
 

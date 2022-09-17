@@ -1,5 +1,3 @@
-const OutputState = require('../state/OutputState.js')
-const dbcalls = require('./database_calls.js')
 const {errorPrintout} = require('./Printouts')
 
 

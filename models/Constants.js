@@ -10,7 +10,8 @@ const Constants = {
     "PythonSensorEvents",
     "EmailSensorEvents",
     "BoundedEvents",
-    "SunTrackerEvents"
+    "SunTrackerEvents",
+    "ManualEvents"
   ],
   "weekdays": {
     "None": "0x0000000",
@@ -22,7 +23,7 @@ const Constants = {
     "Saturday": "0x0100000",
     "Sunday": "0x1000000"
   },
-  "controllerStates":{
+  "outputControllers":{
     "MANUAL": "MANUAL",
     "SCHEDULE": "SCHEDULE"
   },
