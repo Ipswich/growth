@@ -53,7 +53,7 @@ router.put('/manualEvents', auth, async function(req, res, next) {
         sanitizedData[key] = mysql.escape(sanitizedData[key])
       }
     }
-    let manualEventID = sanitizedData.manualEventID
+    let manualEventID = sanitizedData.eventID
     let dayID = sanitizedData.dayID;
     let outputID = sanitizedData.outputID;
     let outputValue = sanitizedData.outputValue;

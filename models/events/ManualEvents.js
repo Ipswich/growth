@@ -38,10 +38,11 @@ module.exports = class ManualEvents {
     //Iterate through time Schedules
     for(const manualEvent of manualEvents) {
       // If the minder includes the current event, skip to next schedule
-      if(triggeredScheduleMinder.includes(manualEvent.manualEventID)){
+      if(this.triggeredScheduleMinder.includes(manualEvent.manualEventID)){
         continue;
       }
-      this._handleManualEvent(config, outputs[manualEvent.outputID], await Outputs.readStateAsync(timeEvent.outputID), timeEvent);
+      Outputs.updateManualStateAsync
+      this._handleManualEvent(config, outputs[manualEvent.outputID], (await Outputs.readStateAsync(manualEvent.outputID))[0], manualEvent);
       manualOutputs.push(manualEvent.outputID)
       // Add to array of triggered schedule
       this.triggeredScheduleMinder.add_schedule({
@@ -62,12 +63,12 @@ module.exports = class ManualEvents {
     if(outputValue > 0) {
       let toggle = EventHandlerUtils.filterOn(output, outputState, outputValue, Constants.outputControllers.MANUAL);
       if (toggle){
-        Outputs.turnOn(config, manualEvent.outputID, outputValue, outputState, false)
+        Outputs.turnOn(config, output, outputValue, outputState, false)
       }
     } else {
       let toggle = EventHandlerUtils.filterOff(output, outputState, outputValue, Constants.outputControllers.MANUAL);
       if (toggle){
-        Outputs.turnOff(manualEvent.outputID, outputState, false)
+        Outputs.turnOff(output, outputState, false)
       }
     }
   }
