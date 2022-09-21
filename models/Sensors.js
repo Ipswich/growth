@@ -106,6 +106,7 @@ module.exports = class Sensors {
     }
     let analogPin = sensor.sensorPin || mapperState.analogPins.shift();
     hardwareObject[sensor.sensorHardwareID] = analogPin;
+    Sensors.updatePinAsync(sensor.sensorID, analogPin)
     sensor.sensorPin = analogPin;
     return [mapperState, hardwareObject]
   }
@@ -121,6 +122,7 @@ module.exports = class Sensors {
       onewirePin = sensor.sensorPin || mapperState.sensorPins.shift()
     }
     hardwareObject[sensor.sensorHardwareID] = onewirePin;
+    Sensors.updatePinAsync(sensor.sensorID, onewirePin);
     sensor.sensorPin = onewirePin;
     return [mapperState, hardwareObject, onewirePin]
   }
@@ -134,6 +136,7 @@ module.exports = class Sensors {
     }
     let sensorPin = sensor.sensorPin || mapperState.sensorPins.shift()
     hardwareObject[sensor.sensorHardwareID] = sensorPin;
+    Sensors.updatePinAsync(sensor.sensorID, sensorPin);
     sensor.sensorPin = sensorPin
     return [mapperState, hardwareObject]
   }

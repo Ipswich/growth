@@ -42,17 +42,18 @@ module.exports.testConnectivity = testConnectivity
  * @param {string} type Output type.
  * @param {string} description Description of the output. 
  * @param {boolean} outputPWM Enable/Disable PWM.
- * @param {number} outputPWMPin Pin number for device.
+ * @param {number} outputPin Pin number for device.
+ * @param {number} outputPWMPin PWMPin number for device.
  * @param {boolean} outputPWMInversion Invert or not PWM Scale.
  * @param {number} order Ascending logical ordering of the output; higher 
  * number is lower on the list, with 0 being last. Defaults to 0.
  * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is 
  * insert only.
  */
-module.exports.addOutput = async function(name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order = 0) {
+module.exports.addOutput = async function(name, type, description, outputPWM, outputPin, outputPWMPin, outputPWMInversion, order = 0) {
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = `CALL addOutput(${name}, ${type}, ${description}, ${outputPWM}, ${outputPWMPin}, ${outputPWMInversion}, ${order})`
+    let query = `CALL addOutput(${name}, ${type}, ${description}, ${outputPWM}, ${outputPin}, ${outputPWMPin}, ${outputPWMInversion}, ${order})`
     pool.query(query, (error, results, fields) => {
       //Error on problem
       if(error) {
@@ -394,10 +395,10 @@ module.exports.updateSensorPin = async function(sensorID, pin){
  * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
  * update only.
  */
-module.exports.updateOutput = async function(id, name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order = 0){
+module.exports.updateOutput = async function(id, name, type, description, outputPWM, outputPin, outputPWMPin, outputPWMInversion, order = 0){
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = `CALL updateOutput(${id}, ${name}, ${type}, ${description}, ${outputPWM}, ${outputPWMPin}, ${outputPWMInversion}, ${order})`
+    let query = `CALL updateOutput(${id}, ${name}, ${type}, ${description}, ${outputPWM}, ${outputPin}, ${outputPWMPin}, ${outputPWMInversion}, ${order})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
@@ -492,6 +493,54 @@ module.exports.updateOutputLastController = async function(id, outputLastControl
       //Error on problem.
       if(error) {
         simpleErrorPrintout("updateOutputLastController() failed, database error.");          
+        reject(error);
+      } else {
+        resolve(results[0])
+      }
+    })
+  })
+}
+
+/**
+ * Updates an output pin in the database.
+ * @param {number} outputID The output to update; must map to an existing
+ * @param {int} pin The new pin.
+ * output.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
+ * update only.
+ */
+module.exports.updateOutputPin = async function(outputID, pin){
+  let pool = await exports.getPool()
+  return new Promise((resolve, reject) => {
+    let query = `CALL updateOutputPin(${outputID}, ${pin})`
+    pool.query(query, (error, results, fields) => {
+      //Error on problem.
+      if(error) {
+        simpleErrorPrintout("updateOutputPin() failed, database error.");          
+        reject(error);
+      } else {
+        resolve(results[0])
+      }
+    })
+  })
+}
+
+/**
+ * Updates an output PWM pin in the database.
+ * @param {number} outputID The output to update; must map to an existing
+ * @param {int} pin The new pin.
+ * output.
+ * @returns {Promise<[object]>} A promise that resolves with the results of the query - this is
+ * update only.
+ */
+module.exports.updateOutputPWMPin = async function(outputID, pin){
+  let pool = await exports.getPool()
+  return new Promise((resolve, reject) => {
+    let query = `CALL updateOutputPWMPin(${outputID}, ${pin})`
+    pool.query(query, (error, results, fields) => {
+      //Error on problem.
+      if(error) {
+        simpleErrorPrintout("updateOutputPWMPin() failed, database error.");          
         reject(error);
       } else {
         resolve(results[0])

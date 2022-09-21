@@ -67,27 +67,27 @@ module.exports = class SensorEvents{
   /**
    * Helper function; Runs the schedule.
    */
-  static _handleSensorEvent(config, output, outputState, sensorEvent, manualOutputs){
+  static _handleSensorEvent(config, output, sensorEvent, manualOutputs){
     let outputValue = sensorEvent.outputValue;
     if (outputValue < 0){
       outputValue = Math.round((Math.random() * 100))
     }
     if(outputValue > 0) {
-      let toggle = EventHandlerUtils.filterOn(output, outputState, outputValue);
+      let toggle = EventHandlerUtils.filterOn(output, outputValue);
       if (toggle){
         if(manualOutputs.includes(sensorEvent.outputID)){
-          Outputs.turnOn(config, sensorEvent.outputID, outputValue, outputState, true)
+          Outputs.turnOn(config, output, outputValue, true)
         } else {
-          Outputs.turnOn(config, sensorEvent.outputID, outputValue, outputState, false)
+          Outputs.turnOn(config, output, outputValue, false)
         }
       }
     } else {
-      let toggle = EventHandlerUtils.filterOff(output, outputState, outputValue);
+      let toggle = EventHandlerUtils.filterOff(output, outputValue);
       if (toggle){
         if(manualOutputs.includes(sensorEvent.outputID)){
-          Outputs.turnOff(sensorEvent.outputID, outputState, true)
+          Outputs.turnOff(output, true)
         } else {
-          Outputs.turnOff(sensorEvent.outputID, outputState, false)
+          Outputs.turnOff(output, false)
         }
       }
     }

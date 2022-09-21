@@ -44,7 +44,7 @@ module.exports = class TimeEvents {
       let triggerTime = moment(timeEvent.triggerTime, "HH:mm:ss");
       //If trigger time matches time stamp trigger event.
       if(moment(currentTime, "HH:mm:ss").isSame(triggerTime, 'minute')) {
-        this._handleTimeEvent(config, outputs[timeEvent.outputID], await Outputs.readStateAsync(timeEvent.outputID), timeEvent, manualOutputs);
+        this._handleTimeEvent(config, outputs[timeEvent.outputID], timeEvent, manualOutputs);
         // Add to array of triggered schedule
         this.triggeredScheduleMinder.add_schedule({
           scheduleID: timeEvent.timeEventID,
@@ -56,27 +56,27 @@ module.exports = class TimeEvents {
     this.triggeredScheduleMinder.auto_remove_schedules();
   }
 
-  static _handleTimeEvent(config, output, outputState, timeEvent, manualOutputs){
+  static _handleTimeEvent(config, output, timeEvent, manualOutputs){
     let outputValue = timeEvent.outputValue;
 
     if (outputValue < 0){
       outputValue = Math.round((Math.random() * 100))
     }
     if(outputValue > 0) {
-      let toggle = EventHandlerUtils.filterOn(output, outputState, outputValue);
+      let toggle = EventHandlerUtils.filterOn(output, outputValue);
       if (toggle){
         if(manualOutputs.includes(timeEvent.outputID)){
-          Outputs.turnOn(config, timeEvent.outputID, outputValue, outputState, true)
+          Outputs.turnOn(config, output, outputValue, true)
         }
-        Outputs.turnOn(config, timeEvent.outputID, outputValue, outputState, false)
+        Outputs.turnOn(config, output, outputValue, false)
       }
     } else {
-      let toggle = EventHandlerUtils.filterOff(output, outputState, outputValue);
+      let toggle = EventHandlerUtils.filterOff(output, outputValue);
       if (toggle){
         if(manualOutputs.includes(sensorEvent.outputID)){
-          Outputs.turnOff(timeEvent.outputID, outputState, true)
+          Outputs.turnOff(output, true)
         }
-        Outputs.turnOff(timeEvent.outputID, outputState, false)
+        Outputs.turnOff(output, false)
       }
     }
   }

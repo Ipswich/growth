@@ -8,8 +8,8 @@ module.exports = class Outputs {
   
   static outputs = undefined
 
-  static async createAsync(name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order) {
-    await dbCalls.addOutput(name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order);
+  static async createAsync(name, type, description, outputPWM, outputPin, outputPWMPin, outputPWMInversion, order) {
+    await dbCalls.addOutput(name, type, description, outputPWM, outputPin, outputPWMPin, outputPWMInversion, order);
   }
 
   static async readAllAsync() {
@@ -28,24 +28,38 @@ module.exports = class Outputs {
     return await dbCalls.getOutputStateByID(outputID);
   }
 
-  static async updateAsync(id, name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order){ 
-    await dbCalls.updateOutput(id, name, type, description, outputPWM, outputPWMPin, outputPWMInversion, order);
+  static async updateAsync(id, name, type, description, outputPWM, outputPin, outputPWMPin, outputPWMInversion, order){ 
+    await dbCalls.updateOutput(id, name, type, description, outputPWM, outputPin, outputPWMPin, outputPWMInversion, order);
   }
 
   static async updateManualStateAsync(id, outputManualState, outputManualValue) {
     await dbCalls.updateOutputManualState(id, outputManualState, outputManualValue);
+    this.outputs[id].outputManualState = outputManualState;
+    this.outputs[id].outputManualValue = outputManualValue;
   }
   
   static async updateScheduleStateAsync(id, outputScheduleState, outputScheduleValue) {
     await dbCalls.updateOutputScheduleState(id, outputScheduleState, outputScheduleValue);
+    this.outputs[id].outputScheduleState = outputScheduleState;
+    this.outputs[id].outputScheduleValue = outputScheduleValue;
   }
   
   static async updateControllerAsync(id, outputController) {
     await dbCalls.updateOutputController(id, outputController);
+    this.outputs[id].outputController = outputController;
   }
 
   static async updateLastControllerAsync(id, outputLastController) {
     await dbCalls.updateOutputLastController(id, outputLastController);
+    this.outputs[id].outputLastController = outputLastController;
+  }
+
+  static async updatePinAsync(outputID, pin){
+    await dbCalls.updateOutputPin(outputID, pin)
+  }
+
+  static async updatePWMPinAsync(outputID, PWMpin){
+    await dbCalls.updateOutputPWMPin(outputID, PWMpin)
   }
 
   static async deleteAsync(outputID){
@@ -80,10 +94,9 @@ module.exports = class Outputs {
    * @param {object} config configuration file
    * @param {object} output output to turn on
    * @param {number} outputValue PWM value (0 - 100)
-   * @param {object} outputState output to turn on's state
    * @param {boolean} stateOnly update state only
    */
-   static turnOn(config, output, outputValue, outputState, stateOnly) {
+   static async turnOn(config, output, outputValue, stateOnly) {
     if(output.outputPWMObject){
       let maxPWM = config.board_pinout.MAX_PWM;
       // Do math for PWM object
@@ -98,18 +111,18 @@ module.exports = class Outputs {
       if (!stateOnly){
         output.outputPWMObject.brightness(value);        
         output.outputObject.close();
-        Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] ON @ " + outputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");      
+        Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON @ " + outputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");      
       }
     } else {
       if(!stateOnly){
-        Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
+        Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
         output.outputObject.close();
       }
     }
-    if(outputState.outputController == Constants.outputControllers.MANUAL){
-      this.updateManualStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
+    if(output.outputController == Constants.outputControllers.MANUAL){
+      await this.updateManualStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
     } else {
-      this.updateScheduleStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
+      await this.updateScheduleStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
     }
   }
 
@@ -117,16 +130,17 @@ module.exports = class Outputs {
   /**
    * Turns off an output, logging the schedule. Helper function for triggerEvent.
    * @param {object} output output to turn off
+   * @param {boolean} stateOnly true to only change system state, false otherwise.
    */
-   static turnOff(output, outputState, stateOnly) {
-    Printouts.simpleLogPrintout(output.outputName + ": [" + outputState.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
+   static async turnOff(output, stateOnly) {
+    Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
     if (!stateOnly){
       output.outputObject.open();
     }
-    if(outputState.outputController == Constants.outputControllers.MANUAL){
-      this.updateManualStateAsync(output.outputID, Constants.outputStates.OFF, 0);
+    if(output.outputController == Constants.outputControllers.MANUAL){
+      await this.updateManualStateAsync(output.outputID, Constants.outputStates.OFF, 0);
     } else {
-      this.updateScheduleStateAsync(output.outputID, Constants.outputStates.OFF, 0);
+      await this.updateScheduleStateAsync(output.outputID, Constants.outputStates.OFF, 0);
     }
   }
 
@@ -137,7 +151,7 @@ module.exports = class Outputs {
    */
    static async _mapPins(config) {
     let mapperState;
-    try{
+    try {
       mapperState = {
         outputs: await dbCalls.getOutputs(),
         outputPins: config.board_pinout.OUTPUT_PINS,
@@ -208,7 +222,9 @@ module.exports = class Outputs {
         //If we've run out of output pins, error.
         try {
           Mappings._pinCountCheck(mapperState.outputPins, "output")
-          mapperState.outputs[index].outputPin = mapperState.outputPins.shift();
+          let pin = mapperState.outputPins.shift();
+          this.updatePinAsync(mapperState.outputs[index].outputID, pin)
+          mapperState.outputs[index].outputPin = pin;
         } catch (e) {
           Printouts.errorPrintout("Cannot map output pin, out of pins!")
           throw e
@@ -221,7 +237,9 @@ module.exports = class Outputs {
         }
         try {
           Mappings._pinCountCheck(mapperState.pwmPins, "PWM")
-          mapperState.outputs[index].outputPWMPin = mapperState.pwmPins.shift();
+          let pin = mapperState.outputPins.shift();
+          this.updatePWMPinAsync(mapperState.outputs[index].outputID, pin)
+          mapperState.outputs[index].outputPWMPin = pin;
         } catch (e) {
           Printouts.errorPrintout("Cannot map PWM pin, out of pins!")
           throw e

@@ -1358,9 +1358,9 @@ DELIMITER ;
 
 ##Insert new Output
 DELIMITER $$
-CREATE PROCEDURE `addOutput` ( IN `p_name` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_description` VARCHAR(128), IN `p_outputPWM` BOOLEAN, IN `p_outputPWMPin` INT, IN `p_outputPWMInversion` BOOLEAN, IN `p_order` INT)
+CREATE PROCEDURE `addOutput` ( IN `p_name` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_description` VARCHAR(128), IN `p_outputPWM` BOOLEAN, IN `p_outputPin` INT, IN `p_outputPWMPin` INT, IN `p_outputPWMInversion` BOOLEAN, IN `p_order` INT)
 MODIFIES SQL DATA
-	INSERT INTO Outputs (outputName, outputType, outputDescription, outputPWM, outputPWMPin, outputPWMInversion, outputOrder) VALUES (p_name, p_type, p_description, p_outputPWM, p_outputPWMPin, p_outputPWMInversion, p_order);
+	INSERT INTO Outputs (outputName, outputType, outputDescription, outputPWM, outputPin, outputPWMPin, outputPWMInversion, outputOrder) VALUES (p_name, p_type, p_description, p_outputPWM, p_outputPin, p_outputPWMPin, p_outputPWMInversion, p_order);
 $$
 DELIMITER ;
 
@@ -1396,9 +1396,9 @@ READS SQL DATA
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE `updateOutput`(IN `p_outputID` INT, IN `p_name` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_description` VARCHAR(128), IN `p_outputPWM` BOOLEAN, IN `p_outputPWMPin` INT, IN `p_outputPWMInversion` BOOLEAN, IN `p_order` INT)
+CREATE PROCEDURE `updateOutput`(IN `p_outputID` INT, IN `p_name` VARCHAR(64), IN `p_type` VARCHAR(32), IN `p_description` VARCHAR(128), IN `p_outputPWM` BOOLEAN, IN `p_outputPin` INT, IN `p_outputPWMPin` INT, IN `p_outputPWMInversion` BOOLEAN, IN `p_order` INT)
 MODIFIES SQL DATA
-  UPDATE Outputs SET outputName = p_name, outputType = p_type, outputDescription = p_description, outputPWM = p_outputPWM, outputPWMPin = p_outputPWMPin, outputPWMInversion = p_outputPWMInversion, outputOrder = p_order 
+  UPDATE Outputs SET outputName = p_name, outputType = p_type, outputDescription = p_description, outputPWM = p_outputPWM, outputPin = p_outputPin, outputPWMPin = p_outputPWMPin, outputPWMInversion = p_outputPWMInversion, outputOrder = p_order 
   WHERE outputID = p_outputID
   $$
 DELIMITER ;
@@ -1434,6 +1434,23 @@ MODIFIES SQL DATA
   WHERE outputID = p_outputID
   $$
 DELIMITER ;
+
+##Update output Pin
+DELIMITER $$
+CREATE PROCEDURE `updateOutputPin`(IN `p_outputID` INT, IN `p_outputPin` INT)
+MODIFIES SQL DATA
+  UPDATE Outputs SET outputPin = p_outputPin WHERE outputID = p_outputID
+$$
+DELIMITER $$
+DELIMITER ;
+
+##Update output PWM Pin
+DELIMITER $$
+CREATE PROCEDURE `updateOutputPWMPin`(IN `p_outputID` INT, IN `p_outputPWMPin` INT)
+MODIFIES SQL DATA
+  UPDATE Outputs SET outputPWMPin = p_outputPWMPin WHERE outputID = p_outputID
+$$
+DELIMITER $$
 
 DELIMITER $$
 CREATE PROCEDURE `removeOutput`(IN `p_outputID` INT)

@@ -28,6 +28,7 @@ module.exports = class Schedule {
     let manualOutputs = await ManualEvents.manualEventRunner(config, outputs, 1);
     await TimeEvents.timeEventRunner(config, outputs, manualOutputs, 1);
     await SensorEvents.sensorEventRunner(config, outputs, manualOutputs, 1);
+    await Schedule._scheduleMinder(outputs);
     setInterval(async function() {
       let manualOutputs = await ManualEvents.manualEventRunner(config, outputs, 1);
       await TimeEvents.timeEventRunner(config, outputs, manualOutputs, 1);
@@ -35,7 +36,7 @@ module.exports = class Schedule {
       await Schedule._scheduleMinder(outputs);
     }, EVENT_TIMER);
 
-    // Handle camera things, if enabled.
+    // Handle camera things
     this._cameraEventRunner(config, web_data);
   }
 
@@ -84,10 +85,7 @@ module.exports = class Schedule {
         }
       }
       if (present != true){
-        if(outputs[i].outputController != Constants.outputControllers.MANUAL) {
-          Outputs.turnOff(outputs[i], await Outputs.readStateAsync(outputs[i].outputID));
-        }
-        Outputs.updateScheduleStateAsync(outputs[i].outputID, Constants.outputStates.OFF, 0);
+          Outputs.turnOff(outputs[i]);
       }
     }
   }
