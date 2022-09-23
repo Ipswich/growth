@@ -1430,7 +1430,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `updateOutputManualState`(IN `p_outputID` INT, IN `p_outputManualState` BOOLEAN, IN `p_outputManualOutputValue` INT)
 MODIFIES SQL DATA
-  UPDATE Outputs SET outputputManualState = p_outputManualState, outputManualOutputValue = p_outputManualOutputValue
+  UPDATE Outputs SET outputManualState = p_outputManualState, outputManualOutputValue = p_outputManualOutputValue
   WHERE outputID = p_outputID
   $$
 DELIMITER ;

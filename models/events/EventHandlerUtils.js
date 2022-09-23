@@ -89,7 +89,7 @@ module.exports = class EventHandlerUtils {
    * manual offs do not interfere with other running events, and vice versa. 
    * @param {object} output
    * @param {object} controllerType
-   * @returns true if the event should be turned off, false otherwise.
+   * @returns {boolean} true if the event should be turned off, false otherwise.
    */
   static async filterOff(output, controllerType = Constants.outputControllers.SCHEDULE) {
     //If currently in manual control

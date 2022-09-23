@@ -41,7 +41,7 @@ module.exports = class ManualEvents {
       if(this.triggeredScheduleMinder.includes(manualEvent.manualEventID)){
         continue;
       }
-      this._handleManualEvent(config, outputs[manualEvent.outputID], manualEvent);
+      await this._handleManualEvent(config, outputs[manualEvent.outputID], manualEvent);
       manualOutputs.push(manualEvent.outputID)
       // Add to array of triggered schedule
       this.triggeredScheduleMinder.add_schedule({
@@ -51,23 +51,23 @@ module.exports = class ManualEvents {
     };
     // Clean up all schedules from minder
     this.triggeredScheduleMinder.auto_remove_schedules();
-  return manualOutputs
+    return manualOutputs
   }
 
-  static _handleManualEvent(config, output, manualEvent){output;
+  static async _handleManualEvent(config, output, manualEvent){output;
     let outputValue = manualEvent.outputValue;
     if (outputValue < 0){
       outputValue = 0
     }
     if(outputValue > 0) {
-      let toggle = EventHandlerUtils.filterOn(output, outputValue, Constants.outputControllers.MANUAL);
+      let toggle = await EventHandlerUtils.filterOn(output, outputValue, Constants.outputControllers.MANUAL);
       if (toggle){
-        Outputs.turnOn(config, output, outputValue, false)
+        await Outputs.turnOn(config, output, outputValue, false)
       }
     } else {
-      let toggle = EventHandlerUtils.filterOff(output, outputValue, Constants.outputControllers.MANUAL);
+      let toggle = await EventHandlerUtils.filterOff(output, outputValue, Constants.outputControllers.MANUAL);
       if (toggle){
-        Outputs.turnOff(output, outputState, false)
+        await Outputs.turnOff(output, outputState, false)
       }
     }
   }

@@ -44,7 +44,7 @@ module.exports = class TimeEvents {
       let triggerTime = moment(timeEvent.triggerTime, "HH:mm:ss");
       //If trigger time matches time stamp trigger event.
       if(moment(currentTime, "HH:mm:ss").isSame(triggerTime, 'minute')) {
-        this._handleTimeEvent(config, outputs[timeEvent.outputID], timeEvent, manualOutputs);
+        await this._handleTimeEvent(config, outputs[timeEvent.outputID], timeEvent, manualOutputs);
         // Add to array of triggered schedule
         this.triggeredScheduleMinder.add_schedule({
           scheduleID: timeEvent.timeEventID,
@@ -56,27 +56,27 @@ module.exports = class TimeEvents {
     this.triggeredScheduleMinder.auto_remove_schedules();
   }
 
-  static _handleTimeEvent(config, output, timeEvent, manualOutputs){
+  static async _handleTimeEvent(config, output, timeEvent, manualOutputs){
     let outputValue = timeEvent.outputValue;
 
     if (outputValue < 0){
       outputValue = Math.round((Math.random() * 100))
     }
     if(outputValue > 0) {
-      let toggle = EventHandlerUtils.filterOn(output, outputValue);
+      let toggle = await EventHandlerUtils.filterOn(output, outputValue);
       if (toggle){
         if(manualOutputs.includes(timeEvent.outputID)){
-          Outputs.turnOn(config, output, outputValue, true)
+          await Outputs.turnOn(config, output, outputValue, true)
         }
-        Outputs.turnOn(config, output, outputValue, false)
+        await Outputs.turnOn(config, output, outputValue, false)
       }
     } else {
-      let toggle = EventHandlerUtils.filterOff(output, outputValue);
+      let toggle = await EventHandlerUtils.filterOff(output, outputValue);
       if (toggle){
         if(manualOutputs.includes(sensorEvent.outputID)){
-          Outputs.turnOff(output, true)
+          await Outputs.turnOff(output, true)
         }
-        Outputs.turnOff(output, false)
+        await Outputs.turnOff(output, false)
       }
     }
   }
