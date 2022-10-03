@@ -28,8 +28,8 @@ const Constants = {
     "SCHEDULE": "SCHEDULE"
   },
   "outputStates":{
-    "ON": "1",
-    "OFF": "0"
+    "ON": 1,
+    "OFF": 0
   },
   "sensorProtocols":{
     "ANALOG": "ANALOG",

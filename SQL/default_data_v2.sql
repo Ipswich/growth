@@ -4,12 +4,12 @@ START TRANSACTION;
 USE `growth-test`;
 
 -- Add outputs
-CALL addOutput('QB Growlight 1', 'Light', '', 1, NULL, 1, 1, 0);
-CALL addOutput('QB Growlight 2',  'Light', '', 1, NULL, 2, 1, 0);
-CALL addOutput('660nm Growlight',  'Light', '', 1, NULL, 3, 1, 0);
+CALL addOutput('QB Growlight 1', 'Light', '', 1, NULL, NULL, 1, 0);
+CALL addOutput('QB Growlight 2',  'Light', '', 1, NULL, NULL, 1, 0);
+CALL addOutput('660nm Growlight',  'Light', '', 1, NULL, NULL, 1, 0);
 CALL addOutput('Water Valve', 'Valve', '', 0, NULL, NULL, NULL, 0);
 CALL addOutput('Heater', 'Heater', '', 0, NULL, NULL, NULL, 0);
-CALL addOutput('Exhaust Fan', 'Exhaust Fan', '', 1, NULL, 4, 1, 0);
+CALL addOutput('Exhaust Fan', 'Exhaust Fan', '', 1, NULL, NULL, 1, 0);
 CALL addOutput('Circulation Fan 1', 'Circulation Fan', '', 0, NULL, NULL, NULL, 0);
 CALL addOutput('Circulation Fan 2', 'Circulation Fan', '', 0, NULL, NULL, NULL, 0);
 

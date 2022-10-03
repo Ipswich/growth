@@ -29,7 +29,7 @@ module.exports = class SensorEvents{
     await dbCalls.removeSensorEvent(eventID);
   }
 
-  static async sensorEventRunner(config, outputs, manualOutputs, dayID){
+  static async sensorEventRunner(config, outputs, dayID){
     const sensorEvents = await this.getByDayIDAsync(dayID);
 
     for(const sensorEvent in sensorEvents){
@@ -47,7 +47,7 @@ module.exports = class SensorEvents{
           data.triggerValues.sort((a, b) => a.triggerValue - b.triggerValue)
           for(const triggerValue in data.triggerValues){
             if(sensorVal >= triggerValue.triggerValue){
-              await this._handleSensorEvent(config, await Outputs.readStateAsync(timeEvent.outputID), outputs[sensorEvent.outputID], sensorEvent, manualOutputs)              
+              await this._handleSensorEvent(config, await Outputs.readStateAsync(timeEvent.outputID), outputs[sensorEvent.outputID], sensorEvent)              
             }
           }
           break;
@@ -55,7 +55,7 @@ module.exports = class SensorEvents{
           data.triggerValues.sort((a, b) => b.triggerValue - a.triggerValue)
           for(const triggerValue in data.triggerValues){
             if(sensorVal <= triggerValue.triggerValue){
-              await this._handleSensorEvent(config, await Outputs.readStateAsync(timeEvent.outputID), outputs[sensorEvent.outputID], sensorEvent, manualOutputs)
+              await this._handleSensorEvent(config, await Outputs.readStateAsync(timeEvent.outputID), outputs[sensorEvent.outputID], sensorEvent)
             }
           }
       }      
@@ -67,7 +67,7 @@ module.exports = class SensorEvents{
   /**
    * Helper function; Runs the schedule.
    */
-  static async _handleSensorEvent(config, output, sensorEvent, manualOutputs){
+  static async _handleSensorEvent(config, output, sensorEvent){
     let outputValue = sensorEvent.outputValue;
     if (outputValue < 0){
       outputValue = Math.round((Math.random() * 100))
@@ -75,16 +75,16 @@ module.exports = class SensorEvents{
     if(outputValue > 0) {
       let toggle = await EventHandlerUtils.filterOn(output, outputValue);
       if (toggle){
-        if(manualOutputs.includes(sensorEvent.outputID)){
+        if(output.outputController == Constants.outputControllers.MANUAL){
           await Outputs.turnOn(config, output, outputValue, true)
         } else {
           await Outputs.turnOn(config, output, outputValue, false)
         }
       }
     } else {
-      let toggle = await EventHandlerUtils.filterOff(output, outputValue);
+      let toggle = await EventHandlerUtils.filterOff(output);
       if (toggle){
-        if(manualOutputs.includes(sensorEvent.outputID)){
+        if(output.outputController == Constants.outputControllers.MANUAL){
           await Outputs.turnOff(output, true)
         } else {
           await Outputs.turnOff(output, false)

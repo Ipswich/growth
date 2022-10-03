@@ -3,6 +3,7 @@ const EventHandlerUtils = require('./EventHandlerUtils');
 const TriggeredScheduleMinder = require('./TriggeredScheduleMinder');
 const Outputs = require('../Outputs')
 const moment = require('moment');
+const Constants = require('../Constants');
 
 
 module.exports = class TimeEvents {
@@ -31,7 +32,7 @@ module.exports = class TimeEvents {
     return this;
   }
 
-  static async timeEventRunner(config, outputs, manualOutputs, dayID) {
+  static async timeEventRunner(config, outputs, dayID) {
     const timeEvents = await this.getByDayIDAsync(dayID)
     //If no errors, get current timestamp
     const currentTime = moment().format('HH:mm:ss');
@@ -44,7 +45,7 @@ module.exports = class TimeEvents {
       let triggerTime = moment(timeEvent.triggerTime, "HH:mm:ss");
       //If trigger time matches time stamp trigger event.
       if(moment(currentTime, "HH:mm:ss").isSame(triggerTime, 'minute')) {
-        await this._handleTimeEvent(config, outputs[timeEvent.outputID], timeEvent, manualOutputs);
+        await this._handleTimeEvent(config, outputs[timeEvent.outputID], timeEvent);
         // Add to array of triggered schedule
         this.triggeredScheduleMinder.add_schedule({
           scheduleID: timeEvent.timeEventID,
@@ -56,7 +57,7 @@ module.exports = class TimeEvents {
     this.triggeredScheduleMinder.auto_remove_schedules();
   }
 
-  static async _handleTimeEvent(config, output, timeEvent, manualOutputs){
+  static async _handleTimeEvent(config, output, timeEvent){
     let outputValue = timeEvent.outputValue;
 
     if (outputValue < 0){
@@ -65,15 +66,15 @@ module.exports = class TimeEvents {
     if(outputValue > 0) {
       let toggle = await EventHandlerUtils.filterOn(output, outputValue);
       if (toggle){
-        if(manualOutputs.includes(timeEvent.outputID)){
+        if(output.outputController == Constants.outputControllers.MANUAL){
           await Outputs.turnOn(config, output, outputValue, true)
         }
         await Outputs.turnOn(config, output, outputValue, false)
       }
     } else {
-      let toggle = await EventHandlerUtils.filterOff(output, outputValue);
+      let toggle = await EventHandlerUtils.filterOff(output);
       if (toggle){
-        if(manualOutputs.includes(sensorEvent.outputID)){
+        if(output.outputController == Constants.outputControllers.MANUAL){
           await Outputs.turnOff(output, true)
         }
         await Outputs.turnOff(output, false)

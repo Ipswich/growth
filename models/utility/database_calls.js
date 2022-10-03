@@ -418,7 +418,7 @@ module.exports.updateOutput = async function(id, name, type, description, output
  * @param {number} outputScheduleValue 
  * @returns 
  */
-module.exports.updateOutputScheduleState = async function(id, outputScheduleState, outputScheduleValue){
+module.exports.updateOutputScheduleState = async function(id, outputScheduleState, outputScheduleValue = 0){
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
     let query = `CALL updateOutputScheduleState(${id}, ${outputScheduleState}, ${outputScheduleValue})`
@@ -441,7 +441,7 @@ module.exports.updateOutputScheduleState = async function(id, outputScheduleStat
  * @param {number} outputManualValue 
  * @returns 
  */
-module.exports.updateOutputManualState = async function(id, outputManualState, outputManualValue){
+module.exports.updateOutputManualState = async function(id, outputManualState, outputManualValue = 0){
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
     let query = `CALL updateOutputManualState(${id}, ${outputManualState}, ${outputManualValue})`
@@ -1193,7 +1193,6 @@ module.exports.removeManualEvent = async function(manualEventID){
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
     let query = `CALL removeManualEvent(${manualEventID})`
-    console.log(query)
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
@@ -1516,7 +1515,8 @@ module.exports.addManualEvent = async function(dayID, outputID, outputValue, cre
  * @param {string} pythonScript 
  * @param {string} createdBy 
  */
-module.exports.addPythonTimeEvent = async function(dayID, triggerTime, pythonScript, createdBy){let pool = await exports.getPool()
+module.exports.addPythonTimeEvent = async function(dayID, triggerTime, pythonScript, createdBy){
+  let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
     let query = `CALL addPythonTimeEvent(${dayID}, ${triggerTime}, ${pythonScript}, ${createdBy})`
     pool.query(query, (error, results, fields) => {
@@ -1543,7 +1543,8 @@ module.exports.addPythonTimeEvent = async function(dayID, triggerTime, pythonScr
  * @param {number} minTimeout 
  * @param {string} createdBy 
  */
-module.exports.addRandomEvent = async function(dayID, startTime, stopTime, outputID, outputValue, occurrences, duration, minTimeout, createdBy){let pool = await exports.getPool()
+module.exports.addRandomEvent = async function(dayID, startTime, stopTime, outputID, outputValue, occurrences, duration, minTimeout, createdBy){
+  let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
     let query = `CALL addRandomEvent(${dayID}, ${startTime}, ${stopTime}, ${outputID}, ${outputValue}, ${occurrences}, ${duration}, ${minTimeout}, ${createdBy})`
     pool.query(query, (error, results, fields) => {

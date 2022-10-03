@@ -45,12 +45,12 @@ module.exports = class Outputs {
   }
   
   static async updateControllerAsync(id, outputController) {
-    await dbCalls.updateOutputController(id, outputController);
+    await dbCalls.updateOutputController(id, `'${outputController}'`);
     this.outputs[id].outputController = outputController;
   }
 
   static async updateLastControllerAsync(id, outputLastController) {
-    await dbCalls.updateOutputLastController(id, outputLastController);
+    await dbCalls.updateOutputLastController(id, `'${outputLastController}'`);
     this.outputs[id].outputLastController = outputLastController;
   }
 
@@ -109,14 +109,13 @@ module.exports = class Outputs {
         value = maxPWM - Math.round(base * outputValue);
       }
       if (!stateOnly){
-        output.outputPWMObject.brightness(value);        
-        output.outputObject.close();
+        output.outputPWMObject.brightness(value);
         Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON @ " + outputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");      
       }
     } else {
       if(!stateOnly){
-        Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
         output.outputObject.close();
+        Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
       }
     }
     if(output.outputController == Constants.outputControllers.MANUAL){
@@ -136,6 +135,9 @@ module.exports = class Outputs {
     Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
     if (!stateOnly){
       output.outputObject.open();
+      if (output.outputPWM){
+        output.outputPWMObject.brightness(0)
+      }
     }
     if(output.outputController == Constants.outputControllers.MANUAL){
       await this.updateManualStateAsync(output.outputID, Constants.outputStates.OFF, 0);
@@ -171,14 +173,14 @@ module.exports = class Outputs {
   }
 
   static _assignPinnedOutputs(mapperState){
-    for(let index in mapperState.outputs){
+    for(const output of mapperState.outputs){
       //If no assigned output pin, skip
-      if (mapperState.outputs[index].outputPin == null || mapperState.outputs[index].outputPin == undefined){
+      if (output.outputPin == null || output.outputPin == undefined){
         continue;
       }
       //If the pin doesn't exist, error. Otherwise, give pin.
       try {
-        let pinIndex = Mappings._pinExists(mapperState.outputs[index].outputPin, mapperState.outputPins, "output")        
+        let pinIndex = Mappings._pinExists(output.outputPin, mapperState.outputPins, "output")        
         mapperState.outputPins.splice(pinIndex, 1);
       } catch (e) {
         Printouts.errorPrintout("Cannot map preassigned output pin, pin does not exist!")
@@ -186,13 +188,13 @@ module.exports = class Outputs {
       }
 
       //Apply PWM PIN property if necessary.
-      if(mapperState.outputs[index].outputPWM == true) {
+      if(output.outputPWM == true) {
         //If no assigned pwm pin, skip
-        if (mapperState.outputs[index].outputPWMPin == null || mapperState.outputs[index].outputPWMPin == undefined){
+        if (output.outputPWMPin == null || output.outputPWMPin == undefined){
           continue;
         }
         try{
-          let pinIndex = Mappings._pinExists(mapperState.outputs[index].outputPWMPin, mapperState.pwmPins, "PWM")
+          let pinIndex = Mappings._pinExists(output.outputPWMPin, mapperState.pwmPins, "PWM")
           mapperState.pwmPins.splice(pinIndex, 1);
         } catch (e) {
           Printouts.errorPrintout("Cannot map preassigned PWM pin, pin does not exist!")
@@ -216,30 +218,30 @@ module.exports = class Outputs {
 
   static _assignOutputPins(mapperState){
     //Iterate through outputs
-    for(let index in mapperState.outputs){
+    for(const output of mapperState.outputs){
       // skip if output already has a pin
-      if(mapperState.outputs[index].outputPin == null || mapperState.outputs[index].outputPin == undefined){
+      if(output.outputPin == null || output.outputPin == undefined){
         //If we've run out of output pins, error.
         try {
           Mappings._pinCountCheck(mapperState.outputPins, "output")
           let pin = mapperState.outputPins.shift();
-          this.updatePinAsync(mapperState.outputs[index].outputID, pin)
-          mapperState.outputs[index].outputPin = pin;
+          this.updatePinAsync(output.outputID, pin)
+          output.outputPin = pin;
         } catch (e) {
           Printouts.errorPrintout("Cannot map output pin, out of pins!")
           throw e
         }
       }
       //If we've run out of PWM pins, error.
-      if(mapperState.outputs[index].outputPWM == true) {
-        if(mapperState.outputs[index].outputPWMPin != null || mapperState.outputs[index].outputPWMPin != undefined){
+      if(output.outputPWM == true) {
+        if(output.outputPWMPin != null || output.outputPWMPin != undefined){
           continue;
         }
         try {
           Mappings._pinCountCheck(mapperState.pwmPins, "PWM")
-          let pin = mapperState.outputPins.shift();
-          this.updatePWMPinAsync(mapperState.outputs[index].outputID, pin)
-          mapperState.outputs[index].outputPWMPin = pin;
+          let pin = mapperState.pwmPins.shift();
+          this.updatePWMPinAsync(output.outputID, pin)
+          output.outputPWMPin = pin;
         } catch (e) {
           Printouts.errorPrintout("Cannot map PWM pin, out of pins!")
           throw e

@@ -18,13 +18,14 @@ router.get('/latest', auth, async function(req, res, next) {
   }
 })
 
-router.get('/take_image', auth, async function(req, res, next) {
+router.get('/takeImage', auth, async function(req, res, next) {
   let config = res.app.get('config');
+  let web_data = res.app.get('web_data');
   if (config.camera.image_api_enable != true){
     res.status(404).send()
   } else {
     try {
-      CameraEvents.takeImage()
+      CameraEvents.takeImage(config, web_data)
       res.status(200).send()
     } catch (e) {
       res.status(500).send(e.message)

@@ -6,6 +6,7 @@ const SensorEvents = require('./events/SensorEvents')
 const ManualEvents = require('./events/ManualEvents')
 const Outputs = require('./Outputs')
 const Constants = require('./Constants')
+const EventHandlerUtils = require('./events/EventHandlerUtils')
 
 const EVENT_TIMER = 1 * 1000 // 1 SECOND
 
@@ -25,15 +26,38 @@ module.exports = class Schedule {
     }, config.log_interval);
 
     // Event running
-    let manualOutputs = await ManualEvents.manualEventRunner(config, outputs, 1);
-    await TimeEvents.timeEventRunner(config, outputs, manualOutputs, 1);
-    await SensorEvents.sensorEventRunner(config, outputs, manualOutputs, 1);
+    let manualOutputs = new Set(await ManualEvents.manualEventRunner(config, outputs, 1));
+    let unusedOutputIDs = Object.keys(outputs)
+      .filter((key) => !isNaN(key))
+      .map((key) => parseInt(key))
+      .filter((key) => !manualOutputs.has(key));
+    for(const id of unusedOutputIDs){
+      if (outputs[id].outputController == Constants.outputControllers.MANUAL){
+        Outputs.updateLastControllerAsync(id, outputs[id].outputController);
+        Outputs.updateControllerAsync(id, Constants.outputControllers.SCHEDULE);        
+      }
+    }
+    await TimeEvents.timeEventRunner(config, outputs, 1);
+    await SensorEvents.sensorEventRunner(config, outputs, 1);
     await Schedule._scheduleMinder(outputs);
+
+
     setInterval(async function() {
-      let manualOutputs = await ManualEvents.manualEventRunner(config, outputs, 1);
-      await TimeEvents.timeEventRunner(config, outputs, manualOutputs, 1);
-      await SensorEvents.sensorEventRunner(config, outputs, manualOutputs, 1);
+      let manualOutputs = new Set(await ManualEvents.manualEventRunner(config, outputs, 1));
+      let unusedOutputIDs = Object.keys(outputs)
+        .filter((key) => !isNaN(key))
+        .map((key) => parseInt(key))
+        .filter((key) => !manualOutputs.has(key));
+      for(const id of unusedOutputIDs){
+        if (outputs[id].outputController == Constants.outputControllers.MANUAL){
+          Outputs.updateLastControllerAsync(id, outputs[id].outputController);
+          Outputs.updateControllerAsync(id, Constants.outputControllers.SCHEDULE);        
+        }
+      }
+      await TimeEvents.timeEventRunner(config, outputs, 1);
+      await SensorEvents.sensorEventRunner(config, outputs, 1);
       await Schedule._scheduleMinder(outputs);
+  
     }, EVENT_TIMER);
 
     // Handle camera things
@@ -62,31 +86,41 @@ module.exports = class Schedule {
 
   /**
    * "Minds" the schedule. Ensures that outputs are turned off if there are no
-   * schedules that reference them. Manually controlled outputs are untouched,
-   * but outputScheduleState is updated if needed.
+   * schedules that reference them.
    */
   static async _scheduleMinder(outputs) {
-    let schedulesObject = Object.assign({}, 
+    let schedules = [
+      await ManualEvents.getAllAsync(),
       await TimeEvents.getAllAsync(), 
-      await SensorEvents.getAllAsync(),
-      await ManualEvents.getAllAsync()
-    );
-    for(let i = 0; i < outputs.length; i++){
-      let present = false
-      for(const key in Object.keys(schedulesObject)){        
-        for(let j = 0; j < schedulesObject[key].length; j++){
-          if (outputs[i].outputID == schedulesObject[key][j].outputID){
-            present = true;
+      await SensorEvents.getAllAsync()
+    ];
+    for(const outputID in outputs){
+      if (isNaN(outputID)){
+        continue;
+      }
+      let isSchedulePresent = false
+      for(const scheduleType of schedules){
+        for(const schedule of scheduleType){
+          if (outputID == schedule.outputID){
+            isSchedulePresent = true;
             break;
           }
         }
-        if(present) {
+        if(isSchedulePresent) {
           break;
         }
       }
-      if (present != true){
-          Outputs.turnOff(outputs[i]);
+      if (isSchedulePresent == false){
+        Outputs.updateLastControllerAsync(outputID, outputs[outputID].outputController);
+        Outputs.updateControllerAsync(outputID, Constants.outputControllers.SCHEDULE);        
+        if(await EventHandlerUtils.filterOff(outputs[outputID])){                    
+          Outputs.turnOff(outputs[outputID]);
+       }
       }
     }
+  }
+
+  static _ScheduleSetter(outputIDs){
+
   }
 }

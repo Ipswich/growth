@@ -25,7 +25,7 @@ module.exports = class ConfigHelper {
    * Reloads web-data from the passed file.
    */
   static reloadWebData = function() {
-    this.constructor.web_data = JSON.parse(fs.readFileSync(this.CONFIG_LOCATION).toString());
+    this.constructor.web_data = JSON.parse(fs.readFileSync(this.WEB_DATA_LOCATION).toString());
   }
 
   /**
