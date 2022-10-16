@@ -25,17 +25,17 @@ module.exports = class Schedule {
       await Sensors.addSensorReadings(sensors);
     }, config.log_interval);
 
+    // Default outputs to off and schedule/schedule
+    this._InitializeOutputDefaults(outputs);
+
     // Event running
-    let manualOutputs = new Set(await ManualEvents.manualEventRunner(config, outputs, 1));
+    let manualOutputs = new Set(await ManualEvents.manualEventRunner(config, Outputs.outputs, 1));
     let unusedOutputIDs = Object.keys(outputs)
       .filter((key) => !isNaN(key))
       .map((key) => parseInt(key))
       .filter((key) => !manualOutputs.has(key));
     for(const id of unusedOutputIDs){
-      if (outputs[id].outputController == Constants.outputControllers.MANUAL){
-        Outputs.updateLastControllerAsync(id, outputs[id].outputController);
-        Outputs.updateControllerAsync(id, Constants.outputControllers.SCHEDULE);        
-      }
+      Outputs.updateControllerAsync(id, Constants.outputControllers.SCHEDULE);        
     }
     await TimeEvents.timeEventRunner(config, outputs, 1);
     await SensorEvents.sensorEventRunner(config, outputs, 1);
@@ -43,14 +43,13 @@ module.exports = class Schedule {
 
 
     setInterval(async function() {
-      let manualOutputs = new Set(await ManualEvents.manualEventRunner(config, outputs, 1));
+      let manualOutputs = new Set(await ManualEvents.manualEventRunner(config, Outputs.outputs, 1));
       let unusedOutputIDs = Object.keys(outputs)
         .filter((key) => !isNaN(key))
         .map((key) => parseInt(key))
         .filter((key) => !manualOutputs.has(key));
       for(const id of unusedOutputIDs){
         if (outputs[id].outputController == Constants.outputControllers.MANUAL){
-          Outputs.updateLastControllerAsync(id, outputs[id].outputController);
           Outputs.updateControllerAsync(id, Constants.outputControllers.SCHEDULE);        
         }
       }
@@ -120,7 +119,14 @@ module.exports = class Schedule {
     }
   }
 
-  static _ScheduleSetter(outputIDs){
-
+  static _InitializeOutputDefaults(outputs){
+    for (const outputID in outputs){
+      if (isNaN(outputID)){
+        continue;
+      }
+      Outputs.updateLastControllerAsync(outputID, outputs[outputID].outputController);
+      Outputs.updateControllerAsync(outputID, Constants.outputControllers.SCHEDULE);        
+      Outputs.turnOff(outputs[outputID])
+    }
   }
 }

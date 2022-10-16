@@ -26,7 +26,7 @@ module.exports.simpleErrorPrintout = function(error){
  * @param {string} string Debug message to print.
  */
 module.exports.debugPrintout = function(string){
-  if (process.env.NODE_ENV.toLocaleLowerCase().includes('debug')){
+  if (!!process.env.NODE_ENV && process.env.NODE_ENV.toLocaleLowerCase().includes('debug')){
     let currentTime = '[' + moment().format('M/D/YYYY - HH:mm') + ']'
     console.log(currentTime + "  " + string)
   }

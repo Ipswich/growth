@@ -81,12 +81,12 @@ module.exports = class Sensors {
   }
 
   static _filterSensorPins(mapperState){
-    for (let index in mapperState.sensors){
-      let pin = mapperState.sensors[index].sensorPin
+    for (const sensor in mapperState.sensors){
+      let pin = sensor.sensorPin
       if (pin == null || pin == undefined){
         continue;
       }
-      if (mapperState.sensors[index].sensorProtocol == 'ANALOG'){
+      if (sensor.sensorProtocol == 'ANALOG'){
         let pinIndex = Mappings._pinExists(pin, mapperState.analogPins, "analog");
         mapperState.sensors.splice(pinIndex, 1);
       } else {
@@ -146,9 +146,7 @@ module.exports = class Sensors {
       let id = sensor.sensorID;
       let data = {};
       for(let key in sensor){
-        if (key != "sensorID"){
-          data[key] = sensor[key]
-        }
+        data[key] = sensor[key]
       }
       return {[id]: data}
     }))
@@ -173,7 +171,6 @@ module.exports = class Sensors {
       address_event.on('done', async (DS18B20_Array) => {
         //Set up sensors and bind to state object.
         DS18B20_Array = DS18B20_Array.map(e => e.toString())
-        //###################Get max hardwareID 
         //###TODO: FIX ME
         let hardwareIDList = []
         for(const sensor of mapperState.sensors){
@@ -185,7 +182,6 @@ module.exports = class Sensors {
           //Loop through sensors to find ones with matching hardwareID
           for(const sensor of mapperState.sensors){
             let obj = {controller: sensor.sensorModel}
-
             if(hardwareID == sensor.sensorHardwareID && sensor.sensorProtocol == 'I2C'){
               obj.address = parseInt(sensor.sensorAddress)
             } else if(hardwareID == sensor.sensorHardwareID) {

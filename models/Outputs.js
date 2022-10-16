@@ -32,16 +32,16 @@ module.exports = class Outputs {
     await dbCalls.updateOutput(id, name, type, description, outputPWM, outputPin, outputPWMPin, outputPWMInversion, order);
   }
 
-  static async updateManualStateAsync(id, outputManualState, outputManualValue) {
-    await dbCalls.updateOutputManualState(id, outputManualState, outputManualValue);
+  static async updateManualStateAsync(id, outputManualState, outputManualOutputValue) {
+    await dbCalls.updateOutputManualState(id, outputManualState, outputManualOutputValue);
     this.outputs[id].outputManualState = outputManualState;
-    this.outputs[id].outputManualValue = outputManualValue;
+    this.outputs[id].outputManualOutputValue = outputManualOutputValue;
   }
   
-  static async updateScheduleStateAsync(id, outputScheduleState, outputScheduleValue) {
-    await dbCalls.updateOutputScheduleState(id, outputScheduleState, outputScheduleValue);
+  static async updateScheduleStateAsync(id, outputScheduleState, outputScheduleOutputValue) {
+    await dbCalls.updateOutputScheduleState(id, outputScheduleState, outputScheduleOutputValue);
     this.outputs[id].outputScheduleState = outputScheduleState;
-    this.outputs[id].outputScheduleValue = outputScheduleValue;
+    this.outputs[id].outputScheduleOutputValue = outputScheduleOutputValue;
   }
   
   static async updateControllerAsync(id, outputController) {
@@ -84,6 +84,7 @@ module.exports = class Outputs {
     let outputDict = await this._createOutputDictionary(mapperState)
     if (mapperState.relayControlObject) {
       outputDict["relayControlObject"] = mapperState.relayControlObject
+      outputDict["relayControlObject"].high();
     }
     Outputs.outputs = outputDict
     return outputDict
@@ -102,20 +103,24 @@ module.exports = class Outputs {
       // Do math for PWM object
       let value;
       let base = maxPWM/100;
-      //If inversion set, use module.exports.ANALOG_RESOLUTION - PWM value
       if (output.outputPWMInversion == 0) {
         value = Math.round(base * outputValue);
       } else {
         value = maxPWM - Math.round(base * outputValue);
       }
       if (!stateOnly){
+        output.outputObject.close();
         output.outputPWMObject.brightness(value);
         Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON @ " + outputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");      
+      } else {
+        Printouts.debugPrintout("[" + output.outputName + "]" + " ON @ " + outputValue + "% - SKIPPED, STATE ONLY")
       }
     } else {
       if(!stateOnly){
         output.outputObject.close();
         Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
+      } else {
+        Printouts.debugPrintout("[" + output.outputName + "]" + " ON - SKIPPED, STATE ONLY")
       }
     }
     if(output.outputController == Constants.outputControllers.MANUAL){
@@ -132,12 +137,14 @@ module.exports = class Outputs {
    * @param {boolean} stateOnly true to only change system state, false otherwise.
    */
    static async turnOff(output, stateOnly) {
-    Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
-    if (!stateOnly){
+     if (!stateOnly){
+      Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
       output.outputObject.open();
       if (output.outputPWM){
         output.outputPWMObject.brightness(0)
       }
+    } else {
+      Printouts.debugPrintout("[" + output.outputName + "]" + " OFF - SKIPPED, STATE ONLY")
     }
     if(output.outputController == Constants.outputControllers.MANUAL){
       await this.updateManualStateAsync(output.outputID, Constants.outputStates.OFF, 0);

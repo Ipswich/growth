@@ -41,10 +41,6 @@ module.exports = class ManualEvents {
       if(this.triggeredScheduleMinder.includes(manualEvent.manualEventID)){
         continue;
       }
-      if(outputs[manualEvent.outputID].outputController != Constants.outputControllers.MANUAL){
-        await Outputs.updateLastControllerAsync(manualEvent.outputID, outputs[manualEvent.outputID].outputController);
-        await Outputs.updateControllerAsync(manualEvent.outputID, Constants.outputControllers.MANUAL);   
-      }
       await this._handleManualEvent(config, outputs[manualEvent.outputID], manualEvent);
       manualOutputs.push(manualEvent.outputID)
       // Add to array of triggered schedule
@@ -74,5 +70,6 @@ module.exports = class ManualEvents {
         await Outputs.turnOff(output, outputState, false)
       }
     }
+    await Outputs.updateControllerAsync(manualEvent.outputID, Constants.outputControllers.MANUAL);   
   }
 }

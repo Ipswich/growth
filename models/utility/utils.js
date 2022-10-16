@@ -2,10 +2,6 @@ const fs = require('fs')
 const fsPromises = require('fs/promises')
 const jwt = require('jsonwebtoken')
 const moment = require('moment')
-const Constants = require('../Constants')
-const ManualEvents = require('../events/ManualEvents')
-const SensorEvents = require('../events/SensorEvents')
-const TimeEvents = require('../events/TimeEvents')
 const printouts = require('./Printouts')
 
 module.exports = class Utilities {

@@ -39,7 +39,7 @@ module.exports = class TimeEvents {
     //Iterate through time Schedules
     for(const timeEvent of timeEvents) {
       // If the minder includes the current event, skip to next schedule
-      if(triggeredScheduleMinder.includes(timeEvent.timeEventID)){
+      if(this.triggeredScheduleMinder.includes(timeEvent.timeEventID)){
         continue;
       }
       let triggerTime = moment(timeEvent.triggerTime, "HH:mm:ss");
@@ -68,16 +68,18 @@ module.exports = class TimeEvents {
       if (toggle){
         if(output.outputController == Constants.outputControllers.MANUAL){
           await Outputs.turnOn(config, output, outputValue, true)
+        } else {
+          await Outputs.turnOn(config, output, outputValue, false)
         }
-        await Outputs.turnOn(config, output, outputValue, false)
       }
     } else {
       let toggle = await EventHandlerUtils.filterOff(output);
       if (toggle){
         if(output.outputController == Constants.outputControllers.MANUAL){
           await Outputs.turnOff(output, true)
+        } else {
+          await Outputs.turnOff(output, false)
         }
-        await Outputs.turnOff(output, false)
       }
     }
   }

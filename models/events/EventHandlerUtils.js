@@ -12,6 +12,7 @@ module.exports = class EventHandlerUtils {
    * @returns {boolean} true if the output should be turned on, false otherwise.
    */
   static async filterOn(output, outputValue, controllerType = Constants.outputControllers.SCHEDULE) {
+    console.log(output)
     if(output.outputController === Constants.outputControllers.MANUAL) {
       //if last state was set to on output value hasn't changed, return  
       if(controllerType != Constants.outputControllers.MANUAL) {
@@ -54,7 +55,7 @@ module.exports = class EventHandlerUtils {
         Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, MANUAL IN SCHEDULE STATE")
         return false;
       }
-      if(outputState.outputLastController === Constants.outputControllers.SCHEDULE && output.outputScheduleState === Constants.outputStates.ON) {
+      if(output.outputLastController === Constants.outputControllers.SCHEDULE && output.outputScheduleState === Constants.outputStates.ON) {
         if(output.outputPWMObject) {
           if(output.scheduleOutputValue === outputValue) {          
             Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")

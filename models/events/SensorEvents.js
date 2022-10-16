@@ -5,6 +5,7 @@ const Outputs = require('../Outputs')
 const Sensors = require('../Sensors')
 const utils = require('../utility/utils')
 const moment = require('moment');
+const Constants = require('../Constants');
 
 module.exports = class SensorEvents{
   static triggeredScheduleMinder = new TriggeredScheduleMinder()
@@ -31,8 +32,8 @@ module.exports = class SensorEvents{
 
   static async sensorEventRunner(config, outputs, dayID){
     const sensorEvents = await this.getByDayIDAsync(dayID);
-
-    for(const sensorEvent in sensorEvents){
+    
+    for(const sensorEvent of sensorEvents){
       if (this.triggeredScheduleMinder.includes(sensorEvent.sensorEventID)) {
         continue;
       }
@@ -41,21 +42,22 @@ module.exports = class SensorEvents{
       if (!utils.isTimeBetween(startTime.format('H:mm'), stopTime.format('H:mm'), moment().format('H:mm'))){        
         continue;
       }
-      let sensorVal = await Sensors.getSensorVal(sensorEvent.sensorID)
-      switch(sensorEvent.scheduleComparator) {
+      let sensorVal = await Sensors.getSensorVal(Sensors.sensors[sensorEvent.sensorID])
+      let { triggerValues } = JSON.parse(sensorEvent.triggerValues)
+      switch(sensorEvent.triggerComparator) {
         case '>':
-          data.triggerValues.sort((a, b) => a.triggerValue - b.triggerValue)
-          for(const triggerValue in data.triggerValues){
-            if(sensorVal >= triggerValue.triggerValue){
-              await this._handleSensorEvent(config, await Outputs.readStateAsync(timeEvent.outputID), outputs[sensorEvent.outputID], sensorEvent)              
+          triggerValues.sort((a, b) => a.triggerValue - b.triggerValue)
+          for(const triggerValue of triggerValues){
+            if(sensorVal.val >= triggerValue.triggerValue){
+              await this._handleSensorEvent(config, outputs[sensorEvent.outputID], sensorEvent, triggerValue.triggerValue);
             }
           }
           break;
         case '<':
-          data.triggerValues.sort((a, b) => b.triggerValue - a.triggerValue)
-          for(const triggerValue in data.triggerValues){
-            if(sensorVal <= triggerValue.triggerValue){
-              await this._handleSensorEvent(config, await Outputs.readStateAsync(timeEvent.outputID), outputs[sensorEvent.outputID], sensorEvent)
+          triggerValues.sort((a, b) => b.triggerValue - a.triggerValue)
+          for(const triggerValue of triggerValues){
+            if(sensorVal.val <= triggerValue.triggerValue){
+              await this._handleSensorEvent(config, outputs[sensorEvent.outputID], sensorEvent, triggerValue.triggerValue);
             }
           }
       }      
@@ -67,8 +69,9 @@ module.exports = class SensorEvents{
   /**
    * Helper function; Runs the schedule.
    */
-  static async _handleSensorEvent(config, output, sensorEvent){
-    let outputValue = sensorEvent.outputValue;
+  static async _handleSensorEvent(config, output, sensorEvent, triggerValue){
+    let outputValue = triggerValue
+    console.log(outputValue)
     if (outputValue < 0){
       outputValue = Math.round((Math.random() * 100))
     }

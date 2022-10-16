@@ -415,13 +415,13 @@ module.exports.updateOutput = async function(id, name, type, description, output
  * Updates an output's state in the database.
  * @param {number} id
  * @param {boolean} outputScheduleState 
- * @param {number} outputScheduleValue 
+ * @param {number} outputScheduleOutputValue 
  * @returns 
  */
-module.exports.updateOutputScheduleState = async function(id, outputScheduleState, outputScheduleValue = 0){
+module.exports.updateOutputScheduleState = async function(id, outputScheduleState, outputScheduleOutputValue = 0){
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = `CALL updateOutputScheduleState(${id}, ${outputScheduleState}, ${outputScheduleValue})`
+    let query = `CALL updateOutputScheduleState(${id}, ${outputScheduleState}, ${outputScheduleOutputValue})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
@@ -438,13 +438,13 @@ module.exports.updateOutputScheduleState = async function(id, outputScheduleStat
  * Updates an output's state in the database.
  * @param {number} id
  * @param {boolean} outputManualState 
- * @param {number} outputManualValue 
+ * @param {number} outputManualOutputValue 
  * @returns 
  */
-module.exports.updateOutputManualState = async function(id, outputManualState, outputManualValue = 0){
+module.exports.updateOutputManualState = async function(id, outputManualState, outputManualOutputValue = 0){
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = `CALL updateOutputManualState(${id}, ${outputManualState}, ${outputManualValue})`
+    let query = `CALL updateOutputManualState(${id}, ${outputManualState}, ${outputManualOutputValue})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
