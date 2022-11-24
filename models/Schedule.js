@@ -24,39 +24,30 @@ module.exports = class Schedule {
     setInterval(async function() {
       await Sensors.addSensorReadings(sensors);
     }, config.log_interval);
+    // Default outputs to off and None/None
 
-    // Default outputs to off and schedule/schedule
-    this._InitializeOutputDefaults(outputs);
-
+    await this._InitializeOutputDefaults(outputs);
+    let unusedOutputIDs = new Set(Object.keys(outputs)
+      .filter(key => !isNaN(key))
+      .map(id => parseInt(id))
+    )
     // Event running
-    let manualOutputs = new Set(await ManualEvents.manualEventRunner(config, Outputs.outputs, 1));
-    let unusedOutputIDs = Object.keys(outputs)
-      .filter((key) => !isNaN(key))
-      .map((key) => parseInt(key))
-      .filter((key) => !manualOutputs.has(key));
-    for(const id of unusedOutputIDs){
-      Outputs.updateControllerAsync(id, Constants.outputControllers.SCHEDULE);        
-    }
-    await TimeEvents.timeEventRunner(config, outputs, 1);
-    await SensorEvents.sensorEventRunner(config, outputs, 1);
+    await ManualEvents.manualEventRunner(config, outputs, 1);
+    unusedOutputIDs = await TimeEvents.timeEventRunner(config, outputs, unusedOutputIDs, 1);
+    unusedOutputIDs = await SensorEvents.sensorEventRunner(config, outputs, unusedOutputIDs, 1);
     await Schedule._scheduleMinder(outputs);
-
+    console.log(unusedOutputIDs)
 
     setInterval(async function() {
-      let manualOutputs = new Set(await ManualEvents.manualEventRunner(config, Outputs.outputs, 1));
-      let unusedOutputIDs = Object.keys(outputs)
-        .filter((key) => !isNaN(key))
-        .map((key) => parseInt(key))
-        .filter((key) => !manualOutputs.has(key));
-      for(const id of unusedOutputIDs){
-        if (outputs[id].outputController == Constants.outputControllers.MANUAL){
-          Outputs.updateControllerAsync(id, Constants.outputControllers.SCHEDULE);        
-        }
-      }
-      await TimeEvents.timeEventRunner(config, outputs, 1);
-      await SensorEvents.sensorEventRunner(config, outputs, 1);
+      let unusedOutputIDs = new Set(Object.keys(outputs)
+        .filter(key => !isNaN(key))
+        .map(id => parseInt(id))
+      )
+      await ManualEvents.manualEventRunner(config, outputs, 1);
+      unusedOutputIDs = await TimeEvents.timeEventRunner(config, outputs, unusedOutputIDs, 1);
+      unusedOutputIDs = await SensorEvents.sensorEventRunner(config, outputs, unusedOutputIDs, 1);
       await Schedule._scheduleMinder(outputs);
-  
+      console.log(unusedOutputIDs)
     }, EVENT_TIMER);
 
     // Handle camera things
@@ -110,22 +101,20 @@ module.exports = class Schedule {
         }
       }
       if (isSchedulePresent == false){
-        Outputs.updateLastControllerAsync(outputID, outputs[outputID].outputController);
-        Outputs.updateControllerAsync(outputID, Constants.outputControllers.SCHEDULE);        
-        if(await EventHandlerUtils.filterOff(outputs[outputID])){                    
+        if(EventHandlerUtils.filterRedundantOutputCalls(outputs[outputID], 0, Constants.eventTypes.None)){
           Outputs.turnOff(outputs[outputID]);
-       }
+        }
+        Outputs.updateEventTypeAsync(outputID, Constants.eventTypes.None);        
       }
     }
   }
 
-  static _InitializeOutputDefaults(outputs){
+  static async _InitializeOutputDefaults(outputs){
     for (const outputID in outputs){
       if (isNaN(outputID)){
         continue;
       }
-      Outputs.updateLastControllerAsync(outputID, outputs[outputID].outputController);
-      Outputs.updateControllerAsync(outputID, Constants.outputControllers.SCHEDULE);        
+      await Outputs.updateEventTypeAsync(outputID, Constants.eventTypes.None);        
       Outputs.turnOff(outputs[outputID])
     }
   }

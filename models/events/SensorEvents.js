@@ -30,11 +30,13 @@ module.exports = class SensorEvents{
     await dbCalls.removeSensorEvent(eventID);
   }
 
-  static async sensorEventRunner(config, outputs, dayID){
+  static async sensorEventRunner(config, outputs, unusedOutputIDs, dayID){
     const sensorEvents = await this.getByDayIDAsync(dayID);
     
     for(const sensorEvent of sensorEvents){
-      if (this.triggeredScheduleMinder.includes(sensorEvent.sensorEventID)) {
+      if (this.triggeredScheduleMinder.includes(sensorEvent.sensorEventID) ||
+          !unusedOutputIDs.has(sensorEvent.outputID)
+        ){
         continue;
       }
       let startTime = moment(sensorEvent.startTime, 'HH:mm:ss')
@@ -49,6 +51,7 @@ module.exports = class SensorEvents{
           triggerValues.sort((a, b) => a.triggerValue - b.triggerValue)
           for(const triggerValue of triggerValues){
             if(sensorVal.val >= triggerValue.triggerValue){
+              unusedOutputIDs.delete(sensorEvent.outputID)
               await this._handleSensorEvent(config, outputs[sensorEvent.outputID], sensorEvent, triggerValue.triggerValue);
             }
           }
@@ -57,13 +60,15 @@ module.exports = class SensorEvents{
           triggerValues.sort((a, b) => b.triggerValue - a.triggerValue)
           for(const triggerValue of triggerValues){
             if(sensorVal.val <= triggerValue.triggerValue){
+              unusedOutputIDs.delete(sensorEvent.outputID)
               await this._handleSensorEvent(config, outputs[sensorEvent.outputID], sensorEvent, triggerValue.triggerValue);
             }
           }
-      }      
+      }
     }
     // Clean up all schedules from minder
     this.triggeredScheduleMinder.auto_remove_schedules()
+    return unusedOutputIDs;
   }
   
   /**
@@ -76,32 +81,35 @@ module.exports = class SensorEvents{
       outputValue = Math.round((Math.random() * 100))
     }
     if(outputValue > 0) {
-      let toggle = await EventHandlerUtils.filterOn(output, outputValue);
+      let toggle = EventHandlerUtils.filterRedundantOutputCalls(output, outputValue, Constants.eventTypes.SensorEvents);
       if (toggle){
-        if(output.outputController == Constants.outputControllers.MANUAL){
+        if(output.outputEventType != Constants.eventTypes.ManualEvents){
           await Outputs.turnOn(config, output, outputValue, true)
         } else {
           await Outputs.turnOn(config, output, outputValue, false)
         }
       }
     } else {
-      let toggle = await EventHandlerUtils.filterOff(output);
+      let toggle = EventHandlerUtils.filterRedundantOutputCalls(output, outputValue, Constants.eventTypes.SensorEvents);
       if (toggle){
-        if(output.outputController == Constants.outputControllers.MANUAL){
+        if(output.outputEventType != Constants.eventTypes.ManualEvents){
           await Outputs.turnOff(output, true)
         } else {
           await Outputs.turnOff(output, false)
         }
       }
     }
+
+    await Outputs.updateEventTypeAsync(sensorEvent.outputID, Constants.eventTypes.SensorEvents);
+
     // Add to array of triggered schedule; update timeout
-    let data = {
+    this.triggeredScheduleMinder.add_schedule( {
       scheduleID: sensorEvent.sensorEventID,
       timeout: moment().add(1, 'm')
-    }
-    this.triggeredScheduleMinder.add_schedule(data)
-    return
+    });
+    return;
   }
+
 }
 
 

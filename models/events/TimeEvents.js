@@ -32,55 +32,62 @@ module.exports = class TimeEvents {
     return this;
   }
 
-  static async timeEventRunner(config, outputs, dayID) {
+  static async timeEventRunner(config, outputs, unusedOutputIDs, dayID) {
     const timeEvents = await this.getByDayIDAsync(dayID)
     //If no errors, get current timestamp
     const currentTime = moment().format('HH:mm:ss');
     //Iterate through time Schedules
     for(const timeEvent of timeEvents) {
       // If the minder includes the current event, skip to next schedule
-      if(this.triggeredScheduleMinder.includes(timeEvent.timeEventID)){
+      if(this.triggeredScheduleMinder.includes(timeEvent.timeEventID) ||
+          !unusedOutputIDs.has(timeEvent.outputID)
+        ){
         continue;
       }
       let triggerTime = moment(timeEvent.triggerTime, "HH:mm:ss");
       //If trigger time matches time stamp trigger event.
       if(moment(currentTime, "HH:mm:ss").isSame(triggerTime, 'minute')) {
         await this._handleTimeEvent(config, outputs[timeEvent.outputID], timeEvent);
-        // Add to array of triggered schedule
-        this.triggeredScheduleMinder.add_schedule({
-          scheduleID: timeEvent.timeEventID,
-          timeout: moment().add(1, 'm')
-        })
+        unusedOutputIDs.delete(timeEvent.outputID)        
       }
-    };
+    }
     // Clean up all schedules from minder
     this.triggeredScheduleMinder.auto_remove_schedules();
+    return unusedOutputIDs
   }
 
   static async _handleTimeEvent(config, output, timeEvent){
     let outputValue = timeEvent.outputValue;
-
     if (outputValue < 0){
       outputValue = Math.round((Math.random() * 100))
     }
     if(outputValue > 0) {
-      let toggle = await EventHandlerUtils.filterOn(output, outputValue);
+      let toggle = EventHandlerUtils.filterRedundantOutputCalls(output, outputValue, Constants.eventTypes.TimeEvents);
       if (toggle){
-        if(output.outputController == Constants.outputControllers.MANUAL){
+        if(output.outputEventType != Constants.eventTypes.ManualEvents){
           await Outputs.turnOn(config, output, outputValue, true)
         } else {
           await Outputs.turnOn(config, output, outputValue, false)
         }
       }
     } else {
-      let toggle = await EventHandlerUtils.filterOff(output);
+      let toggle = EventHandlerUtils.filterRedundantOutputCalls(output, outputValue, Constants.eventTypes.TimeEvents);
       if (toggle){
-        if(output.outputController == Constants.outputControllers.MANUAL){
+        if(output.outputEventType != Constants.eventTypes.ManualEvents){
           await Outputs.turnOff(output, true)
         } else {
           await Outputs.turnOff(output, false)
         }
       }
     }
+
+    await Outputs.updateEventTypeAsync(timeEvent.outputID, Constants.eventTypes.TimeEvents);
+
+    // Add to array of triggered schedule
+    this.triggeredScheduleMinder.add_schedule({
+      scheduleID: timeEvent.timeEventID,
+      timeout: moment().add(1, 'm')
+    });
+    return;
   }
 }

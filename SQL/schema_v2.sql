@@ -48,8 +48,7 @@ CREATE TABLE Outputs (
   outputScheduleOutputValue INT DEFAULT 0,
   outputManualState BOOLEAN DEFAULT 0,
   outputManualOutputValue INT DEFAULT 0,
-  outputController VARCHAR(32) DEFAULT "SCHEDULE",
-  outputLastController VARCHAR(32) DEFAULT "SCHEDULE",
+  outputEventType VARCHAR(128) DEFAULT "None",
   outputUpdatedAt TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP ON UPDATE LOCALTIMESTAMP,
   outputOrder INT DEFAULT 0,
   PRIMARY KEY (outputID)
@@ -1382,7 +1381,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getOutputState`()
 READS SQL DATA
-  SELECT outputID, outputScheduleState, outputScheduleOutputValue, outputManualState, outputManualOutputValue, outputController, outputLastController
+  SELECT outputID, outputScheduleState, outputScheduleOutputValue, outputManualState, outputManualOutputValue, outputEventType
   FROM Outputs
   $$
 DELIMITER ;
@@ -1390,7 +1389,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getOutputStateByID`(IN `p_outputID` INT)
 READS SQL DATA
-  SELECT outputID, outputScheduleState, outputScheduleOutputValue, outputManualState, outputManualOutputValue, outputController, outputLastController
+  SELECT outputID, outputScheduleState, outputScheduleOutputValue, outputManualState, outputManualOutputValue, outputEventType
   FROM Outputs Where outputID = p_outputID
   $$
 DELIMITER ;
@@ -1404,17 +1403,9 @@ MODIFIES SQL DATA
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE `updateOutputController`(IN `p_outputID` INT, IN `p_outputController` VARCHAR(32))
+CREATE PROCEDURE `updateOutputEventType`(IN `p_outputID` INT, IN `p_EventType` VARCHAR(128))
 MODIFIES SQL DATA
-  UPDATE Outputs SET outputController = p_outputController 
-  WHERE outputID = p_outputID
-  $$
-DELIMITER ;
-
-DELIMITER $$
-CREATE PROCEDURE `updateOutputLastController`(IN `p_outputID` INT, IN `p_outputLastController` VARCHAR(32))
-MODIFIES SQL DATA
-  UPDATE Outputs SET outputLastController = p_outputLastController 
+  UPDATE Outputs SET outputEventType = p_EventType
   WHERE outputID = p_outputID
   $$
 DELIMITER ;

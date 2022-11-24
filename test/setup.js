@@ -1,6 +1,5 @@
 
 const sinon = require('sinon')
-var app;
 
 exports.mochaGlobalSetup = async function() {
 }

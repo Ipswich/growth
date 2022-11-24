@@ -33,16 +33,18 @@ module.exports = class ManualEvents {
   }
 
   static async manualEventRunner(config, outputs, dayID) {
-    let manualOutputs = []
+    let usedOutputIDs = new Set();
     const manualEvents = await this.getByDayIDAsync(dayID)
     //Iterate through time Schedules
     for(const manualEvent of manualEvents) {
-      // If the minder includes the current event, skip to next schedule
-      if(this.triggeredScheduleMinder.includes(manualEvent.manualEventID)){
+      // If the minder includes the current event, or the output has already been used,
+      // skip to next schedule
+      if(this.triggeredScheduleMinder.includes(manualEvent.manualEventID) || usedOutputIDs.has(manualEvent.outputID)){
+        usedOutputIDs.add(manualEvent.outputID)
         continue;
       }
+      usedOutputIDs.add(manualEvent.outputID)
       await this._handleManualEvent(config, outputs[manualEvent.outputID], manualEvent);
-      manualOutputs.push(manualEvent.outputID)
       // Add to array of triggered schedule
       this.triggeredScheduleMinder.add_schedule({
         scheduleID: manualEvent.manualEventID,
@@ -51,7 +53,6 @@ module.exports = class ManualEvents {
     };
     // Clean up all schedules from minder
     this.triggeredScheduleMinder.auto_remove_schedules();
-    return manualOutputs
   }
 
   static async _handleManualEvent(config, output, manualEvent){
@@ -60,16 +61,16 @@ module.exports = class ManualEvents {
       outputValue = 0
     }
     if(outputValue > 0) {
-      let toggle = await EventHandlerUtils.filterOn(output, outputValue, Constants.outputControllers.MANUAL);
+      let toggle = EventHandlerUtils.filterRedundantOutputCalls(output, outputValue, Constants.eventTypes.ManualEvents);
       if (toggle){
         await Outputs.turnOn(config, output, outputValue, false)
       }
     } else {
-      let toggle = await EventHandlerUtils.filterOff(output, Constants.outputControllers.MANUAL);
+      let toggle = EventHandlerUtils.filterRedundantOutputCalls(output, outputValue, Constants.eventTypes.ManualEvents);
       if (toggle){
         await Outputs.turnOff(output, outputState, false)
       }
     }
-    await Outputs.updateControllerAsync(manualEvent.outputID, Constants.outputControllers.MANUAL);   
+    await Outputs.updateEventTypeAsync(manualEvent.outputID, Constants.eventTypes.ManualEvents);
   }
 }

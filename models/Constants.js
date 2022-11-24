@@ -1,18 +1,19 @@
 const Constants = {
-  "eventTypes" : [
-    "RandomEvents",
-    "RandomPythonEvents",
-    "RecurringEvents",
-    "RecurringPythonEvents",
-    "TimeEvents",
-    "PythonTimeEvents",
-    "SensorEvents",
-    "PythonSensorEvents",
-    "EmailSensorEvents",
-    "BoundedEvents",
-    "SunTrackerEvents",
-    "ManualEvents"
-  ],
+  "eventTypes" : {
+    "RandomEvents": "RandomEvents",
+    "RandomPythonEvents": "RandomPythonEvents",
+    "RecurringEvents": "RecurringEvents",
+    "RecurringPythonEvents": "RecurringPythonEvents",
+    "TimeEvents": "TimeEvents",
+    "PythonTimeEvents": "PythonTimeEvents",
+    "SensorEvents": "SensorEvents",
+    "PythonSensorEvents": "PythonSensorEvents",
+    "EmailSensorEvents": "EmailSensorEvents",
+    "BoundedEvents": "BoundedEvents",
+    "SunTrackerEvents": "SunTrackerEvents",
+    "ManualEvents": "ManualEvents",
+    "None": "None"
+  },
   "weekdays": {
     "None": "0x0000000",
     "Monday": "0x0000001",
@@ -22,10 +23,6 @@ const Constants = {
     "Friday": "0x0010000",
     "Saturday": "0x0100000",
     "Sunday": "0x1000000"
-  },
-  "outputControllers":{
-    "MANUAL": "MANUAL",
-    "SCHEDULE": "SCHEDULE"
   },
   "outputStates":{
     "ON": 1,

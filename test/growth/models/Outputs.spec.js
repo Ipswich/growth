@@ -16,7 +16,9 @@ describe('Outputs.js tests', function(){
       sinon.stub(dbCalls, 'getOutputs').returns(getOutputsReturn)
       sinon.stub(five, 'Relay').returns({open:function(){}})
       sinon.stub(five, 'Led').returns({off:function(){}})
-      sinon.stub(five, 'Pin').returns({low:function(){}})
+      sinon.stub(five, 'Pin')
+        .returns({low:function(){}})
+        .returns({high:function(){}})
       let config = {
         board_pinout:{
           OUTPUT_PINS: [1, 2, 3, 4],

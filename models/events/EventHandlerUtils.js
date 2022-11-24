@@ -1,141 +1,160 @@
 const Printouts = require('../../models/utility/Printouts')
-const Outputs = require('../Outputs.js');
-const Constants = require('../Constants')
+const Constants = require('../Constants');
 
 module.exports = class EventHandlerUtils {
-  /**
-   * Used to filter whether an event should be turned ON or not; used to ensure
-   * manual ons do not interfere with other running events, and vice versa. 
-   * @param {object} output
-   * @param {object} outputValue 
-   * @param {string} controllerType
-   * @returns {boolean} true if the output should be turned on, false otherwise.
-   */
-  static async filterOn(output, outputValue, controllerType = Constants.outputControllers.SCHEDULE) {
-    console.log(output)
-    if(output.outputController === Constants.outputControllers.MANUAL) {
-      //if last state was set to on output value hasn't changed, return  
-      if(controllerType != Constants.outputControllers.MANUAL) {
-        //If output controller is manual but schedule type is not, update schedule state
-        await Outputs.updateScheduleStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
-        Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SCHEDULE IN MANUAL STATE")
-        return false;
-      }
-      if(output.outputLastController === Constants.outputControllers.SCHEDULE && output.outputScheduleState === Constants.outputStates.ON) {
-        //Change of controller - update last output controller, state
-        await Outputs.updateLastControllerAsync(output.outputID, output.outputController)          
-        if(output.outputPWMObject) {
-          if(output.scheduleOutputValue === outputValue) {
-            await Outputs.updateManualStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
-            Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
-            return false;
-          }
-        } else {
-          await Outputs.updateManualStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
-          Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
-          return false;
-        }
-      }
-      if(output.outputLastController === Constants.outputControllers.MANUAL && output.manualState === Constants.outputStates.ON) {
-        if(output.outputPWMObject) {
-          if(output.manualOutputValue === outputValue) {          
-            Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
-            return false;
-          }
-        } else {
-          Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
-          return false;
-        }
-      } 
-    } else {
-      //OutputController === Schedule
-      //If output controller is NOT manual and schedule type is manual, return
-      if(controllerType === Constants.outputControllers.MANUAL) {
-        await Outputs.updateManualStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
-        Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, MANUAL IN SCHEDULE STATE")
-        return false;
-      }
-      if(output.outputLastController === Constants.outputControllers.SCHEDULE && output.outputScheduleState === Constants.outputStates.ON) {
-        if(output.outputPWMObject) {
-          if(output.scheduleOutputValue === outputValue) {          
-            Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
-            return false;
-          }
-        } else {
-          Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
-          return false;
-        }
-      }
-      if(output.outputLastController === Constants.outputControllers.MANUAL && outputState.manualState === Constants.outputStates.ON) {
-        //Change of controller - update last output controller, state
-        await Outputs.updateLastControllerAsync(output.outputID, output.outputController)
-        if(output.outputPWMObject) {
-          if(output.manualOutputValue === outputValue) {              
-            await Outputs.updateScheduleStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
-            Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
-            return false;
-          }
-        } else {
-          await Outputs.updateScheduleStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
-          Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
-          return false;
-        }
-      }   
-    }   
-    return true;         
-  }
 
-  /**
-   * Used to filter whether an event should be turned OFF or not; used to ensure
-   * manual offs do not interfere with other running events, and vice versa. 
-   * @param {object} output
-   * @param {object} controllerType
-   * @returns {boolean} true if the event should be turned off, false otherwise.
-   */
-  static async filterOff(output, controllerType = Constants.outputControllers.SCHEDULE) {
-    //If currently in manual control
-    if(output.outputController === Constants.outputControllers.MANUAL){
-      if(controllerType != Constants.outputControllers.MANUAL){          
-        // If output controller is manual, and schedule type is NOT manual, return
-        await Outputs.updateScheduleStateAsync(output.outputID, Constants.outputStates.OFF); 
-        Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SCHEDULE IN MANUAL STATE")
+  static filterRedundantOutputCalls(output, newOutputValue, newEventType){
+    let currentOutputValue = (output.outputEventType == Constants.eventTypes.ManualEvents) ? output.outputManualOutputValue : output.outputScheduleOutputValue
+    if(output.outputEventType == newEventType){
+      if(currentOutputValue == newOutputValue){
+        Printouts.debugPrintout(`[${output.outputName}] [${output.outputEventType} -> ${newEventType}] @ [${currentOutputValue}% -> ${newOutputValue}%] - SKIPPED, SAME OUTPUT VALUES`);
         return false;
-      } 
-      //if old state was set to off, return        
-      if(output.outputLastController === Constants.outputControllers.SCHEDULE && output.outputScheduleState === Constants.outputStates.OFF) {
-        await Outputs.updateManualStateAsync(output.outputID, Constants.outputStates.OFF);
-        Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
-        return false;
+      } else {
+        return true;
       }
-      if(output.outputLastController === Constants.outputControllers.MANUAL && output.manualState === Constants.outputStates.OFF){
-        Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+    } else {
+      if(currentOutputValue == newOutputValue){
+        Printouts.debugPrintout(`[${output.outputName}] [${output.outputEventType} -> ${newEventType}] @ [${currentOutputValue}% -> ${newOutputValue}%] - SKIPPED, SAME OUTPUT VALUES`);
         return false;
-      }     
-    // Else we're in schedule control
-    } else {  
-      // If output controller is NOT manual, and schedule type is manual, return
-      if(controllerType === Constants.outputControllers.MANUAL){          
-        await Outputs.updateManualStateAsync(output.outputID, Constants.outputStates.OFF);
-        Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] OFF - SKIPPED, MANUAL IN SCHEDULE STATE")
-        return false;
-      }
-      //if old state was set to off, return        
-      if(output.outputLastController === Constants.outputControllers.SCHEDULE && output.outputScheduleState === Constants.outputStates.OFF) {
-        Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] OFF - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
-        return false;
+      } else {
+        return true;
       }
     }
-    return true;
   }
 }
+  // /**
+  //  * Used to filter whether an event should be turned ON or not; used to ensure
+  //  * manual ons do not interfere with other running events, and vice versa. 
+  //  * @param {object} output
+  //  * @param {object} outputValue 
+  //  * @param {string} controllerType
+  //  * @returns {boolean} true if the output should be turned on, false otherwise.
+  //  */
+  // static async filterOn(output, outputValue, controllerType = Constants.outputControllers.SCHEDULE) {    
+  //   if(output.outputController === Constants.outputControllers.MANUAL) {
+  //     //if last state was set to on output value hasn't changed, return  
+  //     if(controllerType != Constants.outputControllers.MANUAL) {
+  //       //If output controller is manual but schedule type is not, update schedule state
+  //       await Outputs.updateScheduleStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
+  //       Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SCHEDULE IN MANUAL STATE")
+  //       return false;
+  //     }
+  //     if(output.outputLastController === Constants.outputControllers.SCHEDULE && output.outputScheduleState === Constants.outputStates.ON) {
+  //       //Change of controller - update last output controller, state
+  //       await Outputs.updateLastControllerAsync(output.outputID, output.outputController)          
+  //       if(output.outputPWMObject) {
+  //         if(output.scheduleOutputValue === outputValue) {
+  //           await Outputs.updateManualStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
+  //           Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+  //           return false;
+  //         }
+  //       } else {
+  //         await Outputs.updateManualStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
+  //         Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+  //         return false;
+  //       }
+  //     }
+  //     if(output.outputLastController === Constants.outputControllers.MANUAL && output.manualState === Constants.outputStates.ON) {
+  //       if(output.outputPWMObject) {
+  //         if(output.manualOutputValue === outputValue) {          
+  //           Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+  //           return false;
+  //         }
+  //       } else {
+  //         Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+  //         return false;
+  //       }
+  //     } 
+  //   } else {
+  //     //OutputController === Schedule
+  //     //If output controller is NOT manual and schedule type is manual, return
+  //     if(controllerType === Constants.outputControllers.MANUAL) {
+  //       await Outputs.updateManualStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
+  //       Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, MANUAL IN SCHEDULE STATE")
+  //       return false;
+  //     }
+  //     if(output.outputLastController === Constants.outputControllers.SCHEDULE && output.outputScheduleState === Constants.outputStates.ON) {
+  //       if(output.outputPWMObject) {
+  //         if(output.scheduleOutputValue === outputValue) {          
+  //           Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+  //           return false;
+  //         }
+  //       } else {
+  //         Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+  //         return false;
+  //       }
+  //     }
+  //     if(output.outputLastController === Constants.outputControllers.MANUAL && outputState.manualState === Constants.outputStates.ON) {
+  //       //Change of controller - update last output controller, state
+  //       await Outputs.updateLastControllerAsync(output.outputID, output.outputController)
+  //       if(output.outputPWMObject) {
+  //         if(output.manualOutputValue === outputValue) {              
+  //           await Outputs.updateScheduleStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
+  //           Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+  //           return false;
+  //         }
+  //       } else {
+  //         await Outputs.updateScheduleStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
+  //         Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] ON @ " + outputValue + "% - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+  //         return false;
+  //       }
+  //     }   
+  //   }   
+  //   return true;         
+  // }
 
-/**
- * Runs schedule on hardware; handles On, Off, Emails, and Python scripts.
- * @param {object} schedule schedule to run
- * @param {object} state current state
- * @param {string} event string representation of event to run
- * @param {number} triggerVal value of sensor trigger
- */
+
+//   /**
+//    * Used to filter whether an event should be turned OFF or not; used to ensure
+//    * manual offs do not interfere with other running events, and vice versa. 
+//    * @param {object} output
+//    * @param {object} controllerType
+//    * @returns {boolean} true if the event should be turned off, false otherwise.
+//    */
+//   static async filterOff(output, controllerType = Constants.outputControllers.SCHEDULE) {
+//     //If currently in manual control
+//     if(output.outputController === Constants.outputControllers.MANUAL){
+//       if(controllerType != Constants.outputControllers.MANUAL){          
+//         // If output controller is manual, and schedule type is NOT manual, return
+//         await Outputs.updateScheduleStateAsync(output.outputID, Constants.outputStates.OFF); 
+//         Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SCHEDULE IN MANUAL STATE")
+//         return false;
+//       } 
+//       //if old state was set to off, return        
+//       if(output.outputLastController === Constants.outputControllers.SCHEDULE && output.outputScheduleState === Constants.outputStates.OFF) {
+//         await Outputs.updateManualStateAsync(output.outputID, Constants.outputStates.OFF);
+//         Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+//         return false;
+//       }
+//       if(output.outputLastController === Constants.outputControllers.MANUAL && output.manualState === Constants.outputStates.OFF){
+//         Printouts.debugPrintout("[" + output.outputName + "]" + "[Manual] OFF - SKIPPED, SAME AS PREVIOUS MANUAL STATE")
+//         return false;
+//       }     
+//     // Else we're in schedule control
+//     } else {  
+//       // If output controller is NOT manual, and schedule type is manual, return
+//       if(controllerType === Constants.outputControllers.MANUAL){          
+//         await Outputs.updateManualStateAsync(output.outputID, Constants.outputStates.OFF);
+//         Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] OFF - SKIPPED, MANUAL IN SCHEDULE STATE")
+//         return false;
+//       }
+//       //if old state was set to off, return        
+//       if(output.outputLastController === Constants.outputControllers.SCHEDULE && output.outputScheduleState === Constants.outputStates.OFF) {
+//         Printouts.debugPrintout("[" + output.outputName + "]" + "[Schedule] OFF - SKIPPED, SAME AS PREVIOUS SCHEDULE STATE")
+//         return false;
+//       }
+//     }
+//     return true;
+//   }
+// }
+
+// /**
+//  * Runs schedule on hardware; handles On, Off, Emails, and Python scripts.
+//  * @param {object} schedule schedule to run
+//  * @param {object} state current state
+//  * @param {string} event string representation of event to run
+//  * @param {number} triggerVal value of sensor trigger
+//  */
 // async function triggerEvent(schedule, state, event = null, triggerVal = null) {
 //   //Iterate through output mappings to get output
 //   let config = config_helper.getConfig()

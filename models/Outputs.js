@@ -44,14 +44,9 @@ module.exports = class Outputs {
     this.outputs[id].outputScheduleOutputValue = outputScheduleOutputValue;
   }
   
-  static async updateControllerAsync(id, outputController) {
-    await dbCalls.updateOutputController(id, `'${outputController}'`);
-    this.outputs[id].outputController = outputController;
-  }
-
-  static async updateLastControllerAsync(id, outputLastController) {
-    await dbCalls.updateOutputLastController(id, `'${outputLastController}'`);
-    this.outputs[id].outputLastController = outputLastController;
+  static async updateEventTypeAsync(id, eventType) {
+    await dbCalls.updateOutputEventType(id, `'${eventType}'`);
+    this.outputs[id].outputEventType = eventType;
   }
 
   static async updatePinAsync(outputID, pin){
@@ -69,8 +64,6 @@ module.exports = class Outputs {
   static async createInitialState(config, board){
     let mapperState = await this._mapPins(config)
     mapperState = this._assignRelayTogglePreventionOutput(board, mapperState)
-    // console.log(board.getMaxListeners())
-    // console.log(this._maxListenerCheck(mapperState))
     board.setMaxListeners(board.getMaxListeners() + this._maxListenerCheck(mapperState))
 
     //Set up outputs and bind to state object.
@@ -111,19 +104,19 @@ module.exports = class Outputs {
       if (!stateOnly){
         output.outputObject.close();
         output.outputPWMObject.brightness(value);
-        Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON @ " + outputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");      
+        Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputEventType + "] ON @ " + outputValue + "% - [Output Pin: " + output.outputPin + ", PWM Pin: " + output.outputPWMPin + "]");      
       } else {
         Printouts.debugPrintout("[" + output.outputName + "]" + " ON @ " + outputValue + "% - SKIPPED, STATE ONLY")
       }
     } else {
       if(!stateOnly){
         output.outputObject.close();
-        Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] ON - [Output Pin: " + output.outputPin + "]");      
+        Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputEventType + "] ON - [Output Pin: " + output.outputPin + "]");      
       } else {
         Printouts.debugPrintout("[" + output.outputName + "]" + " ON - SKIPPED, STATE ONLY")
       }
     }
-    if(output.outputController == Constants.outputControllers.MANUAL){
+    if(output.outputEventType == Constants.eventTypes.ManualEvents){
       await this.updateManualStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
     } else {
       await this.updateScheduleStateAsync(output.outputID, Constants.outputStates.ON, outputValue);
@@ -138,7 +131,7 @@ module.exports = class Outputs {
    */
    static async turnOff(output, stateOnly) {
      if (!stateOnly){
-      Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputController + "] OFF - [Output Pin: " + output.outputPin + "]");  
+      Printouts.simpleLogPrintout(output.outputName + ": [" + output.outputEventType + "] OFF - [Output Pin: " + output.outputPin + "]");  
       output.outputObject.open();
       if (output.outputPWM){
         output.outputPWMObject.brightness(0)
@@ -146,7 +139,7 @@ module.exports = class Outputs {
     } else {
       Printouts.debugPrintout("[" + output.outputName + "]" + " OFF - SKIPPED, STATE ONLY")
     }
-    if(output.outputController == Constants.outputControllers.MANUAL){
+    if(output.outputEventType == Constants.eventTypes.ManualEvents){
       await this.updateManualStateAsync(output.outputID, Constants.outputStates.OFF, 0);
     } else {
       await this.updateScheduleStateAsync(output.outputID, Constants.outputStates.OFF, 0);

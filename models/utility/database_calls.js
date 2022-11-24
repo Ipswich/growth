@@ -460,17 +460,17 @@ module.exports.updateOutputManualState = async function(id, outputManualState, o
 /**
  * Updates an output's state in the database.
  * @param {number} id
- * @param {boolean} outputController 
+ * @param {string} outputEventType 
  * @returns 
  */
-module.exports.updateOutputController = async function(id, outputController){
+module.exports.updateOutputEventType = async function(id, eventType){
   let pool = await exports.getPool()
   return new Promise((resolve, reject) => {
-    let query = `CALL updateOutputController(${id}, ${outputController})`
+    let query = `CALL updateOutputEventType(${id}, ${eventType})`
     pool.query(query, (error, results, fields) => {
       //Error on problem.
       if(error) {
-        simpleErrorPrintout("updateOutputController() failed, database error.");          
+        simpleErrorPrintout("updateOutputEventType() failed, database error.");          
         reject(error);
       } else {
         resolve(results[0])
