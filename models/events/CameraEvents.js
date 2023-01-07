@@ -30,7 +30,7 @@ module.exports = class CameraEvents {
       flag_string += ` -q ${config.camera.image_quality}`
     }
     let overlay_sum = this.getOverlayValue(config)
-    if (overlay_sum != 0){
+    if (overlay_sum !== 0){
       overlay_string = ` -a ${overlay_sum}`
     }
     let command = `raspistill -o ${output_file}${flag_string}${overlay_string}`
@@ -77,7 +77,7 @@ module.exports = class CameraEvents {
     if (config.camera.overlay_time){
       overlay_sum += 8
     }
-    if (overlay_sum != 0 && config.camera.overlay_black){
+    if (overlay_sum !== 0 && config.camera.overlay_black){
       overlay_sum += 1024
     }
     return overlay_sum

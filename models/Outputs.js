@@ -139,7 +139,7 @@ module.exports = class Outputs {
     } else {
       Printouts.debugPrintout("[" + output.outputName + "]" + " OFF - SKIPPED, STATE ONLY")
     }
-    if(output.outputEventType == Constants.eventTypes.ManualEvents){
+    if(output.outputEventType === Constants.eventTypes.ManualEvents){
       await this.updateManualStateAsync(output.outputID, Constants.outputStates.OFF, 0);
     } else {
       await this.updateScheduleStateAsync(output.outputID, Constants.outputStates.OFF, 0);

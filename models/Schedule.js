@@ -8,7 +8,7 @@ const Outputs = require('./Outputs')
 const Constants = require('./Constants')
 const EventHandlerUtils = require('./events/EventHandlerUtils')
 
-const EVENT_TIMER = 1 * 1000 // 1 SECOND
+const EVENT_TIMER = 1000 // 1 SECOND
 
 module.exports = class Schedule {
   /**
